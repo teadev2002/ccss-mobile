@@ -7,7 +7,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Login from "./app_source/screens/AuthenScreen/Login.js";
-import Navigation from "./app_source/components/navigator/Navigation.js";
+import Signup from "./app_source/screens/AuthenScreen/Signup.js"; // Add Signup
+import TabNavigator from "./app_source/components/navigator/Navigation.js"; // Updated import
 import Profile from "./app_source/screens/ProfileScreen/Profile.js";
 import Contact from "./app_source/screens/ContactScreen/Contact.js";
 import MenuSidebarRight from "./app_source/components/sidebar/MenuSidebarRight.js";
@@ -16,7 +17,7 @@ import Cosplayer from "./app_source/screens/CosplayerScreen/Cosplayer.js";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
-const { width } = Dimensions.get("window"); // Lấy chiều rộng màn hình
+const { width } = Dimensions.get("window");
 
 function MainDrawer() {
   return (
@@ -26,13 +27,13 @@ function MainDrawer() {
         headerShown: false,
         drawerPosition: "right",
         drawerStyle: {
-          width: width * 0.5, // Đặt chiều rộng là 50% màn hình
+          width: width * 0.5,
         },
-        overlayColor: "rgba(0, 0, 0, 0.5)", // Overlay tối với độ trong suốt 50%
-        drawerType: "slide", // Sử dụng slide để overlay hoạt động tốt
+        overlayColor: "rgba(0, 0, 0, 0.5)",
+        drawerType: "slide",
       }}
     >
-      <Drawer.Screen name="MainTabs" component={Navigation} />
+      <Drawer.Screen name="Tabs" component={TabNavigator} />
     </Drawer.Navigator>
   );
 }
@@ -46,6 +47,11 @@ export default function App() {
             <Stack.Screen
               name="Login"
               component={Login}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Signup"
+              component={Signup}
               options={{ headerShown: false }}
             />
             <Stack.Screen
@@ -73,7 +79,6 @@ export default function App() {
               component={Cosplayer}
               options={{
                 headerShown: false,
-                // Giữ tab bar hiển thị
                 presentation: "modal",
               }}
             />
