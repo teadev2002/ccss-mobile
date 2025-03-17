@@ -45,7 +45,7 @@ const HomeStyles = StyleSheet.create({
     padding: 20,
   },
   sectionTitle: {
-    fontSize: 24, // Giảm từ 2.5rem
+    fontSize: 20, // Giảm từ 2.5rem
     fontWeight: "700",
     color: "#510545",
     textAlign: "center",
@@ -125,10 +125,11 @@ const HomeStyles = StyleSheet.create({
     marginBottom: 15,
   },
   serviceTitle: {
-    fontSize: 17, // Giảm từ 1.8rem
+    fontSize: 15, // Giảm từ 1.8rem
     fontWeight: "800",
     color: "#510545",
     marginBottom: 10,
+    textAlign: "center",
   },
   serviceDescription: {
     fontSize: 14, // Giảm từ 1.1rem

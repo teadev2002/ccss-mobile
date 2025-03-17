@@ -127,7 +127,7 @@ const Home = () => {
       icon: <Feather name="users" size={40} color="#fff" />,
     },
     {
-      title: "Event Organize",
+      title: "Event Organization",
       description:
         "Professional event organization services to bring your cosplay vision to life.",
       icon: <Feather name="calendar" size={40} color="#fff" />,
@@ -145,7 +145,7 @@ const Home = () => {
       icon: <Feather name="gift" size={40} color="#fff" />,
     },
     {
-      title: "Event Ticket",
+      title: "Event Registration",
       description: "",
       icon: <Ionicons name="ticket-outline" size={40} color="#fff" />,
     },
@@ -228,9 +228,6 @@ const Home = () => {
             <View key={index}>{renderServiceItem({ item: service })}</View>
           ))}
         </View>
-        {/* <TouchableOpacity style={HomeStyles.viewAllButton}>
-          <Text style={HomeStyles.viewAllText}>View All Services</Text>
-        </TouchableOpacity> */}
       </View>
 
       <Toast />
