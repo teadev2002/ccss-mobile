@@ -254,6 +254,25 @@ import { useNavigation } from "@react-navigation/native";
 
 const Home = () => {
   const navigation = useNavigation();
+  // useEffect(() => {
+  //   const accessToken = "your-token-from-storage"; // Thay bằng cách lấy từ AsyncStorage nếu cần
+  //   if (!accessToken) return;
+  //   try {
+  //     const decoded = jwtDecode(accessToken);
+  //     const accountName = decoded?.AccountName;
+  //     if (accountName) {
+  //       Toast.show({
+  //         type: "success",
+  //         text1: `Welcome, ${accountName}!`,
+  //         position: "top",
+  //         autoHide: true,
+  //         visibilityTime: 5000,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Invalid token", error);
+  //   }
+  // }, []);
 
   const carouselItems = [
     {
