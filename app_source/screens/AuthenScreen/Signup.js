@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  Image,
   View,
   Text,
   TextInput,
@@ -228,10 +229,19 @@ const Signup = () => {
 
             <TouchableOpacity
               style={styles.googleButton}
-              onPress={() => Alert.alert("Google Sign Up", "Coming soon!")}
+              onPress={() =>
+                Alert.alert(
+                  "Google Sign In",
+                  "Redirecting to Google authentication..."
+                )
+              }
             >
-              <Feather name="globe" size={20} color="#000" />
-              <Text style={styles.googleButtonText}>Sign up with Google</Text>
+              <Image
+                source={{ uri: "https://www.google.com/favicon.ico" }}
+                style={styles.googleLogo}
+                resizeMode="contain"
+              />
+              <Text style={styles.googleButtonText}>Google</Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => navigation.navigate("Login")}>

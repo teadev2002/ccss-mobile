@@ -188,6 +188,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 16,
   },
+  googleLogo: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+  },
   modalErrorText: {
     color: "#721c24",
     fontSize: 14,

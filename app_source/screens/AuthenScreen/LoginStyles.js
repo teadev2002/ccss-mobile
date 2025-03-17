@@ -8,9 +8,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: 20,
+    // flexGrow: 1,
+    // justifyContent: "center",
+    // padding: 20,
   },
   container: {
     flex: 1,
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     shadowColor: "#000",
-    marginTop: 150, // Tăng marginTop để tránh đè lên leftPanel
+    marginTop: 190, // Tăng marginTop để tránh đè lên leftPanel
   },
   title: {
     fontSize: 24,
