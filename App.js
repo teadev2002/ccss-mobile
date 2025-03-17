@@ -7,13 +7,17 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Login from "./app_source/screens/AuthenScreen/Login.js";
-import Signup from "./app_source/screens/AuthenScreen/Signup.js"; // Add Signup
-import TabNavigator from "./app_source/components/navigator/Navigation.js"; // Updated import
+import Signup from "./app_source/screens/AuthenScreen/Signup.js";
+import TabNavigator from "./app_source/components/navigator/Navigation.js";
 import Profile from "./app_source/screens/ProfileScreen/Profile.js";
 import Contact from "./app_source/screens/ContactScreen/Contact.js";
 import MenuSidebarRight from "./app_source/components/sidebar/MenuSidebarRight.js";
 import Home from "./app_source/screens/HomeScreen/Home.js";
 import Cosplayer from "./app_source/screens/CosplayerScreen/Cosplayer.js";
+import EventOrganization from "./app_source/screens/EventOrganizationScreen/EventOrganization.js"; // Thêm mới
+import CostumeRental from "./app_source/screens/CostumeRentalScreen/CostumeRental.js"; // Thêm mới
+import Souvenirs from "./app_source/screens/SouvenirsScreen/Souvenirs.js"; // Thêm mới
+import EventRegistration from "./app_source/screens/EventRegistrationScreen/EventRegistration.js"; // Thêm mới
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -79,13 +83,45 @@ export default function App() {
               component={Cosplayer}
               options={{
                 headerShown: false,
-                presentation: "modal",
+                presentation: "fullScreenModal",
+              }}
+            />
+            <Stack.Screen
+              name="EventOrganization"
+              component={EventOrganization}
+              options={{
+                headerShown: false,
+                presentation: "fullScreenModal",
+              }}
+            />
+            <Stack.Screen
+              name="CostumeRental"
+              component={CostumeRental}
+              options={{
+                headerShown: false,
+                presentation: "fullScreenModal",
+              }}
+            />
+            <Stack.Screen
+              name="Souvenirs"
+              component={Souvenirs}
+              options={{
+                headerShown: false,
+                presentation: "fullScreenModal",
+              }}
+            />
+            <Stack.Screen
+              name="EventRegistration"
+              component={EventRegistration}
+              options={{
+                headerShown: false,
+                presentation: "fullScreenModal",
               }}
             />
           </Stack.Navigator>
         </NavigationContainer>
         <Toast />
-        <StatusBar style="light" backgroundColor="white" translucent />
+        <StatusBar style="light" backgroundColor="black" translucent />
       </SafeAreaView>
     </GestureHandlerRootView>
   );
