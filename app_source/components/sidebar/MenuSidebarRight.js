@@ -9,6 +9,7 @@ const MenuSidebarRight = ({ navigation }) => {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("userToken");
+      console.log("User logged out successfully");
       navigation.reset({
         index: 0,
         routes: [{ name: "Login" }],
@@ -34,7 +35,28 @@ const MenuSidebarRight = ({ navigation }) => {
           color="#510545"
           style={styles.icon}
         />
-        <Text style={styles.text}>Profile</Text>
+        <Text style={styles.text}>My Profile</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuItem}
+        onPress={() => navigation.navigate("Contact")}
+      >
+        <Ionicons name="ticket" size={24} color="#510545" style={styles.icon} />
+        <Text style={styles.text}>My Ticket</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuItem}
+        onPress={() => navigation.navigate("Contact")}
+      >
+        <Ionicons
+          name="receipt-outline"
+          size={24}
+          color="#510545"
+          style={styles.icon}
+        />
+        <Text style={styles.text}> Purchase History</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.menuItem}
@@ -46,7 +68,7 @@ const MenuSidebarRight = ({ navigation }) => {
           color="#510545"
           style={styles.icon}
         />
-        <Text style={styles.text}>Contact</Text>
+        <Text style={styles.text}>Contact Us</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.menuItem, styles.logout]}

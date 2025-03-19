@@ -18,7 +18,7 @@ import EventOrganization from "./app_source/screens/EventOrganizationScreen/Even
 import CostumeRental from "./app_source/screens/CostumeRentalScreen/CostumeRental.js"; // Thêm mới
 import Souvenirs from "./app_source/screens/SouvenirsScreen/Souvenirs.js"; // Thêm mới
 import EventRegistration from "./app_source/screens/EventRegistrationScreen/EventRegistration.js"; // Thêm mới
-
+import Cart from "./app_source/screens/CartScreen/Cart.js";
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const { width } = Dimensions.get("window");
@@ -102,6 +102,7 @@ export default function App() {
                 presentation: "fullScreenModal",
               }}
             />
+            <Stack.Screen name="Cart" component={Cart} />
             <Stack.Screen
               name="Souvenirs"
               component={Souvenirs}

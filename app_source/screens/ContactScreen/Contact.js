@@ -72,7 +72,7 @@ const Contact = () => {
                 <Feather name="mail" size={24} color="#510545" />
                 <View style={styles.infoTextContainer}>
                   <Text style={styles.infoLabel}>Email</Text>
-                  <Text style={styles.infoText}>contact@ccss.com</Text>
+                  <Text style={styles.infoText}>anhhoanggg855@gmail.com</Text>
                 </View>
               </View>
 

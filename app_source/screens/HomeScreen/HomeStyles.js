@@ -42,7 +42,8 @@ const HomeStyles = StyleSheet.create({
   },
   // Featured Characters Styles
   featuredCharacters: {
-    padding: 20,
+    paddingTop: 20,
+    paddingBottom: 20,
   },
   sectionTitle: {
     fontSize: 20, // Giảm từ 2.5rem

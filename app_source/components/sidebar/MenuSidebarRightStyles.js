@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     color: "#510545",
   },
   logout: {
-    marginTop: "550",
+    marginTop: "480",
     borderTopWidth: 1,
     borderTopColor: "#ddd",
     backgroundColor: "#510545",
