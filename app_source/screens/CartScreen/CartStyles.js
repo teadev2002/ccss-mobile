@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   },
   itemPrice: {
     fontSize: 16,
-    color: "#FF6347",
+    color: "royalblue",
     fontWeight: "bold",
   },
   itemQuantity: {
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   checkoutButton: {
-    backgroundColor: "#FF6347",
+    backgroundColor: "royalblue",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,

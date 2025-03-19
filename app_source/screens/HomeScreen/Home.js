@@ -8,10 +8,9 @@
 //   ScrollView,
 // } from "react-native";
 // import { LinearGradient } from "expo-linear-gradient";
-// import Toast from "react-native-toast-message"; // Đảm bảo import đúng
-// // import jwtDecode from "jwt-decode";
-// import { Feather } from "@expo/vector-icons"; // Sử dụng @expo/vector-icons
-// import HomeStyles from "./HomeStyles"; // Import styles từ file HomeStyles
+// import Toast from "react-native-toast-message";
+// import { Feather } from "@expo/vector-icons";
+// import HomeStyles from "./HomeStyles";
 // import { Ionicons } from "@expo/vector-icons";
 // import { useNavigation } from "@react-navigation/native";
 
@@ -138,7 +137,6 @@
 //         "High-quality costumes for your favorite characters, ensuring perfect fit and authentic details.",
 //       icon: <Ionicons name="shirt-outline" size={40} color="#fff" />,
 //     },
-
 //     {
 //       title: "Buy Souvenirs",
 //       description: "",
@@ -178,7 +176,22 @@
 //   );
 
 //   const renderServiceItem = ({ item }) => (
-//     <TouchableOpacity style={HomeStyles.serviceCard}>
+//     <TouchableOpacity
+//       style={HomeStyles.serviceCard}
+//       onPress={() => {
+//         if (item.title === "Hire Cosplayers") {
+//           navigation.navigate("Cosplayer");
+//         } else if (item.title === "Event Organization") {
+//           navigation.navigate("EventOrganization");
+//         } else if (item.title === "Costume Rental") {
+//           navigation.navigate("CostumeRental");
+//         } else if (item.title === "Buy Souvenirs") {
+//           navigation.navigate("Souvenirs");
+//         } else if (item.title === "Event Registration") {
+//           navigation.navigate("EventRegistration");
+//         }
+//       }}
+//     >
 //       <LinearGradient
 //         colors={["#510545", "#22668a"]}
 //         style={HomeStyles.iconWrapper}
@@ -216,7 +229,7 @@
 //           style={HomeStyles.viewAllButton}
 //           onPress={() => navigation.navigate("Cosplayer")}
 //         >
-//           <Text style={HomeStyles.viewAllText}>Hire Cosplayers</Text>
+//           <Text style={HomeStyles.viewAllText}>All Cosplayers</Text>
 //         </TouchableOpacity>
 //       </View>
 
@@ -236,6 +249,7 @@
 // };
 
 // export default Home;
+
 import React, { useEffect } from "react";
 import {
   View,
@@ -467,7 +481,14 @@ const Home = () => {
           style={HomeStyles.viewAllButton}
           onPress={() => navigation.navigate("Cosplayer")}
         >
-          <Text style={HomeStyles.viewAllText}>Hire Cosplayers</Text>
+          <LinearGradient
+            colors={["#510545", "#22668a"]} // Gradient từ #510545 đến #22668a
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={HomeStyles.gradientButton} // Thêm style mới cho gradient
+          >
+            <Text style={HomeStyles.viewAllText}>All Cosplayers</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
 

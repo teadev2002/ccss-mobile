@@ -31,7 +31,7 @@ function MainDrawer() {
         headerShown: false,
         drawerPosition: "right",
         drawerStyle: {
-          width: width * 0.5,
+          width: width * 0.6,
         },
         overlayColor: "rgba(0, 0, 0, 0.5)",
         drawerType: "slide",

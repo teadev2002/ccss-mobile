@@ -17,7 +17,8 @@ const cartData = {
       variant: "Pink Tone",
       price: 224000,
       quantity: 2,
-      image: "https://via.placeholder.com/80", // Placeholder cho hình ảnh
+      image:
+        "https://th.bing.com/th/id/OIP.buM88nQd7Hb1-nx8ksaTpwHaHa?w=700&h=700&rs=1&pid=ImgDetMain", // Placeholder cho hình ảnh
     },
     {
       id: "2",
@@ -26,7 +27,8 @@ const cartData = {
       variant: "Black",
       price: 108933,
       quantity: 1,
-      image: "https://via.placeholder.com/80",
+      image:
+        "https://th.bing.com/th/id/OIP.hinKeORphbJPDzUZwmzAbwHaHa?rs=1&pid=ImgDetMain",
     },
   ],
 };
@@ -35,7 +37,7 @@ const cartData = {
 const CustomCheckbox = ({ value, onValueChange }) => (
   <TouchableOpacity onPress={onValueChange} style={styles.checkboxContainer}>
     {value ? (
-      <Ionicons name="checkbox" size={24} color="#FF6347" />
+      <Ionicons name="checkbox" size={24} color="royalblue" />
     ) : (
       <Ionicons name="square-outline" size={24} color="#888" />
     )}
