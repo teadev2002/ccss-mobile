@@ -109,7 +109,7 @@ const Cosplayer = () => {
           </View>
           <TouchableOpacity
             onPress={() => {
-              console.log(`Đặt thuê ${item.Name}`);
+              console.log(`Xem ${item.Name}`);
             }}
             style={styles.bookButton}
           >
@@ -151,7 +151,7 @@ const Cosplayer = () => {
               <Ionicons name="arrow-back" size={30} color="#fff" />
             </TouchableOpacity>
             {/* Tiêu đề */}
-            <Text style={styles.headerTitle}>Cosplayer</Text>
+            <Text style={styles.headerTitle}>All Cosplayers</Text>
           </View>
         </ImageBackground>
       </Animated.View>

@@ -299,7 +299,7 @@ const CostumeRental = () => {
       MinWeight: "40kg",
       Quantity: 6,
       Image:
-        "https://th.bing.com/th/id/OIP.cwyo2KGLiYn0XOftqerasant2hgHaLH?rs=1&pid=ImgDetMain",
+        "https://th.bing.com/th/id/OIP.AvoIQvux_zg9VXkfiSwwAAHaLH?rs=1&pid=ImgDetMain",
     },
     {
       CharacterId: "6",

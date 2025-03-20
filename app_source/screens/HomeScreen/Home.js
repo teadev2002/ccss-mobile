@@ -1,3 +1,4 @@
+// sua
 // import React, { useEffect } from "react";
 // import {
 //   View,
@@ -194,12 +195,21 @@
 //     >
 //       <LinearGradient
 //         colors={["#510545", "#22668a"]}
-//         style={HomeStyles.iconWrapper}
+//         start={{ x: 0, y: 0 }}
+//         end={{ x: 1, y: 1 }}
+//         style={HomeStyles.serviceButton}
 //       >
-//         {item.icon}
+//         <View style={HomeStyles.serviceButtonContent}>
+//           {/* Icon on the left */}
+//           <View style={HomeStyles.iconWrapper}>{item.icon}</View>
+
+//           {/* Service title in the center */}
+//           <Text style={HomeStyles.serviceTitle}>{item.title}</Text>
+
+//           {/* Right arrow */}
+//           <Feather name="chevron-right" size={24} color="#fff" />
+//         </View>
 //       </LinearGradient>
-//       <Text style={HomeStyles.serviceTitle}>{item.title}</Text>
-//       {/* <Text style={HomeStyles.serviceDescription}>{item.description}</Text> */}
 //     </TouchableOpacity>
 //   );
 
@@ -229,7 +239,14 @@
 //           style={HomeStyles.viewAllButton}
 //           onPress={() => navigation.navigate("Cosplayer")}
 //         >
-//           <Text style={HomeStyles.viewAllText}>All Cosplayers</Text>
+//           <LinearGradient
+//             colors={["#510545", "#22668a"]} // Gradient từ #510545 đến #22668a
+//             start={{ x: 0, y: 0 }}
+//             end={{ x: 1, y: 1 }}
+//             style={HomeStyles.gradientButton} // Thêm style mới cho gradient
+//           >
+//             <Text style={HomeStyles.viewAllText}>All Cosplayers</Text>
+//           </LinearGradient>
 //         </TouchableOpacity>
 //       </View>
 
@@ -265,6 +282,7 @@ import { Feather } from "@expo/vector-icons";
 import HomeStyles from "./HomeStyles";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { Avatar } from "react-native-paper";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -314,7 +332,7 @@ const Home = () => {
     {
       image:
         "https://i.redd.it/my-2b-cosplay-photoart-kmitenkova-small-medium-biped-3d-v0-os0y07ka9g1d1.jpg?width=1920&format=pjpg&auto=webp&s=6c962da48b1e7b0807c7f147a30238a47e89cab4",
-      title: "Professional Costume Rentals",
+      title: "Costume Rentals",
       description: "High-Quality Costumes for Every Character",
     },
     {
@@ -446,17 +464,52 @@ const Home = () => {
     >
       <LinearGradient
         colors={["#510545", "#22668a"]}
-        style={HomeStyles.iconWrapper}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={HomeStyles.serviceButton}
       >
-        {item.icon}
+        <View style={HomeStyles.serviceButtonContent}>
+          {/* Icon on the left */}
+          <View style={HomeStyles.iconWrapper}>{item.icon}</View>
+
+          {/* Service title in the center */}
+          <Text style={HomeStyles.serviceTitle}>{item.title}</Text>
+
+          {/* Right arrow */}
+          <Feather name="chevron-right" size={24} color="#fff" />
+        </View>
       </LinearGradient>
-      <Text style={HomeStyles.serviceTitle}>{item.title}</Text>
-      {/* <Text style={HomeStyles.serviceDescription}>{item.description}</Text> */}
     </TouchableOpacity>
   );
-
+  const profile = {
+    imageUrl:
+      "https://cdn.pixabay.com/photo/2023/12/04/13/23/ai-generated-8429472_1280.png",
+    name: "John Doe",
+    description: "A passionate cosplayer and team leader.",
+    isActive: true,
+    onTask: true,
+    leader: true,
+    email: "john.doe@example.com",
+    phone: "+84 123 456 789",
+    birthday: "01-01-2002",
+    taskQuantity: 10,
+    height: "175 cm",
+    weight: "70 kg",
+  };
   return (
     <ScrollView style={HomeStyles.container}>
+      <View style={HomeStyles.welcomeSection}>
+        <Avatar.Image
+          size={50}
+          source={{ uri: profile.imageUrl }}
+          style={HomeStyles.welcomeAvatar}
+        />
+        <View style={HomeStyles.welcomeTextContainer}>
+          <Text style={HomeStyles.welcomeText}>Hello </Text>
+          <Text style={HomeStyles.welcomeName}>{profile.name}</Text>
+        </View>
+      </View>
+
       {/* Carousel */}
       <FlatList
         data={carouselItems}
