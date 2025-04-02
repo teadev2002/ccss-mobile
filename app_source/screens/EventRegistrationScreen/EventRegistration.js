@@ -220,12 +220,12 @@ const EventRegistration = () => {
             >
               <Ionicons name="arrow-back" size={30} color="#fff" />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Event Registration</Text>
+            <Text style={styles.headerTitle}>Buy Ticket Event</Text>
             <TouchableOpacity
               style={styles.cartButton}
-              onPress={() => navigation.navigate("Cart")}
+              onPress={() => navigation.navigate("MyTicket")}
             >
-              <Ionicons name="cart" size={24} color="#fff" />
+              <Ionicons name="ticket-outline" size={24} color="#fff" />
             </TouchableOpacity>
           </View>
         </ImageBackground>

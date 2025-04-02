@@ -146,7 +146,7 @@ const MenuSidebarRight = ({ navigation }) => {
       {/* Menu Item: My Ticket */}
       <TouchableOpacity
         style={styles.menuItem}
-        onPress={() => navigation.navigate("Contact")}
+        onPress={() => navigation.navigate("MyTicket")}
       >
         <LinearGradient
           colors={["#510545", "#22668a"]}

@@ -157,6 +157,8 @@ import Souvenirs from "./app_source/screens/SouvenirsScreen/Souvenirs.js"; // Th
 import EventRegistration from "./app_source/screens/EventRegistrationScreen/EventRegistration.js"; // Thêm mới
 import Cart from "./app_source/screens/CartScreen/Cart.js";
 import Onboarding from "./app_source/screens/OnboardingScreen/Onboarding.js"; // Thêm mới
+import MyTicket from "./app_source/screens/MyTicketScreen/MyTicket.js"; // Thêm mới
+import HireCosplay from "./app_source/screens/HireCosplayScreen/HireCosplay.js";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -218,6 +220,11 @@ export default function App() {
               options={{ headerShown: false }}
             />
             <Stack.Screen
+              name="MyTicket"
+              component={MyTicket}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
               name="Home"
               component={Home}
               options={{ headerShown: false }}
@@ -258,6 +265,14 @@ export default function App() {
             <Stack.Screen
               name="EventRegistration"
               component={EventRegistration}
+              options={{
+                headerShown: false,
+                presentation: "fullScreenModal",
+              }}
+            />
+            <Stack.Screen
+              name="HireCosplay"
+              component={HireCosplay}
               options={{
                 headerShown: false,
                 presentation: "fullScreenModal",
