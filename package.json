@@ -18,6 +18,7 @@
     "@react-navigation/native": "^7.0.15",
     "@react-navigation/stack": "7.1.2",
     "antd-mobile-rn": "^2.3.3",
+    "axios": "^1.8.4",
     "expo": "~52.0.42",
     "expo-linear-gradient": "~14.0.2",
     "expo-status-bar": "~2.0.1",

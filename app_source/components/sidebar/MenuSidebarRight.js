@@ -104,7 +104,7 @@ import styles from "./MenuSidebarRightStyles";
 const MenuSidebarRight = ({ navigation }) => {
   const handleLogout = async () => {
     try {
-      await AsyncStorage.removeItem("userToken");
+      await AsyncStorage.removeItem("accessToken");
       console.log("User logged out successfully");
       navigation.reset({
         index: 0,

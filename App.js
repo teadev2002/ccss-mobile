@@ -188,7 +188,7 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.container}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Onboarding">
+          <Stack.Navigator initialRouteName="Login">
             <Stack.Screen
               name="Onboarding"
               component={Onboarding}
