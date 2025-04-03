@@ -215,7 +215,7 @@ const Home = () => {
   const profile = {
     imageUrl:
       "https://cdn.pixabay.com/photo/2023/12/04/13/23/ai-generated-8429472_1280.png",
-    name: "John Doe",
+    name: "The Anh",
     description: "A passionate cosplayer and team leader.",
     isActive: true,
     onTask: true,

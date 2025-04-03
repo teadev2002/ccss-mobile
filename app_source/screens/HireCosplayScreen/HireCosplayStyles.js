@@ -1,39 +1,320 @@
+// import { StyleSheet } from "react-native";
+
+// const styles = StyleSheet.create({
+//   safeArea: {
+//     flex: 1,
+//     backgroundColor: "#FFFFFF",
+//   },
+//   header: {
+//     height: 60,
+//     flexDirection: "row",
+//     alignItems: "center",
+//     justifyContent: "space-between",
+//     paddingHorizontal: 15,
+//     borderBottomWidth: 1,
+//     borderBottomColor: "#E0E0E0",
+//     backgroundColor: "#FFFFFF",
+//   },
+//   backButton: {
+//     padding: 5,
+//   },
+//   headerTitle: {
+//     fontSize: 18,
+//     fontWeight: "bold",
+//     color: "#333",
+//   },
+//   placeholder: {
+//     width: 34,
+//   },
+//   content: {
+//     flex: 1,
+//     padding: 20,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+// });
+
+// export default styles;
+
+//=======================================
+// import { StyleSheet } from "react-native";
+
+// const styles = StyleSheet.create({
+//   safeArea: {
+//     flex: 1,
+//     backgroundColor: "#fff",
+//   },
+//   header: {
+//     height: 60,
+//     flexDirection: "row",
+//     alignItems: "center",
+//     justifyContent: "space-between",
+//     paddingHorizontal: 15,
+//     backgroundColor: "#fff",
+//     shadowColor: "black",
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.9,
+//     shadowRadius: 50,
+//     elevation: 10,
+//   },
+//   backButton: {
+//     padding: 5,
+//   },
+//   headerTitle: {
+//     fontSize: 18,
+//     fontWeight: "700",
+//     color: "#510545",
+//   },
+//   placeholder: {
+//     width: 34,
+//   },
+//   content: {
+//     flex: 1,
+//     padding: 20,
+//   },
+//   sectionTitle: {
+//     fontSize: 25,
+//     fontWeight: "700",
+//     color: "#510545",
+//     textAlign: "center",
+//     marginVertical: 15,
+//   },
+//   inputContainer: {
+//     marginBottom: 20,
+//   },
+//   label: {
+//     fontSize: 16,
+//     fontWeight: "700",
+//     color: "#000",
+//     marginBottom: 5,
+//   },
+//   input: {
+//     borderRadius: 10,
+//     backgroundColor: "#f5f5f5",
+//     paddingVertical: 10,
+//     paddingHorizontal: 15,
+//     fontSize: 16,
+//     color: "#333",
+//   },
+//   inputText: {
+//     fontSize: 16,
+//     color: "#333",
+//   },
+//   submitButton: {
+//     alignSelf: "center",
+//     marginTop: 20,
+//     borderRadius: 30,
+//     overflow: "hidden",
+//     shadowColor: "black",
+//     shadowOffset: { width: 20, height: 20 },
+//     shadowOpacity: 1,
+//     shadowRadius: 50,
+//     elevation: 50,
+//   },
+//   gradientButton: {
+//     paddingVertical: 12,
+//     paddingHorizontal: 30,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   submitButtonText: {
+//     fontSize: 16,
+//     fontWeight: "700",
+//     color: "#fff",
+//   },
+// });
+
+// export default styles;
+//========================================
+// import { StyleSheet } from "react-native";
+
+// const styles = StyleSheet.create({
+//   safeArea: {
+//     flex: 1,
+//     backgroundColor: "#fff",
+//   },
+//   header: {
+//     height: 60,
+//     flexDirection: "row",
+//     alignItems: "center",
+//     justifyContent: "space-between",
+//     paddingHorizontal: 15,
+//     backgroundColor: "#fff",
+//     shadowColor: "black",
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.9,
+//     shadowRadius: 50,
+//     elevation: 10,
+//   },
+//   backButton: {
+//     padding: 5,
+//   },
+//   headerTitle: {
+//     fontSize: 18,
+//     fontWeight: "700",
+//     color: "#510545",
+//   },
+//   placeholder: {
+//     width: 34,
+//   },
+//   content: {
+//     flex: 1,
+//     padding: 20,
+//   },
+//   sectionTitle: {
+//     fontSize: 25,
+//     fontWeight: "700",
+//     color: "#510545",
+//     textAlign: "center",
+//     marginVertical: 15,
+//   },
+//   inputContainer: {
+//     marginBottom: 20,
+//   },
+//   label: {
+//     fontSize: 16,
+//     fontWeight: "700",
+//     color: "#000",
+//     marginBottom: 5,
+//   },
+//   input: {
+//     borderRadius: 10,
+//     backgroundColor: "#f5f5f5",
+//     paddingVertical: 10,
+//     paddingHorizontal: 15,
+//     fontSize: 16,
+//     color: "#333",
+//   },
+//   row: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//   },
+//   halfInput: {
+//     width: "48%", // Chiếm khoảng 48% chiều rộng để có khoảng cách giữa hai input
+//   },
+//   submitButton: {
+//     alignSelf: "center",
+//     marginTop: 20,
+//     borderRadius: 30,
+//     overflow: "hidden",
+//     shadowColor: "black",
+//     shadowOffset: { width: 20, height: 20 },
+//     shadowOpacity: 1,
+//     shadowRadius: 50,
+//     elevation: 50,
+//   },
+//   gradientButton: {
+//     paddingVertical: 12,
+//     paddingHorizontal: 30,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   submitButtonText: {
+//     fontSize: 16,
+//     fontWeight: "700",
+//     color: "#fff",
+//   },
+// });
+
+// export default styles;
+
+//===========================================
+import { StyleSheet } from "react-native";
+
 const styles = StyleSheet.create({
   safeArea: {
-    flex: 1, // Đảm bảo SafeAreaView chiếm toàn bộ màn hình
-    backgroundColor: "#FFFFFF", // Màu nền chung cho màn hình
+    flex: 1,
+    backgroundColor: "#fff",
   },
   header: {
-    height: 60, // Chiều cao của header
-    flexDirection: "row", // Sắp xếp các item theo hàng ngang
-    alignItems: "center", // Căn giữa các item theo chiều dọc
-    justifyContent: "space-between", // Phân bố không gian giữa các item
-    paddingHorizontal: 15, // Padding ngang cho header
-    borderBottomWidth: 1, // Đường viền dưới header
-    borderBottomColor: "#E0E0E0", // Màu đường viền
-    backgroundColor: "#FFFFFF", // Màu nền header (có thể khác màu nền chính)
+    height: 60,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 15,
+    backgroundColor: "#fff",
+    shadowColor: "black",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.9,
+    shadowRadius: 50,
+    elevation: 10,
   },
   backButton: {
-    padding: 5, // Tăng vùng nhấn cho nút back
+    padding: 5,
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-    // Nếu muốn tiêu đề luôn ở giữa, bạn có thể bỏ justifyContebt: 'space-between'
-    // và thêm position: 'absolute', left: 0, right: 0, textAlign: 'center'
-    // nhưng cần đảm bảo nút back không bị đè lên
+    fontWeight: "700",
+    color: "#510545",
   },
   placeholder: {
-    // Phần tử trống này giúp căn giữa tiêu đề khi dùng justifyContebt: 'space-between'
-    // Kích thước của nó nên tương đương với nút back để cân bằng
-    width: 24 + 5 * 2, // size icon + padding*2
+    width: 34,
   },
   content: {
-    flex: 1, // Phần nội dung chiếm hết không gian còn lại
-    padding: 20, // Padding cho nội dung
-    justifyContent: "center", // Căn giữa nội dung (tạm thời)
-    alignItems: "center", // Căn giữa nội dung (tạm thời)
+    flex: 1,
+    padding: 20,
+  },
+  sectionTitle: {
+    fontSize: 25,
+    fontWeight: "700",
+    color: "#510545",
+    textAlign: "center",
+    marginVertical: 15,
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#000",
+    marginBottom: 5,
+  },
+  input: {
+    borderRadius: 10,
+    backgroundColor: "#f5f5f5",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    fontSize: 16,
+    color: "#333",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  halfInputContainer: {
+    width: "48%",
+  },
+  halfInput: {
+    width: "100%",
+  },
+  errorText: {
+    fontSize: 12,
+    color: "red",
+    marginTop: 5,
+  },
+  submitButton: {
+    alignSelf: "center",
+    marginTop: 20,
+    borderRadius: 30,
+    overflow: "hidden",
+    shadowColor: "black",
+    shadowOffset: { width: 20, height: 20 },
+    shadowOpacity: 1,
+    shadowRadius: 50,
+    elevation: 50,
+  },
+  gradientButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  submitButtonText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#fff",
   },
 });
+
 export default styles;

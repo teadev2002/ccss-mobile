@@ -159,7 +159,7 @@ import Cart from "./app_source/screens/CartScreen/Cart.js";
 import Onboarding from "./app_source/screens/OnboardingScreen/Onboarding.js"; // Thêm mới
 import MyTicket from "./app_source/screens/MyTicketScreen/MyTicket.js"; // Thêm mới
 import HireCosplay from "./app_source/screens/HireCosplayScreen/HireCosplay.js";
-
+import ChooseCharacter from "./app_source/screens/ChooseCharacterScreen/ChooseCharacterScreen.js";
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const { width } = Dimensions.get("window");
@@ -273,6 +273,14 @@ export default function App() {
             <Stack.Screen
               name="HireCosplay"
               component={HireCosplay}
+              options={{
+                headerShown: false,
+                presentation: "fullScreenModal",
+              }}
+            />
+            <Stack.Screen
+              name="ChooseCharacter"
+              component={ChooseCharacter}
               options={{
                 headerShown: false,
                 presentation: "fullScreenModal",
