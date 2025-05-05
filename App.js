@@ -26,6 +26,8 @@ import ChooseCharacter from "./app_source/screens/ChooseCharacterScreen/ChooseCh
 import CustomFontProvider from "./app_source/provider/CustomFontProvider.js";
 import { AuthProvider } from "./assets/context/AuthContext.js";
 import HireFlowStack from "./app_source/components/navigation/HireFlowStack.js";
+import HireHistory from './app_source/screens/HireHistoryScreen/HireHistory';
+import ContractPdfScreen from './app_source/screens/HireHistoryScreen/components/ContractPdfScreen';
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const { width } = Dimensions.get("window");
@@ -146,9 +148,25 @@ export default function App() {
                     presentation: "fullScreenModal",
                   }}
                 />
+                 <Stack.Screen
+                  name="HireHistory"
+                  component={HireHistory}
+                  options={{
+                    headerShown: false,
+                    presentation: "fullScreenModal",
+                  }}
+                />
                 <Stack.Screen
                   name="ChooseCharacter"
                   component={ChooseCharacter}
+                  options={{
+                    headerShown: false,
+                    presentation: "fullScreenModal",
+                  }}
+                />
+                <Stack.Screen
+                  name="ContractPdfScreen"
+                  component={ContractPdfScreen}
                   options={{
                     headerShown: false,
                     presentation: "fullScreenModal",

@@ -1,232 +1,96 @@
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
-  ImageBackground,
-  TouchableOpacity,
   FlatList,
   Image,
   TextInput,
-  Animated, // Thêm Animated
+  TouchableOpacity,
+  ImageBackground,
+  Alert,
 } from "react-native";
-import React, { useState, useRef } from "react"; // Thêm useRef
-import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import styles from "./SouvenirsStyles";
+import useSouvenirProducts from "../../hooks/useSurvenirProduct";
+import { AuthContext } from "../../../assets/context/AuthContext";
+import ProductDetailModal from "./components/ProductDetailModal";
 
 const Souvenirs = () => {
   const navigation = useNavigation();
   const [searchText, setSearchText] = useState("");
-  const scrollY = useRef(new Animated.Value(0)).current; // Thêm Animated.Value để theo dõi cuộn
+  const { user } = useContext(AuthContext);
+  const accountId = user?.id;
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const { productItems, cartCount, loading, handleAddToCart, stockMap } =
+    useSouvenirProducts(accountId, searchText);
 
-  const productItems = [
-    {
-      ProductId: "1",
-      ProductName: "Goku Figure",
-      Description: "High-quality PVC figure of Goku from Dragon Ball.",
-      Quantity: 10,
-      Price: "$25",
-      CreateDate: "2025-03-01",
-      UpdateDate: "2025-03-15",
-      IsActive: true,
-      Image:
-        "https://th.bing.com/th/id/R.db7eb58a193cedf3914c747b8a50c222?rik=llj3LgO8EN9t3Q&pid=ImgRaw&r=0",
-    },
-    {
-      ProductId: "2",
-      ProductName: "Naruto Poster",
-      Description: "Vibrant poster featuring Naruto in his Hokage robe.",
-      Quantity: 5,
-      Price: "$15",
-      CreateDate: "2025-03-02",
-      UpdateDate: "2025-03-10",
-      IsActive: true,
-      Image:
-        "https://th.bing.com/th/id/OIP.zLueSvLy6VhN9T6qovwCqQHaLl?rs=1&pid=ImgDetMain",
-    },
-    {
-      ProductId: "3",
-      ProductName: "Luffy Keychain",
-      Description: "Cute keychain with Monkey D. Luffy from One Piece.",
-      Quantity: 0,
-      Price: "$5",
-      CreateDate: "2025-03-03",
-      UpdateDate: "2025-03-12",
-      IsActive: false,
-      Image:
-        "https://th.bing.com/th/id/OIP.ytcafCIcDADhafCfE9fZHwHaHa?rs=1&pid=ImgDetMain",
-    },
-    {
-      ProductId: "4",
-      ProductName: "Sasuke Figure",
-      Description: "Detailed figure of Sasuke from Naruto Shippuden.",
-      Quantity: 8,
-      Price: "$30",
-      CreateDate: "2025-03-04",
-      UpdateDate: "2025-03-14",
-      IsActive: true,
-      Image:
-        "https://th.bing.com/th/id/OIP.McmTHl9GfgZ2hXdoUyY24AHaKN?rs=1&pid=ImgDetMain",
-    },
-    {
-      ProductId: "5",
-      ProductName: "Attack on Titan Poster",
-      Description: "Epic poster of the Survey Corps from Attack on Titan.",
-      Quantity: 3,
-      Price: "$20",
-      CreateDate: "2025-03-05",
-      UpdateDate: "2025-03-15",
-      IsActive: true,
-      Image:
-        "https://th.bing.com/th/id/OIP.TfR7XD-Y6UZDt-uLfGzu0AHaKe?rs=1&pid=ImgDetMain",
-    },
-    {
-      ProductId: "6",
-      ProductName: "Ichigo Keychain",
-      Description: "Stylish keychain featuring Ichigo from Bleach.",
-      Quantity: 6,
-      Price: "$6",
-      CreateDate: "2025-03-06",
-      UpdateDate: "2025-03-13",
-      IsActive: true,
-      Image:
-        "https://th.bing.com/th/id/OIP.4prE5qrtUzrsEs4YGfa59QHaHa?rs=1&pid=ImgDetMain",
-    },
-    {
-      ProductId: "7",
-      ProductName: "Demon Slayer Figure",
-      Description: "Intricate figure of Tanjiro from Demon Slayer.",
-      Quantity: 4,
-      Price: "$35",
-      CreateDate: "2025-03-07",
-      UpdateDate: "2025-03-15",
-      IsActive: true,
-      Image:
-        "https://th.bing.com/th/id/R.ab0863043536677c6d7f74e659bb46c1?rik=Da4wTyce6BSPXA&pid=ImgRaw&r=0",
-    },
-    {
-      ProductId: "8",
-      ProductName: "Goku Figure",
-      Description: "High-quality PVC figure of Goku from Dragon Ball.",
-      Quantity: 10,
-      Price: "$25",
-      CreateDate: "2025-03-01",
-      UpdateDate: "2025-03-15",
-      IsActive: true,
-      Image:
-        "https://th.bing.com/th/id/R.db7eb58a193cedf3914c747b8a50c222?rik=llj3LgO8EN9t3Q&pid=ImgRaw&r=0",
-    },
-    {
-      ProductId: "9",
-      ProductName: "Naruto Poster",
-      Description: "Vibrant poster featuring Naruto in his Hokage robe.",
-      Quantity: 5,
-      Price: "$15",
-      CreateDate: "2025-03-02",
-      UpdateDate: "2025-03-10",
-      IsActive: true,
-      Image:
-        "https://th.bing.com/th/id/OIP.zLueSvLy6VhN9T6qovwCqQHaLl?rs=1&pid=ImgDetMain",
-    },
-    {
-      ProductId: "10",
-      ProductName: "Luffy Keychain",
-      Description: "Cute keychain with Monkey D. Luffy from One Piece.",
-      Quantity: 0,
-      Price: "$5",
-      CreateDate: "2025-03-03",
-      UpdateDate: "2025-03-12",
-      IsActive: false,
-      Image:
-        "https://th.bing.com/th/id/OIP.ytcafCIcDADhafCfE9fZHwHaHa?rs=1&pid=ImgDetMain",
-    },
-    {
-      ProductId: "11",
-      ProductName: "Sasuke Figure",
-      Description: "Detailed figure of Sasuke from Naruto Shippuden.",
-      Quantity: 8,
-      Price: "$30",
-      CreateDate: "2025-03-04",
-      UpdateDate: "2025-03-14",
-      IsActive: true,
-      Image:
-        "https://th.bing.com/th/id/OIP.McmTHl9GfgZ2hXdoUyY24AHaKN?rs=1&pid=ImgDetMain",
-    },
-    {
-      ProductId: "12",
-      ProductName: "Attack on Titan Poster",
-      Description: "Epic poster of the Survey Corps from Attack on Titan.",
-      Quantity: 3,
-      Price: "$20",
-      CreateDate: "2025-03-05",
-      UpdateDate: "2025-03-15",
-      IsActive: true,
-      Image:
-        "https://th.bing.com/th/id/OIP.TfR7XD-Y6UZDt-uLfGzu0AHaKe?rs=1&pid=ImgDetMain",
-    },
-    {
-      ProductId: "13",
-      ProductName: "Ichigo Keychain",
-      Description: "Stylish keychain featuring Ichigo from Bleach.",
-      Quantity: 6,
-      Price: "$6",
-      CreateDate: "2025-03-06",
-      UpdateDate: "2025-03-13",
-      IsActive: true,
-      Image:
-        "https://th.bing.com/th/id/OIP.4prE5qrtUzrsEs4YGfa59QHaHa?rs=1&pid=ImgDetMain",
-    },
-    {
-      ProductId: "14",
-      ProductName: "Demon Slayer Figure",
-      Description: "Intricate figure of Tanjiro from Demon Slayer.",
-      Quantity: 4,
-      Price: "$35",
-      CreateDate: "2025-03-07",
-      UpdateDate: "2025-03-15",
-      IsActive: true,
-      Image:
-        "https://th.bing.com/th/id/R.ab0863043536677c6d7f74e659bb46c1?rik=Da4wTyce6BSPXA&pid=ImgRaw&r=0",
-    },
-  ];
-
-  // Filter products based on search text and only active items
   const filteredItems = productItems.filter(
     (item) =>
-      item.IsActive &&
-      item.ProductName.toLowerCase().includes(searchText.toLowerCase())
+      item.name && item.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // Tạo hiệu ứng thu nhỏ header
-  const headerHeight = scrollY.interpolate({
-    inputRange: [0, 100],
-    outputRange: [200, 80],
-    extrapolate: "clamp",
-  });
+  const handleAdd = (item) => {
+    if (!item.quantity || item.quantity <= 0) {
+      Alert.alert("Out of stock", "This product is sold out!");
+      return;
+    }
+    setSelectedProduct({ ...item, stock: stockMap[item.id] });
+    setShowModal(true);
+  };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.productContainer}>
-      <Image source={{ uri: item.Image }} style={styles.productImage} />
-      <View style={styles.productDetails}>
-        <Text style={styles.productName}>{item.ProductName}</Text>
-        <View style={styles.priceAdd}>
-          <Text style={styles.productPrice}>{item.Price}</Text>
-          <Ionicons name="add-circle" size={30} color="black" />
+  const renderItem = ({ item }) => {
+    const isOutOfStock = stockMap[item.id] <= 0;
+
+    return (
+      <View style={styles.productContainer}>
+        <Image
+          source={{
+            uri: "https://i.pinimg.com/originals/9b/f9/e7/9bf9e73625e302f350b62903b4ecd9fd.jpg", // placeholder
+          }}
+          style={styles.productImage}
+        />
+        {isOutOfStock && (
+          <View style={styles.outOfStockTag}>
+            <Text style={styles.outOfStockText}>Out of stock</Text>
+          </View>
+        )}
+        <View style={styles.productDetails}>
+          <Text style={styles.productName}>{item.name}</Text>
+          <Text style={styles.productStock}>
+            Stock: {stockMap[item.id]} items
+          </Text>
+          <View style={styles.priceAdd}>
+            <Text style={styles.productPrice}>
+              {item.price.toLocaleString()}đ
+            </Text>
+            <TouchableOpacity
+              onPress={() => handleAdd(item)}
+              disabled={isOutOfStock}
+              style={isOutOfStock ? { opacity: 0.4 } : {}}
+            >
+              <Ionicons name="add-circle" size={30} color="black" />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>
-      {/* Header động */}
-      <Animated.View
-        style={[styles.headerBackground, { height: headerHeight }]}
-      >
+      {/* Header đứng yên */}
+      <View style={styles.headerBackground}>
         <ImageBackground
           source={{
             uri: "https://nintendoeverything.com/wp-content/uploads/Pokemon-Center-7/9/16/pokemon-center-7.jpg",
           }}
-          style={styles.headerImage} // Đổi tên để khớp với style mới
+          style={styles.headerImage}
+          imageStyle={{
+            borderBottomLeftRadius: 20,
+            borderBottomRightRadius: 20,
+          }}
         >
           <View style={styles.overlay} />
           <View style={styles.headerContent}>
@@ -242,14 +106,18 @@ const Souvenirs = () => {
               onPress={() => navigation.navigate("Cart")}
             >
               <Ionicons name="cart" size={24} color="#fff" />
+              {cartCount > 0 && (
+                <View style={styles.cartBadge}>
+                  <Text style={styles.cartBadgeText}>{cartCount}</Text>
+                </View>
+              )}
             </TouchableOpacity>
           </View>
         </ImageBackground>
-      </Animated.View>
+      </View>
 
-      {/* Nội dung chính */}
+      {/* Nội dung scroll */}
       <View style={styles.content}>
-        {/* Search bar */}
         <View style={styles.searchContainer}>
           <Ionicons
             name="search"
@@ -265,24 +133,31 @@ const Souvenirs = () => {
             placeholderTextColor="#666"
           />
         </View>
-        {/* List of products */}
-        <Animated.FlatList
-          data={filteredItems}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.ProductId}
-          numColumns={2}
-          columnWrapperStyle={styles.row}
-          contentContainerStyle={styles.listContent}
-          ListEmptyComponent={() => (
-            <Text style={styles.emptyText}>No products found</Text>
-          )}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false }
-          )}
-          scrollEventThrottle={16}
-        />
+
+        {loading ? (
+          <Text style={styles.loadingText}>Loading products...</Text>
+        ) : (
+          <FlatList
+            data={filteredItems}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={2}
+            columnWrapperStyle={styles.row}
+            contentContainerStyle={styles.listContent}
+            ListEmptyComponent={() => (
+              <Text style={styles.emptyText}>No products found</Text>
+            )}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
       </View>
+
+      <ProductDetailModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        product={selectedProduct}
+        onAdd={(product, qty) => handleAddToCart(product, qty)}
+      />
     </View>
   );
 };

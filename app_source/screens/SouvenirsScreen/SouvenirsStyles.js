@@ -7,11 +7,21 @@ const styles = StyleSheet.create({
   },
   headerBackground: {
     width: "100%",
+    height: 200,
     justifyContent: "center",
+  },
+  productStock: {
+    fontSize: 12,
+    color: "#999",
+    marginBottom: 5,
+  },
+  listContent: {
+    paddingTop: 16, // cho sản phẩm không đụng sát search bar
+    paddingBottom: 20,
   },
   headerImage: {
     width: "100%",
-    height: "100%", // Để ImageBackground khớp với Animated.View
+    height: "100%", 
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
@@ -132,6 +142,41 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
+  outOfStockTag: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    backgroundColor: "red",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 5,
+    zIndex: 5,
+  },
+  
+  outOfStockText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+  
+
+  cartBadge: {
+    position: "absolute",
+    top: -5,
+    right: -10,
+    backgroundColor: "red",
+    borderRadius: 10,
+    width: 18,
+    height: 18,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cartBadgeText: {
+    color: "white",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+  
 });
 
 export default styles;
