@@ -157,4 +157,64 @@ export default StyleSheet.create({
     color: "#0095f6", // $link-color
     fontWeight: "500",
   },
+  postListContainer: {
+    flex: 1,
+    backgroundColor: "#f2f2f2", 
+    paddingHorizontal: 10,
+    paddingTop: 10,
+  },
+  
+  postList: {
+    paddingBottom: 80, 
+  },
+  postCard: {
+    marginBottom: 20,
+    borderRadius: 12,
+    overflow: "hidden",
+    backgroundColor: "#fff",
+  },
+  
+  postHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+  },
+  
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    marginRight: 10,
+  },
+  
+  username: {
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  
+  postImage: {
+    height: 400,
+    backgroundColor: "#eee",
+  },
+  
+  postActions: {
+    flexDirection: "row",
+    padding: 10,
+  },
+  
+  iconAction: {
+    marginRight: 16,
+    color: "#000",
+  },
+  
+  captionArea: {
+    paddingHorizontal: 10,
+    paddingBottom: 8,
+  },
+  
+  postTime: {
+    fontSize: 12,
+    color: "#888",
+    marginTop: 4,
+  },  
 });

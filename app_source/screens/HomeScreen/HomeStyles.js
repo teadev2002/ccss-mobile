@@ -5,41 +5,40 @@ const { width } = Dimensions.get("window");
 const HomeStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFFFF1A",
   },
   // Welcome Section Styles
   welcomeSection: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 15,
+    padding: 35,
     backgroundColor: "#fff",
     borderRadius: 10,
-    marginHorizontal: 10,
-    marginTop: 10,
-    marginBottom: 5,
-    shadowColor: "black",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.9,
     shadowRadius: 50,
     elevation: 10,
   },
   welcomeAvatar: {
-    marginRight: 15,
+    marginLeft: 150,
   },
   welcomeTextContainer: {
     flex: 1,
   },
   welcomeText: {
-    fontSize: 14,
+    fontFamily: "Poppins-SemiBoldItalic",
+    fontSize: 24,
     color: "#666",
-    fontWeight: "400",
   },
   welcomeName: {
-    fontSize: 18,
-    fontWeight: "700",
+    fontFamily: "Poppins-SemiBoldItalic",
+    fontSize: 14,
     color: "#000",
   },
   // Carousel Styles
+  carousel: {
+    borderRadius: 12,
+  },
   carouselItem: {
     width: width,
     height: 250,
@@ -74,14 +73,24 @@ const HomeStyles = StyleSheet.create({
   },
   // Featured Characters Styles
   featuredCharacters: {
-    paddingTop: 20,
-    paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+
+  rowBetween: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  
+  seeMore: {
+    fontFamily: "Poppins-Regular",
+    fontSize: 14,
+    color: "#22668a",
   },
   sectionTitle: {
     fontSize: 25,
-    fontWeight: "700",
     color: "#510545",
-    textAlign: "center",
     marginVertical: 10,
   },
   characterCard: {
@@ -110,14 +119,11 @@ const HomeStyles = StyleSheet.create({
     borderRadius: 20,
     marginTop: 5,
   },
-  // Featured Services Styles
-
   serviceDescription: {
     fontSize: 14,
     color: "#666",
     textAlign: "center",
   },
-  // Featured Services Styles
   featuredServices: {
     padding: 20,
   },
@@ -160,26 +166,63 @@ const HomeStyles = StyleSheet.create({
   },
   viewAllButton: {
     alignSelf: "center",
-    marginTop: 10,
-    borderRadius: 30, // Giữ bo góc từ trước
-    overflow: "hidden", // Đảm bảo gradient không tràn ra ngoài
+    borderRadius: 30, 
+    overflow: "hidden", 
     shadowColor: "black",
-    shadowOffset: { width: 20, height: 20 }, // Tăng offset để bóng xa hơn
-    shadowOpacity: 1, // Độ tối tối đa
-    shadowRadius: 50, // Bán kính bóng lớn để lan rộng
-    elevation: 50, // Tăng elevation tối đa cho Android
+    shadowOffset: { width: 20, height: 20 },
+    shadowOpacity: 1, 
+    shadowRadius: 50, 
+    elevation: 50, 
   },
   gradientButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 30,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     justifyContent: "center",
     alignItems: "center",
   },
   viewAllText: {
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: 10,
     color: "#fff",
   },
+  featureGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  card: {
+    width: '47%',
+    backgroundColor: '#fff',
+    padding: 25,
+    marginBottom: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  icon: { fontSize: 30, marginBottom: 5 },
+  title: { fontSize: 16, fontWeight: '500', color: "#fff" },
+  filterRow: {
+    flexDirection: "row",
+    gap: 20,
+    marginBottom: 12,
+    paddingHorizontal: 10,
+  },
+  
+  filterText: {
+    fontSize: 16,
+    color: "#555",
+    fontFamily: "Poppins-Regular",
+  },
+  
+  activeFilterTextShadow: {
+    color: "#510545",
+    fontFamily: "Poppins-Bold",
+    textShadowColor: "rgba(81, 5, 69, 0.4)", 
+    textShadowOffset: { width: 0, height: 4 },
+    textShadowRadius: 6,
+  },  
 });
 
 export default HomeStyles;

@@ -1,21 +1,18 @@
 import { apiClient } from "../../api/apiClient";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const AuthenService = {
+const AuthService = {
   login: async (email, password) => {
     try {
       const response = await apiClient.post("/api/Auth", null, {
         params: { email, password },
       });
-      const tokens = {
-        accessToken: response.data.accessToken,
-        refreshToken: response.data.refreshToken,
-      };
-      await AsyncStorage.setItem("accessToken", tokens.accessToken);
-      await AsyncStorage.setItem("refreshToken", tokens.refreshToken);
-      return tokens;
+      return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Login failed");
+      const errorMessage = error.response?.data?.message || error.message || "Login failed";
+      console.log("Login error:", errorMessage);
+
+      // Ném lỗi ra ngoài với thông báo cụ thể
+      throw new Error(errorMessage);
     }
   },
 
@@ -34,25 +31,6 @@ const AuthenService = {
       throw new Error(error.response?.data?.message || "Sign up failed");
     }
   },
-
-  isAuthenticated: async () => {
-    const token = await AsyncStorage.getItem("accessToken");
-    return !!token;
-  },
-
-  getTokens: async () => {
-    return {
-      accessToken: await AsyncStorage.getItem("accessToken"),
-      refreshToken: await AsyncStorage.getItem("refreshToken"),
-    };
-  },
-
-  logout: async () => {
-    await AsyncStorage.removeItem("accessToken");
-    await AsyncStorage.removeItem("refreshToken");
-    await AsyncStorage.removeItem("cartId");
-    await AsyncStorage.removeItem("accountId");
-  },
 };
 
-export default AuthenService;
+export default AuthService;

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   Text,
@@ -14,28 +14,16 @@ import HomeStyles from "./HomeStyles";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "react-native-paper";
+import AppBar from "../../components/appbar/AppBar"
+import CustomText from "../../components/common/CustomText";
+import CustomButton from "../../components/common/CustomButton";
+import CardItem from "../../components/common/CardItem";
+import { AuthContext } from "../../../assets/context/AuthContext"; // Đường dẫn tới AuthContext
 
 const Home = () => {
   const navigation = useNavigation();
-  // useEffect(() => {
-  //   const accessToken = "your-token-from-storage"; // Thay bằng cách lấy từ AsyncStorage nếu cần
-  //   if (!accessToken) return;
-  //   try {
-  //     const decoded = jwtDecode(accessToken);
-  //     const accountName = decoded?.AccountName;
-  //     if (accountName) {
-  //       Toast.show({
-  //         type: "success",
-  //         text1: `Welcome, ${accountName}!`,
-  //         position: "top",
-  //         autoHide: true,
-  //         visibilityTime: 5000,
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Invalid token", error);
-  //   }
-  // }, []);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const { user } = useContext(AuthContext);
 
   const carouselItems = [
     {
@@ -149,6 +137,15 @@ const Home = () => {
       icon: <Ionicons name="ticket-outline" size={40} color="#fff" />,
     },
   ];
+  const categories = ["All", ...new Set(featuredCharacters.map(item => item.category))];
+  const filteredCharacters =
+    selectedCategory === "All"
+      ? featuredCharacters
+      : featuredCharacters.filter((item) => item.category === selectedCategory);
+
+  const handleFilter = (category) => {
+    setSelectedCategory(category);
+  };
 
   const renderCarouselItem = ({ item }) => (
     <View style={HomeStyles.carouselItem}>
@@ -164,54 +161,37 @@ const Home = () => {
   );
 
   const renderCharacterItem = ({ item }) => (
-    <TouchableOpacity style={HomeStyles.characterCard}>
+    <TouchableOpacity
+      style={HomeStyles.characterCard}
+      onPress={() => selectCharacterItem({ item })}>
       <Image source={{ uri: item.image }} style={HomeStyles.characterImage} />
       <LinearGradient
         colors={["rgba(0,0,0,0.7)", "rgba(0,0,0,0.7)"]}
         style={HomeStyles.characterContent}
       >
-        {/* <Text style={HomeStyles.characterName}>{item.name}</Text>
-        <Text style={HomeStyles.categoryBadge}>{item.category}</Text> */}
+        <Text style={HomeStyles.characterName}>{item.name}</Text>
+        <Text style={HomeStyles.categoryBadge}>{item.category}</Text>
       </LinearGradient>
     </TouchableOpacity>
   );
+  function selectCharacterItem({ item }) {
+    // New logiclogic
+  }
 
-  const renderServiceItem = ({ item }) => (
-    <TouchableOpacity
-      style={HomeStyles.serviceCard}
-      onPress={() => {
-        if (item.title === "Hire Cosplayers") {
-          navigation.navigate("HireCosplay");
-        } else if (item.title === "Event Organization") {
-          navigation.navigate("EventOrganization");
-        } else if (item.title === "Costume Rental") {
-          navigation.navigate("CostumeRental");
-        } else if (item.title === "Buy Souvenirs") {
-          navigation.navigate("Souvenirs");
-        } else if (item.title === "Buy Ticket Event") {
-          navigation.navigate("EventRegistration");
-        }
-      }}
-    >
-      <LinearGradient
-        colors={["#510545", "#22668a"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={HomeStyles.serviceButton}
-      >
-        <View style={HomeStyles.serviceButtonContent}>
-          {/* Icon on the left */}
-          <View style={HomeStyles.iconWrapper}>{item.icon}</View>
-
-          {/* Service title in the center */}
-          <Text style={HomeStyles.serviceTitle}>{item.title}</Text>
-
-          {/* Right arrow */}
-          <Feather name="chevron-right" size={24} color="#fff" />
-        </View>
-      </LinearGradient>
-    </TouchableOpacity>
-  );
+  function selectServiceItem({ item }) {
+    if (item.title === "Hire Cosplayers") {
+      navigation.navigate("HireFlow");
+    } else if (item.title === "Event Organization") {
+      navigation.navigate("EventOrganization");
+    } else if (item.title === "Costume Rental") {
+      navigation.navigate("CostumeRental");
+    } else if (item.title === "Buy Souvenirs") {
+      navigation.navigate("Souvenirs");
+    } else if (item.title === "Buy Ticket Event") {
+      navigation.navigate("EventRegistration");
+    }
+  }
+     
   const profile = {
     imageUrl:
       "https://cdn.pixabay.com/photo/2023/12/04/13/23/ai-generated-8429472_1280.png",
@@ -228,66 +208,87 @@ const Home = () => {
     weight: "70 kg",
   };
   return (
+    <>
+    <AppBar
+      title="CCSS Logo"
+      onOpenDrawer={() => navigation.openDrawer()}
+      onNotificationPress={() => navigation.navigate('Notify')}
+    />
     <ScrollView style={HomeStyles.container}>
       <View style={HomeStyles.welcomeSection}>
-        <Avatar.Image
-          size={50}
-          source={{ uri: profile.imageUrl }}
-          style={HomeStyles.welcomeAvatar}
-        />
         <View style={HomeStyles.welcomeTextContainer}>
-          <Text style={HomeStyles.welcomeText}>Hello </Text>
-          <Text style={HomeStyles.welcomeName}>{profile.name}</Text>
+          <Text style={HomeStyles.welcomeText}>Welcome </Text>
+          <Text style={HomeStyles.welcomeName}>Home, {user?.accountName}</Text>
         </View>
+        <Avatar.Image
+          size={70}
+          source={{ uri: profile.imageUrl }}
+          style={HomeStyles.welcomeAvatar} />
       </View>
 
       {/* Carousel */}
-      <FlatList
-        data={carouselItems}
-        renderItem={renderCarouselItem}
-        keyExtractor={(item, index) => index.toString()}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-      />
-
-      {/* Featured Characters */}
-      <View style={HomeStyles.featuredCharacters}>
-        <Text style={HomeStyles.sectionTitle}>Highlight Cosplayer</Text>
+      <View style={HomeStyles.carousel}>
         <FlatList
-          data={featuredCharacters}
+          data={carouselItems}
+          renderItem={renderCarouselItem}
+          keyExtractor={(item, index) => index.toString()}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false} />
+      </View>
+
+      <View style={HomeStyles.featuredCharacters}>
+        <View style={HomeStyles.rowBetween}>
+          <CustomText style={HomeStyles.sectionTitle}>Highlight Cosplayer</CustomText>
+          <CustomButton
+            title="See more"
+            onPress={() => navigation.navigate("Cosplayer")}
+            containerStyle={HomeStyles.viewAllButton}
+            gradientStyle={HomeStyles.gradientButton}
+            textStyle={HomeStyles.viewAllText}
+          />
+        </View>
+        <View style={HomeStyles.filterRow}>
+          {categories.map((category, index) => (
+            <TouchableOpacity key={index} onPress={() => handleFilter(category)}>
+              <Text
+                style={[
+                  HomeStyles.filterText,
+                  selectedCategory === category && HomeStyles.activeFilterTextShadow,
+                ]}
+              >
+                {category}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <FlatList
+          data={filteredCharacters}
           renderItem={renderCharacterItem}
           keyExtractor={(item) => item.id.toString()}
           horizontal
-          showsHorizontalScrollIndicator={false}
-        />
-        <TouchableOpacity
-          style={HomeStyles.viewAllButton}
-          onPress={() => navigation.navigate("Cosplayer")}
-        >
-          <LinearGradient
-            colors={["#510545", "#22668a"]} // Gradient từ #510545 đến #22668a
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={HomeStyles.gradientButton} // Thêm style mới cho gradient
-          >
-            <Text style={HomeStyles.viewAllText}>All Cosplayers</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+          showsHorizontalScrollIndicator={false} />
       </View>
 
-      {/* Featured Services */}
       <View style={HomeStyles.featuredServices}>
-        <Text style={HomeStyles.sectionTitle}>Featured Services</Text>
-        <View style={HomeStyles.serviceList}>
-          {services.map((service, index) => (
-            <View key={index}>{renderServiceItem({ item: service })}</View>
+        <CustomText style={HomeStyles.sectionTitle}>Features</CustomText>
+        <View style={HomeStyles.featureGrid}>
+          {services.map((item, index) => (
+            <CardItem
+              key={index}
+              title={item.title}
+              icon={item.icon}
+              onPress={() => selectServiceItem({ item })}
+              containerStyle={HomeStyles.card}
+              textStyle={HomeStyles.title}
+            />
           ))}
         </View>
       </View>
 
       <Toast />
     </ScrollView>
+    </>
   );
 };
 

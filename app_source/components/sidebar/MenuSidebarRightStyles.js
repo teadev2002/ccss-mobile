@@ -1,100 +1,91 @@
-// import { StyleSheet } from "react-native";
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "#f9f9f9",
-//   },
-//   header: {
-//     padding: 20,
-//     borderBottomWidth: 1,
-//     borderBottomColor: "#ddd",
-//     marginBottom: 10,
-//   },
-//   headerText: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//     color: "#510545",
-//   },
-//   menuItem: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     padding: 15,
-//     borderBottomWidth: 1,
-//     borderBottomColor: "#ddd",
-//   },
-//   icon: {
-//     marginRight: 15,
-//   },
-//   text: {
-//     fontSize: 16,
-//     fontWeight: "600",
-//     color: "#510545",
-//   },
-//   logout: {
-//     marginTop: "420",
-//     borderTopWidth: 1,
-//     borderTopColor: "#ddd",
-//     backgroundColor: "#510545",
-//     borderRadius: 8,
-//     margin: 10,
-//     paddingVertical: 12,
-//     display: "flex",
-//     justifyContent: "flex-end",
-//     alignItems: "center",
-//   },
-//   logoutText: {
-//     color: "#fff",
-//   },
-// });
-
-// export default styles;
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: "#fff",
+    padding: 16,
   },
-  header: {
-    padding: 20,
+  profileSection: {
+    alignItems: "center",
+    marginBottom: 20,
+    paddingVertical: 10,
+    borderBottomColor: "#eee",
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
   },
-  headerText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#510545", // Đổi màu tiêu đề thành #510545
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 10,
+  },
+  username: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#510545",
+  },
+  useremail: {
+    fontSize: 13,
+    color: "#777",
+  },
+  contentWrapper: {
+    flex: 1,
+    justifyContent: "space-between",
+    paddingBottom: 20,
+  },
+  menuWrapper: {
+    flex: 1,
+    marginTop: 20,
   },
   menuItem: {
-    marginVertical: 5,
-    borderRadius: 10,
-    overflow: "hidden", // Đảm bảo gradient không tràn ra ngoài
+    marginVertical: 8,
+    borderRadius: 14,
+    overflow: "hidden",
   },
   gradientButton: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 15,
+    paddingVertical: 12,
     paddingHorizontal: 20,
   },
   icon: {
-    marginRight: 15,
-  },
-  text: {
-    fontSize: 16,
-    color: "#510545",
+    marginRight: 12,
   },
   gradientText: {
     fontSize: 16,
-    color: "#fff", // Màu chữ trắng để nổi trên gradient
-    fontWeight: "500",
+    color: "#fff",
+    fontWeight: "600",
   },
-  logout: {
-    marginTop: "400",
+  // 👉 Submenu thêm mới
+  submenuContainer: {
+    marginTop: 4,
+    marginBottom: 8,
+    marginLeft: 20, // Lùi vào bên phải
   },
-  logoutText: {
-    color: "#fff", // Không cần nữa vì đã dùng gradientText
+  
+  submenuButton: {
+    marginVertical: 4,
+    borderRadius: 12,
+    overflow: "hidden",
   },
+  
+  submenuGradient: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  
+  submenuIcon: {
+    marginRight: 8,
+  },
+  
+  submenuText: {
+    fontSize: 14,
+    color: "#fff",
+    fontWeight: "600",
+  },
+  
 });
 
 export default styles;
