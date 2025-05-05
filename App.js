@@ -28,6 +28,9 @@ import { AuthProvider } from "./assets/context/AuthContext.js";
 import HireFlowStack from "./app_source/components/navigation/HireFlowStack.js";
 import HireHistory from './app_source/screens/HireHistoryScreen/HireHistory';
 import ContractPdfScreen from './app_source/screens/HireHistoryScreen/components/ContractPdfScreen';
+import PaymentWebviewScreen from './app_source/screens/PaymentWebviewScreen/PaymentWebviewScreen';
+import PaymentFailed from './app_source/screens/PaymentWebviewScreen/PaymentFailed';
+import PaymentSuccess from './app_source/screens/PaymentWebviewScreen/PaymentSuccess';
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const { width } = Dimensions.get("window");
@@ -171,6 +174,24 @@ export default function App() {
                     headerShown: false,
                     presentation: "fullScreenModal",
                   }}
+                />
+                <Stack.Screen
+                  name="PaymentWebviewScreen"
+                  component={PaymentWebviewScreen}
+                  options={{
+                    headerShown: false,
+                    presentation: "fullScreenModal",
+                  }}
+                />
+                <Stack.Screen
+                  name="PaymentSuccess"
+                  component={PaymentSuccess}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="PaymentFailed"
+                  component={PaymentFailed}
+                  options={{ headerShown: false }}
                 />
               </Stack.Navigator>
             </AuthProvider>

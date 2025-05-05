@@ -133,6 +133,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 0,
   },
+  quantityControl: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 4,
+  },
+  
+  quantityText: {
+    fontSize: 16,
+    paddingHorizontal: 8,
+  },
+  deleteIcon: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+  },
 });
 
 export default styles;
