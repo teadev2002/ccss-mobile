@@ -25,6 +25,7 @@ import HireCosplay from "./app_source/screens/HireCosplayScreen/HireCosplay.js";
 import ChooseCharacter from "./app_source/screens/ChooseCharacterScreen/ChooseCharacterScreen.js";
 import CustomFontProvider from "./app_source/provider/CustomFontProvider.js";
 import { AuthProvider } from "./assets/context/AuthContext.js";
+import HireFlowStack from "./app_source/components/navigation/HireFlowStack.js";
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const { width } = Dimensions.get("window");
@@ -138,8 +139,8 @@ export default function App() {
                   }}
                 />
                 <Stack.Screen
-                  name="HireCosplay"
-                  component={HireCosplay}
+                  name="HireFlow"
+                  component={HireFlowStack}
                   options={{
                     headerShown: false,
                     presentation: "fullScreenModal",
