@@ -1,30 +1,30 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import {
   View,
   ActivityIndicator,
   TouchableOpacity,
   Text,
   StyleSheet,
-  Alert,
 } from "react-native";
 import { WebView } from "react-native-webview";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { Alert } from "react-native";
 
 const PaymentWebviewScreen = ({ route }) => {
-  const { paymentUrl, paymentContext } = route.params;
+  const { paymentUrl } = route.params;
   const webViewRef = useRef(null);
   const navigation = useNavigation();
-  const [isLoading, setIsLoading] = useState(true);
 
   const handleNavigationStateChange = (navState) => {
     const { url } = navState;
+
     console.log("WebView URL:", url);
 
     if (url.includes("payment-success")) {
-      navigation.replace("PaymentSuccess", { paymentContext });
+      navigation.replace("PaymentSuccess");
     } else if (url.includes("payment-failed")) {
-      navigation.replace("PaymentFailed", { paymentContext });
+      navigation.replace("PaymentFailed");
     }
   };
 
@@ -38,11 +38,13 @@ const PaymentWebviewScreen = ({ route }) => {
               "Cancel Payment?",
               "Are you sure you want to cancel this payment?",
               [
-                { text: "No", style: "cancel" },
+                {
+                  text: "No",
+                  style: "cancel",
+                },
                 {
                   text: "Yes, Cancel",
-                  onPress: () =>
-                    navigation.replace("PaymentFailed", { paymentContext }),
+                  onPress: () => navigation.replace("PaymentFailed"),
                 },
               ],
               { cancelable: true }
@@ -61,20 +63,18 @@ const PaymentWebviewScreen = ({ route }) => {
         ref={webViewRef}
         source={{ uri: paymentUrl }}
         onNavigationStateChange={handleNavigationStateChange}
-        onShouldStartLoadWithRequest={() => true}
-        onLoadStart={() => setIsLoading(true)}
-        onLoadEnd={() => setIsLoading(false)}
-        startInLoadingState={false}
+        onShouldStartLoadWithRequest={() => {
+          return true;
+        }}
+        
+        startInLoadingState
+        renderLoading={() => (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color="#4a90e2" />
+          </View>
+        )}
         showsVerticalScrollIndicator={false}
       />
-
-      {/* Loading Overlay */}
-      {isLoading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#4a90e2" />
-          <Text style={styles.loadingText}>Processing your payment...</Text>
-        </View>
-      )}
     </View>
   );
 };
@@ -110,15 +110,8 @@ const styles = StyleSheet.create({
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(255,255,255,0.85)",
+    backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 10,
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: "#555",
-    fontWeight: "500",
   },
 });
