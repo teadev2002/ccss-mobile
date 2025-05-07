@@ -6,32 +6,46 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   headerBackground: {
-    width: "100%",
-    justifyContent: "center",
+    height: 200,  // Chiều cao ban đầu của header
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
   },
   headerImage: {
-    width: "100%",
-    height: "100%", // Để ImageBackground khớp với Animated.View
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Lớp phủ tối phía trên ảnh
   },
   headerContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 40,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1, // Đảm bảo content nổi trên background
   },
   backButton: {
-    marginRight: 15,
+    position: 'absolute',
+    left: 20,
+    top: 20,
+  },
+  cartButton: {
+    position: 'absolute',
+    right: 20,
+    top: 20,
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#fff",
-    flex: 1, // Đảm bảo tiêu đề chiếm phần còn lại của không gian
+    fontWeight: 'bold',
+    color: '#fff',
   },
+
   content: {
     flex: 1,
     paddingHorizontal: 10,
@@ -75,8 +89,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   dateContainer: {
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    padding: 10,
+    backgroundColor: "rgba(255, 255, 255, 0.61)",
+    padding: 8,
     borderRadius: 5,
     margin: 10,
     alignItems: "center",
@@ -138,6 +152,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
+  expiredTag: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    backgroundColor: "#dc3545", // đỏ nhẹ
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 5,
+  },
+  expiredText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
+  
 });
 
 export default styles;

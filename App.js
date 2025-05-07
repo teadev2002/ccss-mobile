@@ -31,6 +31,9 @@ import ContractPdfScreen from './app_source/screens/HireHistoryScreen/components
 import PaymentWebviewScreen from './app_source/screens/PaymentWebviewScreen/PaymentWebviewScreen';
 import PaymentFailed from './app_source/screens/PaymentWebviewScreen/PaymentFailed';
 import PaymentSuccess from './app_source/screens/PaymentWebviewScreen/PaymentSuccess';
+import EventDetail from "./app_source/screens/EventDetailsScreen/EventDetail.js";
+
+
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const { width } = Dimensions.get("window");
@@ -162,6 +165,14 @@ export default function App() {
                 <Stack.Screen
                   name="ChooseCharacter"
                   component={ChooseCharacter}
+                  options={{
+                    headerShown: false,
+                    presentation: "fullScreenModal",
+                  }}
+                />
+                <Stack.Screen
+                  name="EventDetail"
+                  component={EventDetail}
                   options={{
                     headerShown: false,
                     presentation: "fullScreenModal",
