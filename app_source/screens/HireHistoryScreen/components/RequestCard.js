@@ -30,6 +30,7 @@ const RequestCard = ({
   onChangeCosplayer,
   COSPLAYER_STATUS,
   reason,
+  cosplayerStatuses,
 }) => {
   const { user } = useContext(AuthContext);
   const navigation = useNavigation();
@@ -43,6 +44,115 @@ const RequestCard = ({
     if (isNaN(percent) || isNaN(price)) return 0;
     return Math.round((price * percent) / 100);
   }, [request]);
+
+  const statusMapping = {
+    [CONTRACT_STATUS.Created]: {
+      label: " - [Created]",
+      style: styles.statusTagCreated,
+    },
+    [CONTRACT_STATUS.Deposited]: {
+      label: " - [Deposited]",
+      style: styles.statusTagDeposited,
+    },
+    [CONTRACT_STATUS.FinalSettlement]: {
+      label: " - [Final]",
+      style: styles.statusTagFinal,
+    },
+    [CONTRACT_STATUS.Completed]: {
+      label: " - [Completed]",
+      style: styles.statusTagComplete,
+    },
+    [CONTRACT_STATUS.Feedbacked]: {
+      label: " - [Feedbacked]",
+      style: styles.statusTagFeedbacked,
+    },
+    [CONTRACT_STATUS.Cancel]: {
+      label: " - [Canceled]",
+      style: styles.statusTagCancel,
+    },
+    [CONTRACT_STATUS.Refund]: {
+      label: " - [Refunded]",
+      style: styles.statusTagRefund,
+    },
+    [CONTRACT_STATUS.Expired]: {
+      label: " - [Expired]",
+      style: styles.statusTagExpired,
+    },
+  };
+
+  const contractStatusComponentMap = {
+    [CONTRACT_STATUS.FinalSettlement]: (
+      <>
+        <Button
+          mode="outlined"
+          icon="file-document-outline"
+          onPress={openContractPdf}
+          style={styles.flexBtn}
+        >
+          View Contract
+        </Button>
+        <Text>Waiting completed.</Text>
+      </>
+    ),
+    [CONTRACT_STATUS.Deposited]: (
+      <>
+        <Button
+          mode="outlined"
+          icon="file-document-outline"
+          onPress={openContractPdf}
+          style={[styles.flexBtn, { marginBottom: 8 }]}
+        >
+          View Contract
+        </Button>
+        <Button
+          mode="outlined"
+          icon="cash-refund"
+          onPress={handlePayRemaining}
+          style={styles.flexBtn}
+        >
+          Pay Remaining
+        </Button>
+      </>
+    ),
+    [CONTRACT_STATUS.Completed]: (
+      <>
+        <Button
+          mode="outlined"
+          icon="file-document-outline"
+          onPress={openContractPdf}
+          style={[styles.flexBtn, { marginBottom: 8 }]}
+        >
+          View Contract
+        </Button>
+        <Button
+          mode="outlined"
+          style={styles.flexBtn}
+          onPress={handleFeedbackPress}
+        >
+          <Text style={styles.editBtnText}>💬 Feedback Cosplayers</Text>
+        </Button>
+      </>
+    ),
+    [CONTRACT_STATUS.Feedbacked]: (
+      <>
+        <Button
+          mode="outlined"
+          icon="file-document-outline"
+          onPress={openContractPdf}
+          style={[styles.flexBtn, { marginBottom: 8 }]}
+        >
+          View Contract
+        </Button>
+        <Button
+          mode="outlined"
+          style={styles.flexBtn}
+          onPress={handleViewFeedbackPress}
+        >
+          <Text style={styles.editBtnText}>💬 View Feedback</Text>
+        </Button>
+      </>
+    ),
+  };
 
   const openContractPdf = () => {
     if (contract?.urlPdf) {
@@ -215,76 +325,7 @@ const RequestCard = ({
           {status === REQUEST_STATUS.Browsed.toLowerCase() &&
             contract?.status && (
               <>
-                {contract.status === CONTRACT_STATUS.FinalSettlement ? (
-                  <>
-                    <Button
-                      mode="outlined"
-                      icon="file-document-outline"
-                      onPress={openContractPdf}
-                      style={styles.flexBtn}
-                    >
-                      View Contract
-                    </Button>
-                    <Text>Waiting completed.</Text>
-                  </>
-                ) : contract.status === CONTRACT_STATUS.Deposited ? (
-                  <>
-                    <Button
-                      mode="outlined"
-                      icon="file-document-outline"
-                      onPress={openContractPdf}
-                      style={[styles.flexBtn, { marginBottom: 8 }]}
-                    >
-                      View Contract
-                    </Button>
-                    <Button
-                      mode="outlined"
-                      icon="cash-refund"
-                      onPress={handlePayRemaining}
-                      style={styles.flexBtn}
-                    >
-                      Pay Remaining
-                    </Button>
-                  </>
-                ) : contract.status === CONTRACT_STATUS.Completed ? (
-                  <>
-                    <Button
-                      mode="outlined"
-                      icon="file-document-outline"
-                      onPress={openContractPdf}
-                      style={[styles.flexBtn, { marginBottom: 8 }]}
-                    >
-                      View Contract
-                    </Button>
-                    <Button
-                      mode="outlined"
-                      style={styles.flexBtn}
-                      onPress={handleFeedbackPress}
-                    >
-                      <Text style={styles.editBtnText}>
-                        💬 Feedback Cosplayers
-                      </Text>
-                    </Button>
-                  </>
-                ) : contract.status === CONTRACT_STATUS.Feedbacked ? (
-                  <>
-                    <Button
-                      mode="outlined"
-                      icon="file-document-outline"
-                      onPress={openContractPdf}
-                      style={[styles.flexBtn, { marginBottom: 8 }]}
-                    >
-                      View Contract
-                    </Button>
-                    <Button
-                      mode="outlined"
-                      style={styles.flexBtn}
-                      onPress={handleViewFeedbackPress}
-                    >
-                      <Text style={styles.editBtnText}>💬 View Feedback</Text>
-                    </Button>
-                  </>
-                ) : (
+                {contractStatusComponentMap[contract.status] ?? (
                   <>
                     <Button
                       mode="outlined"
@@ -315,32 +356,12 @@ const RequestCard = ({
     <View style={styles.requestContainer}>
       <Text style={styles.requestTitle}>
         📦 {request.name} - {request.status}
-        {contract?.status === CONTRACT_STATUS.Created && (
-          <Text style={styles.statusTagCreated}> [Created]</Text>
-        )}
-        {contract?.status === CONTRACT_STATUS.Deposited && (
-          <Text style={styles.statusTagDeposited}> [Deposited]</Text>
-        )}
-        {contract?.status === CONTRACT_STATUS.FinalSettlement && (
-          <Text style={styles.statusTagFinal}> [Final]</Text>
-        )}
-        {contract?.status === CONTRACT_STATUS.Completed && (
-          <Text style={styles.statusTagComplete}> [Completed]</Text>
-        )}
-        {contract?.status === CONTRACT_STATUS.Feedbacked && (
-          <Text style={styles.statusTagFeedbacked}> [Feedbacked]</Text>
-        )}
-        {contract?.status === CONTRACT_STATUS.Cancel && (
-          <Text style={styles.statusTagCancel}> [Canceled]</Text>
-        )}
-        {contract?.status === CONTRACT_STATUS.Refund && (
-          <Text style={styles.statusTagRefund}> [Refunded]</Text>
-        )}
-        {contract?.status === CONTRACT_STATUS.Expired && (
-          <Text style={styles.statusTagExpired}> [Expired]</Text>
-        )}
-        {!contract?.status && (
-          <Text style={styles.statusTagPending}> [No Contract]</Text>
+        {contract?.status ? (
+          <Text style={statusMapping[contract.status]?.style}>
+            {statusMapping[contract.status]?.label}
+          </Text>
+        ) : (
+          <Text style={styles.statusTagPending}> - [No Contract]</Text>
         )}
       </Text>
 
@@ -376,12 +397,7 @@ const RequestCard = ({
             cosplayer={cosplayers[char.cosplayerId]}
             character={characters[char.characterId]}
             COSPLAYER_STATUS={COSPLAYER_STATUS}
-            onChangeCosplayer={() =>
-              onChangeCosplayer({
-                characterId: char.characterId,
-                cosplayerId: char.cosplayerId,
-              })
-            }
+            cosplayerStatuses={cosplayerStatuses}
           />
         ))}
     </View>

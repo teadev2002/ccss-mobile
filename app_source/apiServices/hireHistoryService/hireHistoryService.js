@@ -210,5 +210,20 @@ const hireHistoryService = {
       );
     }
   },
+
+  getRequestCharacterByCosplayer: async (cosplayerId) => {
+    try {
+      const response = await apiClient.get(
+        `/api/RequestCharacter/GetRequestCharacterByCosplayer?cosplayerId=${cosplayerId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ Error fetching request character by cosplayer:", error);
+      throw new Error(
+        error.response?.data?.message || "Không thể lấy request character"
+      );
+    }
+  },
+  
 };
 export default hireHistoryService;

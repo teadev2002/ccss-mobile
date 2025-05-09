@@ -22,3 +22,5 @@ const provinces = [
   "Huyện Hóc Môn",
   "Huyện Nhà Bè",
 ];
+
+export default provinces;

@@ -33,6 +33,7 @@ import PaymentFailed from './app_source/screens/PaymentWebviewScreen/PaymentFail
 import PaymentSuccess from './app_source/screens/PaymentWebviewScreen/PaymentSuccess';
 import EventDetail from "./app_source/screens/EventDetailsScreen/EventDetail.js";
 import OrderHistoryScreen from "./app_source/screens/OrderHistoryScreen/OrderHistoryScreen.js";
+import FeedbackCosplayerScreen from "./app_source/screens/HireHistoryScreen/components/FeedbackCosplayerScreen.js";
 
 
 const Stack = createStackNavigator();
@@ -198,6 +199,15 @@ export default function App() {
                 <Stack.Screen
                   name="OrderHistoryScreen"
                   component={OrderHistoryScreen}
+                  options={{
+                    headerShown: false,
+                    presentation: "fullScreenModal",
+                  }}
+                />
+                
+                <Stack.Screen
+                  name="FeedbackCosplayerScreen"
+                  component={FeedbackCosplayerScreen}
                   options={{
                     headerShown: false,
                     presentation: "fullScreenModal",

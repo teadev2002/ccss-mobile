@@ -8,6 +8,7 @@ const useHireHistoryData = (userId) => {
   const [characters, setCharacters] = useState({});
   const [contracts, setContracts] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [cosplayerStatuses, setCosplayerStatuses] = useState({});
 
   const fetchAllData = async () => {
     setIsLoading(true);
@@ -30,6 +31,31 @@ const useHireHistoryData = (userId) => {
         if (c.requestId) contractMap[c.requestId] = c;
       });
 
+      // Fetch all cosplayer statuses
+      const statusMap = {};
+      await Promise.all(
+        allCos.map(async (cos) => {
+          try {
+            const res = await HireHistoryService.getRequestCharacterByCosplayer(
+              cos.accountId
+            );
+            
+
+            const validStatuses = res.filter(
+              (item) => item.status !== null && item.status !== undefined
+            );
+            const highestStatus = validStatuses.reduce(
+              (max, cur) => (cur.status > max ? cur.status : max),
+              0
+            );
+            statusMap[cos.accountId] = highestStatus;
+          } catch (err) {
+            console.error(`❌ Lỗi fetch status cho ${cos.accountId}:`, err);
+            statusMap[cos.accountId] = 0;
+          }
+        })
+      );
+
       const sorted = [...history].sort(
         (a, b) => new Date(b.startDate) - new Date(a.startDate)
       );
@@ -38,6 +64,7 @@ const useHireHistoryData = (userId) => {
       setCosplayers(cosMap);
       setCharacters(charMap);
       setContracts(contractMap);
+      setCosplayerStatuses(statusMap);
     } catch (err) {
       console.error("Failed to fetch hire history:", err);
     } finally {
@@ -47,7 +74,7 @@ const useHireHistoryData = (userId) => {
 
   useEffect(() => {
     if (userId) {
-      fetchAllData(); 
+      fetchAllData();
     } else {
       setIsLoading(false);
     }
@@ -58,6 +85,7 @@ const useHireHistoryData = (userId) => {
     cosplayers,
     characters,
     contracts,
+    cosplayerStatuses,
     isLoading,
     refetch: fetchAllData,
   };

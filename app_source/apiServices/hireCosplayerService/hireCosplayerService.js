@@ -43,7 +43,7 @@ const HireCosplayerService = {
       const response = await apiClient.get(
         `/api/Request/GetAllRequestByAccount?accountId=${accountId}`
       );
-      //console.log("response data: ", JSON.stringify(response.data, null, 2));
+      // console.log("response data: ", JSON.stringify(response.data, null, 2));
       // console.log("response data: ", response.data);
       
       return response.data;
