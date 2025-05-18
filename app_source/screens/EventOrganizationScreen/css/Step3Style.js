@@ -6,6 +6,9 @@ export default StyleSheet.create({
     backgroundColor: "#fff",
     padding: 16,
   },
+  scrollContent: {
+    paddingBottom: 80,
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -13,116 +16,124 @@ export default StyleSheet.create({
     textAlign: "center",
     color: "#333",
   },
-  switchLabel: {
-    color: "#007AFF",
-    marginBottom: 16,
-    textAlign: "center",
-    fontSize: 16,
-  },
   searchInput: {
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 12,
     padding: 10,
+    borderRadius: 10,
     marginBottom: 16,
     backgroundColor: "#f9f9f9",
   },
-  genderFilterGroup: {
+  gridContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  characterCardGrid: {
+    width: "48%",
+    backgroundColor: "#f0f4f8",
+    padding: 10,
+    borderRadius: 10,
     marginBottom: 16,
-  },
-  genderButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#ccc",
-  },
-  genderButtonSelected: {
-    backgroundColor: "#007AFF",
-    borderColor: "#007AFF",
-  },
-  genderButtonText: {
-    color: "#333",
-    fontWeight: "500",
-  },
-  genderButtonTextSelected: {
-    color: "#fff",
-  },
-  cosplayerCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 12,
-    marginBottom: 12,
-    backgroundColor: "#f2f2f2",
-    borderRadius: 12,
+    elevation: 2,
   },
   selectedCard: {
     borderWidth: 2,
     borderColor: "#007AFF",
     backgroundColor: "#e6f0ff",
   },
-  cosplayerImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginRight: 12,
-  },
-  cosplayerName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 4,
-    color: "#222",
-  },
-  subTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginVertical: 12,
-    color: "#333",
-  },
-  assignRow: {
-    backgroundColor: "#fafafa",
-    borderWidth: 1,
-    borderColor: "#ddd",
+  characterImage: {
+    width: "100%",
+    height: 200,
     borderRadius: 10,
-    padding: 12,
-    marginBottom: 12,
+    marginBottom: 8,
+  },
+  characterName: {
+    fontWeight: "bold",
+    fontSize: 16,
+    color: "#222",
+    marginBottom: 2,
+  },
+  characterDesc: {
+    fontSize: 13,
+    color: "#555",
+    marginBottom: 4,
+  },
+  quantityWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 8,
+  },
+
+  qtyButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    backgroundColor: "#007AFF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  qtySymbol: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+
+  qtyInput: {
+    width: 50,
+    height: 32,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 6,
+    textAlign: "center",
+    marginHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: "#fff",
+  },
+
+  characterPrice: {
+    fontSize: 12,
+    color: "#888",
+  },
+  dropdownWrapper: {
+    marginTop: 8,
+    zIndex: 1000,
+  },
+  dropdownLabel: {
+    fontWeight: "600",
+    marginBottom: 4,
+    fontSize: 14,
+  },
+  dropdownContainer: {
+    height: 40,
+    marginBottom: 8,
+  },
+  dropdown: {
+    borderColor: "#ccc",
+    borderRadius: 8,
+    minHeight: 36,
+  },
+  dropdownListContainer: {
+    borderColor: "#ccc",
+    borderRadius: 8,
+    zIndex: 1000,
+  },
+  dropdownText: {
+    fontSize: 14,
+  },
+  dropdownItem: {
+    height: 36,
   },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 10,
-    padding: 10,
-    marginTop: 8,
-    marginBottom: 8,
+    padding: 8,
+    borderRadius: 8,
     backgroundColor: "#fff",
+    textAlignVertical: "top",
   },
-  inputGroup: {
-    marginVertical: 20,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 12,
-    width: "90%",
-    maxHeight: "80%",
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 12,
-    textAlign: "center",
-  },
-  characterOption: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+  buttonWrapper: {
+    marginTop: 24,
   },
 });

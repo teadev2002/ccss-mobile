@@ -64,6 +64,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: "#334155",
   },
+  price: {
+  marginTop: 4,
+  fontWeight: "bold",
+  color: "#22668a",
+},
   submitButton: {
     alignSelf: "center",
     marginTop: 20,
