@@ -30,7 +30,11 @@ const MenuSidebarRight = ({ navigation }) => {
       screen: "HireHistory",
     },
     { label: "My Rental Costume", icon: "shirt-outline" },
-    { label: "My Event Organization", icon: "calendar-outline" },
+    {
+      label: "My Event Organization",
+      icon: "calendar-outline",
+      screen: "MyEventHistory",
+    },
     {
       label: "Purchase History",
       icon: "receipt-outline",
