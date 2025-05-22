@@ -24,7 +24,7 @@ const CharacterSelectorModal = ({ visible, onClose, selectedCharacters, onConfir
             return {
               ...char,
               price: detail.price || 100000, // fallback nếu không có giá
-              quantity: selectedCharacters?.find((c) => c.characterId === char.characterId)?.quantity || 0,
+              quantity: selectedCharacters?.find((c) => c.characterId === char.characterId)?.quantity || 1,
               selected: selectedCharacters?.some((c) => c.characterId === char.characterId) || false,
             };
           })
@@ -64,8 +64,24 @@ const CharacterSelectorModal = ({ visible, onClose, selectedCharacters, onConfir
   };
 
   const handleConfirm = () => {
-  const selected = allCharacters.filter((c) => c.selected && c.quantity > 0);
-  onConfirm(selected); // trong selected sẽ có thêm `note` field
+  const selected = allCharacters
+    .filter((c) => c.selected && c.quantity > 0)
+    .map((c) => ({
+      characterId: c.characterId,
+      name: c.characterName,
+      quantity: c.quantity,
+      price: c.price,
+      note: c.note || "",
+      image: c.images?.[0]?.urlImage || "",
+      description: c.description || "",
+      maxHeight: c.maxHeight,
+      maxWeight: c.maxWeight,
+      minHeight: c.minHeight,
+      minWeight: c.minWeight,
+      status: c.status || "Pending",
+    }));
+
+  onConfirm(selected);
   onClose();
 };
 

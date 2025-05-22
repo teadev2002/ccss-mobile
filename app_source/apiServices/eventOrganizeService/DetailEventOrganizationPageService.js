@@ -68,6 +68,7 @@ const DetailEventOrganizationPageService = {
         packageId: updateData.packageId,
         listUpdateRequestCharacters: updateData.listUpdateRequestCharacters.map(
           (item) => ({
+            requestCharacterId:item.requestCharacterId,
             characterId: item.characterId,
             cosplayerId: item.cosplayerId || null,
             description: item.description || "shared",
@@ -80,6 +81,10 @@ const DetailEventOrganizationPageService = {
           })
         ),
       };
+      console.log("request", requestId);
+      
+      console.log("update request: ", JSON.stringify(payload, null, 2));
+      
 
       const response = await apiClient.put(
         `/api/Request?RequestId=${requestId}`,

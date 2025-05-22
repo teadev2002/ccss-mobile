@@ -35,7 +35,8 @@ import EventDetail from "./app_source/screens/EventDetailsScreen/EventDetail.js"
 import OrderHistoryScreen from "./app_source/screens/OrderHistoryScreen/OrderHistoryScreen.js";
 import FeedbackCosplayerScreen from "./app_source/screens/HireHistoryScreen/components/FeedbackCosplayerScreen.js";
 import MyEventHistory from "./app_source/screens/MyEventScreen/MyEventHistory.js";
-
+import FeedbackScreen from "./app_source/screens/MyEventScreen/components/FeedbackScreen.js";
+import { Provider as PaperProvider } from "react-native-paper";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -65,6 +66,7 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <CustomFontProvider>
+           <PaperProvider>
           <NavigationContainer>
             <AuthProvider>
               <Stack.Navigator initialRouteName="Login">
@@ -223,6 +225,15 @@ export default function App() {
                     presentation: "fullScreenModal",
                   }}
                 />
+
+                <Stack.Screen
+                  name="FeedbackScreen"
+                  component={FeedbackScreen}
+                  options={{
+                    headerShown: false,
+                    presentation: "fullScreenModal",
+                  }}
+                />
                 <Stack.Screen
                   name="PaymentSuccess"
                   component={PaymentSuccess}
@@ -236,6 +247,7 @@ export default function App() {
               </Stack.Navigator>
             </AuthProvider>
           </NavigationContainer>
+          </PaperProvider>
           <Toast />
           <StatusBar style="light" backgroundColor="black" translucent />
         </CustomFontProvider>

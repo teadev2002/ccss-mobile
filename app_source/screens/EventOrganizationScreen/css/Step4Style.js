@@ -1,7 +1,11 @@
 import { StyleSheet } from "react-native";
 
 export default styles = StyleSheet.create({
-  container: { padding: 0, backgroundColor: "#fff", flex: 1 },
+  container: { padding: 0, backgroundColor: "#fdfdfd", flex: 1 },
+  wrapper: {
+    flex: 1,
+    backgroundColor: "#fdfdfd",
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -27,6 +31,46 @@ export default styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 6,
   },
+  footerButtonGroup: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+
+    paddingVertical: 12,
+    backgroundColor: "#fff",
+  },
+
+  btn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginHorizontal: 6,
+    alignItems: "center",
+  },
+
+  btnPrimary: {
+    backgroundColor: "#22668a",
+  },
+
+  btnPrimaryText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+
+  btnSecondary: {
+    borderWidth: 1,
+    borderColor: "#999",
+    backgroundColor: "#f2f2f2",
+  },
+
+  btnSecondaryText: {
+    color: "#444",
+    fontWeight: "600",
+  },
+
   rowLabel: { fontWeight: "500", color: "#555" },
   rowValue: { color: "#333", flexShrink: 1, textAlign: "right" },
   divider: {
@@ -73,17 +117,4 @@ export default styles = StyleSheet.create({
   modal: { padding: 20, backgroundColor: "#fff" },
   modalTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 12 },
   modalContent: { fontSize: 14, color: "#333", lineHeight: 22 },
-  fixedFooter: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 16,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderColor: "#ddd",
-    zIndex: 10,
-  },
 });

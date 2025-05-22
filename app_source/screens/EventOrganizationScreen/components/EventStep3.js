@@ -11,7 +11,7 @@ import {
 import styles from "../css/Step3Style";
 import DetailEventOrganizationPageService from "../../../apiServices/eventOrganizeService/DetailEventOrganizationPageService";
 
-const EventStep3 = ({ goNextStep }) => {
+const EventStep3 = ({ goNextStep ,goBackStep}) => {
   const [characters, setCharacters] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [characterDetails, setCharacterDetails] = useState({});
@@ -79,128 +79,151 @@ const EventStep3 = ({ goNextStep }) => {
   );
 
   return (
-    <ScrollView
-      style={styles.container}
-      keyboardShouldPersistTaps="handled"
-      contentContainerStyle={styles.scrollContent}
-    >
-      <Text style={styles.title}>Select Characters</Text>
+    <View style={{ flex: 1 }}>
+  <ScrollView
+    style={styles.container}
+    keyboardShouldPersistTaps="handled"
+    contentContainerStyle={{ paddingBottom: 120 }}
+  >
+    <Text style={styles.title}>Select Characters</Text>
 
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search by character name..."
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-      />
+    <TextInput
+      style={styles.searchInput}
+      placeholder="Search by character name..."
+      value={searchTerm}
+      onChangeText={setSearchTerm}
+    />
 
-      <View style={styles.gridContainer}>
-        {filteredCharacters.map((char, index) => {
-          const selected = !!characterDetails[char.characterId];
-          const charDetail = characterDetails[char.characterId];
+    <View style={styles.gridContainer}>
+      {filteredCharacters.map((char, index) => {
+        const selected = !!characterDetails[char.characterId];
+        const charDetail = characterDetails[char.characterId];
 
-          return (
-            <View
-              key={char.characterId}
-              style={[styles.characterCardGrid, selected && styles.selectedCard]}
+        return (
+          <View
+            key={char.characterId}
+            style={[
+              styles.characterCardGrid,
+              selected && styles.selectedCard,
+            ]}
+          >
+            <TouchableOpacity
+              onPress={() => toggleCharacter(char.characterId)}
             >
-              <TouchableOpacity onPress={() => toggleCharacter(char.characterId)}>
-                <Image
-                  source={{ uri: char.images?.[0]?.urlImage }}
-                  style={styles.characterImage}
-                  resizeMode="contain"
-                />
-                <Text style={styles.characterName}>{char.characterName}</Text>
-                <Text style={styles.characterDesc}>{char.description}</Text>
-                <Text style={styles.characterPrice}>
-                  {char.price.toLocaleString()}đ
-                </Text>
-              </TouchableOpacity>
+              <Image
+                source={{ uri: char.images?.[0]?.urlImage }}
+                style={styles.characterImage}
+                resizeMode="contain"
+              />
+              <Text style={styles.characterName}>{char.characterName}</Text>
+              <Text style={styles.characterDesc}>{char.description}</Text>
+              <Text style={styles.characterPrice}>
+                {char.price.toLocaleString()}đ
+              </Text>
+            </TouchableOpacity>
 
-              {selected && (
-                <View style={styles.dropdownWrapper}>
-                  <Text style={styles.dropdownLabel}>Quantity</Text>
-                  <View style={styles.quantityWrapper}>
-                    <TouchableOpacity
-                      style={styles.qtyButton}
-                      onPress={() =>
-                        setCharacterDetails((prev) => {
-                          const current = parseInt(prev[char.characterId]?.quantity || "1");
-                          const newQty = Math.max(1, current - 1);
-                          return {
-                            ...prev,
-                            [char.characterId]: {
-                              ...prev[char.characterId],
-                              quantity: newQty.toString(),
-                            },
-                          };
-                        })
-                      }
-                    >
-                      <Text style={styles.qtySymbol}>–</Text>
-                    </TouchableOpacity>
-
-                    <TextInput
-                      style={styles.qtyInput}
-                      keyboardType="numeric"
-                      value={charDetail.quantity}
-                      onChangeText={(text) =>
-                        setCharacterDetails((prev) => ({
+            {selected && (
+              <View style={styles.dropdownWrapper}>
+                <Text style={styles.dropdownLabel}>Quantity</Text>
+                <View style={styles.quantityWrapper}>
+                  <TouchableOpacity
+                    style={styles.qtyButton}
+                    onPress={() =>
+                      setCharacterDetails((prev) => {
+                        const current = parseInt(
+                          prev[char.characterId]?.quantity || "1"
+                        );
+                        const newQty = Math.max(1, current - 1);
+                        return {
                           ...prev,
                           [char.characterId]: {
                             ...prev[char.characterId],
-                            quantity: text.replace(/[^0-9]/g, "") || "1",
+                            quantity: newQty.toString(),
                           },
-                        }))
-                      }
-                    />
-
-                    <TouchableOpacity
-                      style={styles.qtyButton}
-                      onPress={() =>
-                        setCharacterDetails((prev) => {
-                          const current = parseInt(prev[char.characterId]?.quantity || "1");
-                          const newQty = Math.min(99, current + 1);
-                          return {
-                            ...prev,
-                            [char.characterId]: {
-                              ...prev[char.characterId],
-                              quantity: newQty.toString(),
-                            },
-                          };
-                        })
-                      }
-                    >
-                      <Text style={styles.qtySymbol}>+</Text>
-                    </TouchableOpacity>
-                  </View>
+                        };
+                      })
+                    }
+                  >
+                    <Text style={styles.qtySymbol}>–</Text>
+                  </TouchableOpacity>
 
                   <TextInput
-                    style={styles.input}
-                    placeholder="Note"
-                    multiline
-                    numberOfLines={2}
-                    value={charDetail.note || ""}
+                    style={styles.qtyInput}
+                    keyboardType="numeric"
+                    value={charDetail.quantity}
                     onChangeText={(text) =>
                       setCharacterDetails((prev) => ({
                         ...prev,
                         [char.characterId]: {
                           ...prev[char.characterId],
-                          note: text,
+                          quantity: text.replace(/[^0-9]/g, "") || "1",
                         },
                       }))
                     }
                   />
-                </View>
-              )}
-            </View>
-          );
-        })}
-      </View>
 
-      <View style={styles.buttonWrapper}>
-        <Button title="Next" onPress={handleNext} />
-      </View>
-    </ScrollView>
+                  <TouchableOpacity
+                    style={styles.qtyButton}
+                    onPress={() =>
+                      setCharacterDetails((prev) => {
+                        const current = parseInt(
+                          prev[char.characterId]?.quantity || "1"
+                        );
+                        const newQty = Math.min(99, current + 1);
+                        return {
+                          ...prev,
+                          [char.characterId]: {
+                            ...prev[char.characterId],
+                            quantity: newQty.toString(),
+                          },
+                        };
+                      })
+                    }
+                  >
+                    <Text style={styles.qtySymbol}>+</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Note"
+                  multiline
+                  numberOfLines={2}
+                  value={charDetail.note || ""}
+                  onChangeText={(text) =>
+                    setCharacterDetails((prev) => ({
+                      ...prev,
+                      [char.characterId]: {
+                        ...prev[char.characterId],
+                        note: text,
+                      },
+                    }))
+                  }
+                />
+              </View>
+            )}
+          </View>
+        );
+      })}
+    </View>
+  </ScrollView>
+
+  <View style={styles.footerButtons}>
+    <TouchableOpacity
+      style={[styles.actionButton, styles.backButton]}
+      onPress={goBackStep}
+    >
+      <Text style={styles.actionButtonText}>Back</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity
+      style={[styles.actionButton, styles.nextButton]}
+      onPress={handleNext}
+    >
+      <Text style={styles.actionButtonText}>Next</Text>
+    </TouchableOpacity>
+  </View>
+</View>
   );
 };
 

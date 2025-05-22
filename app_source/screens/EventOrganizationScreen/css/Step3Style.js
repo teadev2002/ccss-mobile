@@ -136,4 +136,53 @@ export default StyleSheet.create({
   buttonWrapper: {
     marginTop: 24,
   },
+  footerButtons: {
+  position: "absolute",
+  bottom: 20,
+  left: 20,
+  right: 20,
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  zIndex: 1000,
+},
+
+actionButton: {
+  flex: 1,
+  paddingVertical: 14,
+  borderRadius: 10,
+  alignItems: "center",
+  marginHorizontal: 5,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+  elevation: 5,
+},
+
+backButton: {
+  backgroundColor: "#aaa",
+},
+
+nextButton: {
+  flex: 1,
+  backgroundColor: "#4CAF50", // Màu xanh hiện đại
+  paddingVertical: 12,
+  paddingHorizontal: 20,
+  borderRadius: 10,
+  alignItems: "center",
+  marginLeft: 8,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 3,
+  elevation: 3,
+},
+
+actionButtonText: {
+  color: "#fff",
+  fontSize: 16,
+  fontWeight: "bold",
+},
+
 });

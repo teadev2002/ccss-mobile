@@ -9,13 +9,12 @@ import {
   Button,
 } from "react-native";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
-
+import styles from "../css/Step4Style";
 
 const EventStep4 = ({ eventData, goBackStep, goNextStep }) => {
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [priceRange, setPriceRange] = useState([15000, 50000]);
-
 
   const {
     selectedPackage,
@@ -47,6 +46,7 @@ const EventStep4 = ({ eventData, goBackStep, goNextStep }) => {
   const estimatedPrice = totalCharacterPrice * totalDays + packagePrice;
 
   return (
+    <View style={styles.wrapper}>
     <ScrollView style={styles.container}>
       <Text style={styles.title}>🎉 Review Your Event</Text>
 
@@ -100,7 +100,8 @@ const EventStep4 = ({ eventData, goBackStep, goNextStep }) => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>🎯 Price Range</Text>
         <Text style={{ textAlign: "center", marginBottom: 6 }}>
-          {priceRange[0].toLocaleString()} VND - {priceRange[1].toLocaleString()} VND
+          {priceRange[0].toLocaleString()} VND -{" "}
+          {priceRange[1].toLocaleString()} VND
         </Text>
         <MultiSlider
           values={priceRange}
@@ -140,33 +141,9 @@ const EventStep4 = ({ eventData, goBackStep, goNextStep }) => {
       </TouchableOpacity>
 
       <View style={styles.checkboxRow}>
-        <TouchableOpacity
-          onPress={() => setAgreed(!agreed)}
-          style={styles.checkboxBox}
-        >
-          <Text style={styles.checkboxText}>{agreed ? "☑" : "☐"}</Text>
-        </TouchableOpacity>
         <Text style={styles.agreeText}>
           I agree to the terms and conditions
         </Text>
-      </View>
-
-      <View style={styles.actionRow}>
-        <TouchableOpacity onPress={goBackStep} style={styles.secondaryBtn}>
-          <Text style={styles.secondaryBtnText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            if (!agreed) {
-              alert("Please agree to the terms to proceed.");
-              return;
-            }
-            goNextStep({ priceRange });
-          }}
-          style={styles.primaryBtn}
-        >
-          <Text style={styles.primaryBtnText}>Finish</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Modal */}
@@ -183,6 +160,30 @@ const EventStep4 = ({ eventData, goBackStep, goNextStep }) => {
         </ScrollView>
       </Modal>
     </ScrollView>
+
+    {/* Fixed Footer Buttons */}
+    <View style={styles.footerButtonGroup}>
+      <TouchableOpacity
+        onPress={goBackStep}
+        style={[styles.btn, styles.btnSecondary]}
+      >
+        <Text style={styles.btnSecondaryText}>← Back</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => {
+          if (!agreed) {
+            alert("Please agree to the terms to proceed.");
+            return;
+          }
+          goNextStep({ priceRange });
+        }}
+        style={[styles.btn, styles.btnPrimary]}
+      >
+        <Text style={styles.btnPrimaryText}>Finish →</Text>
+      </TouchableOpacity>
+    </View>
+    </View>
   );
 };
 
@@ -201,79 +202,6 @@ const DetailRow = ({ label, value, multiline, highlight }) => (
   </View>
 );
 
-const styles = StyleSheet.create({
-  container: { padding: 0, backgroundColor: "#fdfdfd", flex: 1 },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-    color: "#3c3c3c",
-    textAlign: "center",
-  },
-  section: {
-    marginBottom: 20,
-    padding: 12,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    elevation: 2,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 8,
-    color: "#22668a",
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 6,
-  },
-  rowLabel: { fontWeight: "500", color: "#555" },
-  rowValue: { color: "#333", flexShrink: 1, textAlign: "right" },
-  divider: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    marginVertical: 8,
-  },
-  charBox: {
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: "#f3f6fa",
-    borderRadius: 8,
-  },
-  charName: { fontWeight: "600", fontSize: 15, marginBottom: 4 },
-  charDetail: { fontSize: 13, color: "#444" },
-  charNote: { fontStyle: "italic", fontSize: 12, color: "#777", marginTop: 2 },
-  empty: { fontStyle: "italic", color: "#888", paddingLeft: 6 },
-  linkBtn: { alignItems: "center", marginTop: 16 },
-  linkText: { color: "#1e90ff", fontWeight: "500" },
-  checkboxRow: { flexDirection: "row", alignItems: "center", marginTop: 16 },
-  checkboxBox: { marginRight: 8 },
-  checkboxText: { fontSize: 18 },
-  agreeText: { fontSize: 14 },
-  actionRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 24,
-  },
-  primaryBtn: {
-    backgroundColor: "#22668a",
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  primaryBtnText: { color: "#fff", fontWeight: "bold" },
-  secondaryBtn: {
-    borderColor: "#999",
-    borderWidth: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  secondaryBtnText: { color: "#444", fontWeight: "600" },
-  modal: { padding: 20, backgroundColor: "#fff" },
-  modalTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 12 },
-  modalContent: { fontSize: 14, color: "#333", lineHeight: 22 },
-});
+
 
 export default EventStep4;

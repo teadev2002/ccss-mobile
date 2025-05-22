@@ -51,54 +51,61 @@ const EventStep1 = ({ goNextStep }) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Select Event Package</Text>
+    <View style={{ flex: 1 }}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingBottom: 120 }}
+      >
+        <Text style={styles.title}>Select Event Package</Text>
 
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search packages..."
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-      />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search packages..."
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+        />
 
-      {loadingPackages ? (
-        <ActivityIndicator size="large" color="#510545" />
-      ) : (
-        filteredPackages.map((pkg) => (
-          <TouchableOpacity
-            key={pkg.packageId}
-            style={[
-              styles.card,
-              selectedPackage?.packageId === pkg.packageId && styles.selectedCard,
-            ]}
-            onPress={() => setSelectedPackage(pkg)}
-          >
-            <Image source={{ uri: pkg.image }} style={styles.image} />
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{pkg.packageName}</Text>
-              <Text>{pkg.description}</Text>
-              <Text style={styles.price}>Price: {pkg.price.toLocaleString()} VND</Text>
-            </View>
-          </TouchableOpacity>
-        ))
-      )}
+        {loadingPackages ? (
+          <ActivityIndicator size="large" color="#510545" />
+        ) : (
+          filteredPackages.map((pkg) => (
+            <TouchableOpacity
+              key={pkg.packageId}
+              style={[
+                styles.card,
+                selectedPackage?.packageId === pkg.packageId &&
+                  styles.selectedCard,
+              ]}
+              onPress={() => setSelectedPackage(pkg)}
+            >
+              <Image source={{ uri: pkg.image }} style={styles.image} />
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>{pkg.packageName}</Text>
+                <Text>{pkg.description}</Text>
+                <Text style={styles.price}>
+                  Price: {pkg.price.toLocaleString()} VND
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))
+        )}
+      </ScrollView>
 
       {selectedPackage && (
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={() => goNextStep(selectedPackage)}
-        >
-          <LinearGradient
-            colors={["#510545", "#22668a"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.gradientButton}
-          >
-            <Text style={styles.submitButtonText}>Next Step</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+        <View style={styles.fixedNextButton}>
+          <TouchableOpacity onPress={() => goNextStep(selectedPackage)}>
+            <LinearGradient
+              colors={["#510545", "#22668a"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradientButton}
+            >
+              <Text style={styles.submitButtonText}>Next Step</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
       )}
-    </ScrollView>
+    </View>
   );
 };
 

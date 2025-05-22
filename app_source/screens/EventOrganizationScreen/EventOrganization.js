@@ -89,7 +89,7 @@ const EventOrganization = () => {
     startDate: formatDate(startDate),   // "22/05/2025"
     endDate: formatDate(endDate),       // "22/05/2025"
     location,
-    deposit: "0",
+    deposit: "30",
     packageId: selectedPackage?.packageId || "",
     range: `${priceRange[0]}-${priceRange[1]}`,
     listRequestCharactersCreateEvent: selectedCharacters.map((sc) => ({

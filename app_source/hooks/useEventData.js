@@ -3,50 +3,55 @@ import { useEffect, useState } from "react";
 import MyEventOrganizeService from "../apiServices/eventOrganizeService/MyEventOrganizeService";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-
-
-
-const mapTabFromEvent = (event) => {
-  const deposit = event.deposit ?? "0"; // fallback nếu null/undefined
-
-  if (event.status === "Pending" && (deposit === "0" || deposit === "")) return 0;
-  if (event.status === "Pending") return 1;
-  if (event.status === "Deposited") return 2;
-  if (event.status === "Completed") return 3;
-  return -1;
-};
-
+dayjs.extend(customParseFormat); 
 const useEventData = (accountId) => {
   const [events, setEvents] = useState([]);
+  const [contracts, setContracts] = useState([]);
   const [loading, setLoading] = useState(true);
-  dayjs.extend(customParseFormat);
+
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const data = await MyEventOrganizeService.getAllRequestByAccountId(accountId);
-        const filtered = data
+        // 🔹 Gọi cả 2 API
+        const [eventData, contractData] = await Promise.all([
+          MyEventOrganizeService.getAllRequestByAccountId(accountId),
+          MyEventOrganizeService.getAllContractByAccountId(accountId),
+        ]);
+
+        // 🔹 Lọc và format event
+        const filteredEvents = eventData
           .filter((e) => e.serviceId === "S003")
           .map((e) => ({
             ...e,
-            tab: mapTabFromEvent(e),
             startDate: dayjs(e.startDate, "HH:mm DD/MM/YYYY").format("DD/MM/YYYY"),
             endDate: dayjs(e.endDate, "HH:mm DD/MM/YYYY").format("DD/MM/YYYY"),
           }));
-        setEvents(filtered);
+
+        // 🔹 Lọc contract theo requestId và serviceId
+        const filteredContracts = contractData.filter(
+          (c) =>filteredEvents.some(e => e.requestId === c.requestId)
+        );
+
+        setEvents(filteredEvents);
+        setContracts(filteredContracts);
+
+        console.log("🔹 Events:", JSON.stringify(filteredEvents, null, 2));
+        console.log("🔹 Contracts:", JSON.stringify(filteredContracts, null, 2));
       } catch (error) {
-        console.error("Failed to fetch events:", error);
+        console.error("Failed to fetch data:", error);
       } finally {
         setLoading(false);
       }
     };
 
     if (accountId) {
-      fetchEvents();
+      fetchData();
     }
   }, [accountId]);
 
-  return { events, loading };
+  return { events, contracts, loading };
 };
 
-
 export default useEventData;
+

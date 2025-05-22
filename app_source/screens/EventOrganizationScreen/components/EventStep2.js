@@ -25,8 +25,9 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
   const [showTimePicker, setShowTimePicker] = useState(false);
 
   const today = new Date();
-  const minStartDate = new Date();
+  const minStartDate = new Date(today);
   minStartDate.setDate(today.getDate() + 4);
+  minStartDate.setHours(0, 0, 0, 0);
 
   useEffect(() => {
     (async () => {
@@ -43,7 +44,10 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
 
     if (datePickerMode === "startDate") {
       if (date < minStartDate) {
-        Alert.alert("Invalid Date", "Start date must be at least 4 days from today.");
+        Alert.alert(
+          "Invalid Date",
+          "Start date must be at least 4 days from today."
+        );
       } else {
         setStartDate(formatted);
       }
@@ -58,7 +62,10 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
         if (date < new Date(startDate)) {
           Alert.alert("Invalid Date", "End date must be after start date.");
         } else if (date > maxEnd) {
-          Alert.alert("Invalid Date", "End date must be within 10 days of start date.");
+          Alert.alert(
+            "Invalid Date",
+            "End date must be within 10 days of start date."
+          );
         } else {
           setEndDate(formatted);
         }
@@ -74,7 +81,10 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
     const formatted = time.toTimeString().slice(0, 5);
 
     if (hour < 8 || hour >= 22) {
-      Alert.alert("Invalid Time", "Please choose a time between 08:00 and 22:00.");
+      Alert.alert(
+        "Invalid Time",
+        "Please choose a time between 08:00 and 22:00."
+      );
     } else {
       if (timePickerMode === "startTime") {
         setStartTime(formatted);
@@ -88,7 +98,10 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
           start.toDateString() === end.toDateString() &&
           end.getTime() - start.getTime() < 60 * 60 * 1000
         ) {
-          Alert.alert("Invalid Duration", "End time must be at least 1 hour after start time.");
+          Alert.alert(
+            "Invalid Duration",
+            "End time must be at least 1 hour after start time."
+          );
         } else if (end <= start) {
           Alert.alert("Invalid Time", "End time must be after start time.");
         } else {
@@ -173,7 +186,14 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
         <TouchableOpacity
           style={styles.nextButton}
           onPress={() => {
-            if (!location || !startDate || !startTime || !endDate || !endTime || !description) {
+            if (
+              !location ||
+              !startDate ||
+              !startTime ||
+              !endDate ||
+              !endTime ||
+              !description
+            ) {
               Alert.alert("Missing Information", "Please fill in all fields.");
               return;
             }
@@ -198,10 +218,18 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
         mode="date"
         onConfirm={handleDateConfirm}
         onCancel={() => setShowDatePicker(false)}
-        minimumDate={datePickerMode === "startDate" ? minStartDate : startDate ? new Date(startDate) : minStartDate}
+        minimumDate={
+          datePickerMode === "startDate"
+            ? minStartDate
+            : startDate
+            ? new Date(startDate)
+            : minStartDate
+        }
         maximumDate={
           datePickerMode === "endDate" && startDate
-            ? new Date(new Date(startDate).setDate(new Date(startDate).getDate() + 10))
+            ? new Date(
+                new Date(startDate).setDate(new Date(startDate).getDate() + 10)
+              )
             : undefined
         }
       />

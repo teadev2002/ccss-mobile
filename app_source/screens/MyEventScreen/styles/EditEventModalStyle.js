@@ -38,14 +38,28 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   characterRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-    gap: 8,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
+
   charText: {
-    flex: 1,
-    fontSize: 14.5,
+    fontSize: 15,
+    color: "#333",
+    marginBottom: 4,
+  },
+
+  label: {
+    fontWeight: "bold",
+    color: "#555",
   },
   qtyInput: {
     borderWidth: 1,

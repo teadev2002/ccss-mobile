@@ -60,6 +60,7 @@ const PaymentService = {
         // ticketId,
         // ticketQuantity,
         contractId,
+        isWeb: false,
         // orderpaymentId,
       };
 

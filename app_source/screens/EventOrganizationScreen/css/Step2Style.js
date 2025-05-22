@@ -45,23 +45,44 @@ export default StyleSheet.create({
     marginTop: 20,
   },
   backButton: {
-    backgroundColor: '#ccc',
-    padding: 12,
-    borderRadius: 8,
-    width: '45%',
-    alignItems: 'center',
-  },
-  nextButton: {
-    backgroundColor: '#007bff',
-    padding: 12,
-    borderRadius: 8,
-    width: '45%',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    marginTop: 16,
-    marginBottom: 32,
-  },
+  flex: 1,
+  backgroundColor: "#E0E0E0",
+  paddingVertical: 12,
+  paddingHorizontal: 20,
+  borderRadius: 10,
+  alignItems: "center",
+  marginRight: 8,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.2,
+  shadowRadius: 3,
+  elevation: 3,
+},
+
+nextButton: {
+  flex: 1,
+  backgroundColor: "#4CAF50", // Màu xanh hiện đại
+  paddingVertical: 12,
+  paddingHorizontal: 20,
+  borderRadius: 10,
+  alignItems: "center",
+  marginLeft: 8,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 3,
+  elevation: 3,
+},
+
+buttonText: {
+  color: "#fff",
+  fontSize: 16,
+  fontWeight: "bold",
+},
+
+buttonRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  marginTop: 20,
+},
 });

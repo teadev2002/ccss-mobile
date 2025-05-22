@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fb",
   },
   header: {
-    height: 60,
+    height: 40,
     backgroundColor: "#510545",
     flexDirection: "row",
     alignItems: "center",
@@ -39,6 +39,10 @@ const styles = StyleSheet.create({
     textShadowRadius: 6,
     marginBottom: 12,
     textAlign: "center",
+  },
+   actionButton: {
+    flexBasis: "48%", // 2 nút mỗi hàng (2x2)
+    marginBottom: 8,   // khoảng cách giữa các hàng
   },
 heroSection: {
     paddingVertical: 20,
@@ -105,14 +109,14 @@ heroSection: {
   statusChip: {
     backgroundColor: "#1e90ff",
     color: "#fff",
-    height: 28,
+    height: 35,
   },
   eventText: { fontSize: 14, marginBottom: 2 },
   actionRow: {
     flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 10,
-    marginTop: 8,
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: 8, 
   },
 });
 

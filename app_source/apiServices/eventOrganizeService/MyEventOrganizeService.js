@@ -195,7 +195,7 @@ const MyEventOrganizeService = {
         purpose,
         accountId,
         contractId,
-        isWeb: true,
+        isWeb: false,
       };
 
       const response = await apiClient.post("/api/VNPay", requestBody);
@@ -241,7 +241,7 @@ const MyEventOrganizeService = {
     try {
       const response = await apiClient.post(
         `/api/Feedback?accountId=${accountId}&contractId=${contractId}`,
-        data.feedbacks
+        data
       );
       return response.data;
     } catch (error) {

@@ -91,6 +91,32 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  fixedNextButton: {
+  position: "absolute",
+  bottom: 20,
+  left: 20,
+  right: 20,
+  zIndex: 1000,
+},
+
+gradientButton: {
+  paddingVertical: 14,
+  borderRadius: 10,
+  alignItems: "center",
+  justifyContent: "center",
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+  elevation: 5,
+},
+
+submitButtonText: {
+  color: "#fff",
+  fontSize: 16,
+  fontWeight: "bold",
+},
+
 });
 
 export default styles;
