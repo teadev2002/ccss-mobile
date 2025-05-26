@@ -124,6 +124,18 @@ const RequestService = {
       throw error;
     }
   },
+
+  createRentalRequest: async (rentalRequest) => {
+    try {
+      const response = await apiClient.post("/api/Request/CreateRentCostume", rentalRequest);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating rental request:", error);
+      throw error;
+    }
+  },
+
+  
 };
 
 export default RequestService;

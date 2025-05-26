@@ -37,6 +37,7 @@ import FeedbackCosplayerScreen from "./app_source/screens/HireHistoryScreen/comp
 import MyEventHistory from "./app_source/screens/MyEventScreen/MyEventHistory.js";
 import FeedbackScreen from "./app_source/screens/MyEventScreen/components/FeedbackScreen.js";
 import { Provider as PaperProvider } from "react-native-paper";
+import RentalModal from "./app_source/screens/CostumeRentalScreen/components/RentalModal.js";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -170,6 +171,15 @@ export default function App() {
                 <Stack.Screen
                   name="ChooseCharacter"
                   component={ChooseCharacter}
+                  options={{
+                    headerShown: false,
+                    presentation: "fullScreenModal",
+                  }}
+                />
+
+                <Stack.Screen
+                  name="RentalModal"
+                  component={RentalModal}
                   options={{
                     headerShown: false,
                     presentation: "fullScreenModal",

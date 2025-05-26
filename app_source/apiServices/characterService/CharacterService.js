@@ -1,5 +1,4 @@
 import { apiClient } from "../../api/apiClient";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CharacterService = {
   getAllCharacters: async () => {
@@ -9,6 +8,17 @@ const CharacterService = {
     } catch (error) {
       console.error("Error fetching characters:", error);
       throw error;
+    }
+  },
+
+  getCharacterById: async (characterId) => {
+    try {
+      const response = await apiClient.get(`/api/Character/${characterId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Lỗi khi lấy thông tin character"
+      );
     }
   },
 };

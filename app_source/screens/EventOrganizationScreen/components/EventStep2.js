@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
 import styles from "../css/Step2Style";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
@@ -28,16 +27,6 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
   const minStartDate = new Date(today);
   minStartDate.setDate(today.getDate() + 4);
   minStartDate.setHours(0, 0, 0, 0);
-
-  useEffect(() => {
-    (async () => {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        alert("Permission to access media library is required!");
-      }
-    })();
-  }, []);
 
   const handleDateConfirm = (date) => {
     const formatted = date.toISOString().split("T")[0];

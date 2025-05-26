@@ -125,6 +125,98 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
+
+  modalContainer: {
+  flex: 1,
+  justifyContent: "center",
+  alignItems: "center",
+  backgroundColor: "rgba(0,0,0,0.5)",
+},
+
+modalContent: {
+  width: "90%",
+  backgroundColor: "#fff",
+  borderRadius: 10,
+  padding: 20,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.25,
+  shadowRadius: 4,
+  elevation: 5,
+},
+
+modalTitle: {
+  fontSize: 20,
+  fontWeight: "bold",
+  marginBottom: 15,
+  textAlign: "center",
+},
+
+modalInput: {
+  borderWidth: 1,
+  borderColor: "#ccc",
+  borderRadius: 8,
+  padding: 10,
+  marginBottom: 10,
+},
+
+modalButtonRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  marginTop: 10,
+},
+
+modalCancelButton: {
+  backgroundColor: "#999",
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  borderRadius: 8,
+},
+
+modalSubmitButton: {
+  backgroundColor: "#22668a",
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  borderRadius: 8,
+},
+
+modalButtonText: {
+  color: "#fff",
+  fontWeight: "bold",
+},
+
+modalContentScroll: {
+  width: "90%",
+  backgroundColor: "#fff",
+  borderRadius: 10,
+  padding: 20,
+  maxHeight: "90%",
+},
+
+label: {
+  marginTop: 10,
+  fontWeight: "bold",
+},
+
+checkbox: {
+  width: 20,
+  height: 20,
+  borderWidth: 1,
+  borderColor: "#666",
+  marginRight: 10,
+  borderRadius: 4,
+},
+
+termsRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  marginVertical: 10,
+},
+
+termsText: {
+  fontSize: 14,
+},
+
 });
 
 export default styles;
