@@ -13,6 +13,53 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#22668a",
   },
+  shippingStatusContainer: {
+  flexDirection: "row",
+  alignItems: "center",
+  marginVertical: 12,
+  flexWrap: "wrap",
+  justifyContent: "center",
+},
+shippingStep: {
+  flexDirection: "row",
+  alignItems: "center",
+},
+circle: {
+  width: 24,
+  height: 24,
+  borderRadius: 12,
+  alignItems: "center",
+  justifyContent: "center",
+  marginHorizontal: 4,
+},
+circleCompleted: {
+  backgroundColor: "green",
+},
+circlePending: {
+  backgroundColor: "#ccc",
+},
+stepLabel: {
+  fontSize: 12,
+  textAlign: "center",
+  color: "#666",
+  marginHorizontal: 4,
+  maxWidth: 90,
+},
+stepLabelActive: {
+  color: "#000",
+  fontWeight: "bold",
+},
+line: {
+  height: 2,
+  width: 20,
+  backgroundColor: "#ccc",
+},
+lineActive: {
+  backgroundColor: "green",
+},
+lineInactive: {
+  backgroundColor: "#ccc",
+},
   headerTitle: {
     flex: 1,
     textAlign: "center",

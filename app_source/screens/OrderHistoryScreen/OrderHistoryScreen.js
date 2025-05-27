@@ -15,6 +15,7 @@ import styles from "./styles/OrderHistoryStyle";
 import orderService from "../../apiServices/orderService/PurcharseHistoryService";
 import { AuthContext } from "../../../assets/context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
+import LocationPickerService from "../../apiServices/LocationService/LocationPickerService";
 
 const formatDate = (isoDate) => {
   const dateObj = new Date(isoDate);
@@ -48,31 +49,52 @@ const OrderHistoryScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const { user } = useContext(AuthContext);
   const navigation = useNavigation();
+  const [shippingFee, setShippingFee] = useState(0);
 
+  const formatShortOrderId = (id) => {
+    if (!id) return "Unknown";
+    const idStr = id.toString();
+    const last4 = idStr.slice(-4);
+    return `XXXXXXX${last4}`;
+  };
 
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
-      const response = await orderService.getAllOrdersByAccountId(user?.id);
-  
-      const sortedResponse = response.sort(
+
+      const orderResponse = await orderService.getAllOrdersByAccountId(
+        user?.id
+      );
+      const sortedResponse = orderResponse.sort(
         (a, b) => new Date(b.orderDate) - new Date(a.orderDate)
       );
-  
-      const mappedOrders = sortedResponse.map((order) => ({
+
+      // Lấy shipping fee cho từng order song song
+      const shippingFees = await Promise.all(
+        sortedResponse.map((order) =>
+          LocationPickerService.calculateDeliveryFee(order.orderId)
+        )
+      );
+
+      const mappedOrders = sortedResponse.map((order, index) => ({
         orderId: order.orderId,
         date: formatDate(order.orderDate),
-        total: order.totalPrice,
+        subtotal: order.totalPrice,
+        shippingFee: shippingFees[index],
+        total: order.totalPrice + shippingFees[index],
         status: mapOrderStatus(order.orderStatus),
+        deliveryStatus: order.shipStatus,
+        address: order.address || "Updating...",
+        phone: order.phone || "0123456789",
+        note: order.description || "(None)",
         products: order.orderProducts.map((p) => ({
           name: p.product?.productName || "Unknown",
           quantity: p.quantity,
           price: p.price,
           image: p.product?.productImages?.[0]?.urlImage || "",
         })),
-        address: "Updating...",
       }));
-  
+
       setOrders(mappedOrders);
       setFilteredOrders(mappedOrders);
     } catch (error) {
@@ -81,7 +103,6 @@ const OrderHistoryScreen = () => {
       setIsLoading(false);
     }
   };
-  
 
   useEffect(() => {
     fetchOrders();
@@ -102,12 +123,96 @@ const OrderHistoryScreen = () => {
     }
   };
 
+  const renderShippingStatusBar = (status) => {
+    const steps = [
+      { label: "Confirmation", icon: "document-text" },
+      { label: "Picked", icon: "cube" },
+      { label: "In Transit", icon: "car" },
+      { label: "Delivered", icon: "checkmark-done" },
+    ];
+
+    const currentIndex = Math.min(Number(status), steps.length - 1);
+
+    return (
+      <View style={{ marginVertical: 12, alignItems: "center" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            width: "100%",
+            justifyContent: "space-between",
+          }}
+        >
+          {steps.map((step, idx) => {
+            const isCompleted = idx <= currentIndex;
+            const isLast = idx === steps.length - 1;
+
+            return (
+              <React.Fragment key={idx}>
+                <View
+                  style={{
+                    alignItems: "center",
+                    width: `${100 / steps.length}%`,
+                  }}
+                >
+                  <View
+                    style={{
+                      backgroundColor: isCompleted ? "#4caf50" : "#ccc",
+                      borderRadius: 20,
+                      width: 30,
+                      height: 30,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      zIndex: 2,
+                    }}
+                  >
+                    <Ionicons
+                      name={step.icon}
+                      size={16}
+                      color={isCompleted ? "#fff" : "#555"}
+                    />
+                  </View>
+                  <Text
+                    style={{
+                      marginTop: 4,
+                      fontSize: 12,
+                      color: isCompleted ? "#4caf50" : "#999",
+                      textAlign: "center",
+                    }}
+                  >
+                    {step.label}
+                  </Text>
+                </View>
+
+                {!isLast && (
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 15,
+                      left: `${
+                        (idx + 1) * (100 / steps.length) - 50 / steps.length
+                      }%`,
+                      width: `${100 / steps.length}%`,
+                      height: 2,
+                      backgroundColor: idx < currentIndex ? "#4caf50" : "#ccc",
+                      zIndex: 1,
+                    }}
+                  />
+                )}
+              </React.Fragment>
+            );
+          })}
+        </View>
+      </View>
+    );
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.orderItem}>
       <View style={styles.orderHeader}>
         <View style={{ flex: 1 }}>
           <Text style={styles.orderId} numberOfLines={1} ellipsizeMode="tail">
-            #{item.orderId}
+            #{formatShortOrderId(item.orderId)}
           </Text>
           <Text style={styles.orderDate}>📅 {item.date}</Text>
         </View>
@@ -142,10 +247,10 @@ const OrderHistoryScreen = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => {navigation.goBack()}}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Order history</Text>
+        <Text style={styles.headerTitle}>Order History</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -207,7 +312,7 @@ const OrderHistoryScreen = () => {
                 <>
                   <Text style={styles.sectionTitle}>🧾 Order Info</Text>
                   <Text style={styles.detailText}>
-                    Order ID: {selectedOrder.orderId}
+                    Order ID: {formatShortOrderId(selectedOrder.orderId)}
                   </Text>
                   <Text style={styles.detailText}>
                     Date: {selectedOrder.date}
@@ -216,11 +321,14 @@ const OrderHistoryScreen = () => {
                     Status: {selectedOrder.status}
                   </Text>
                   <Text style={styles.detailText}>
-                    Total: ₫{selectedOrder.total?.toLocaleString()}
+                    Total: ₫{selectedOrder.total.toLocaleString()}
                   </Text>
 
                   <View style={styles.divider} />
+                  <Text style={styles.sectionTitle}>🚚 Shipping Status</Text>
+                  {renderShippingStatusBar(selectedOrder.deliveryStatus)}
 
+                  <View style={styles.divider} />
                   <Text style={styles.sectionTitle}>📦 Products</Text>
                   {selectedOrder.products.length > 0 ? (
                     selectedOrder.products.map((product, idx) => (
@@ -245,10 +353,27 @@ const OrderHistoryScreen = () => {
                   )}
 
                   <View style={styles.divider} />
-
-                  <Text style={styles.sectionTitle}>🏠 Delivery Address</Text>
+                  <Text style={styles.sectionTitle}>🧾 Order Summary</Text>
                   <Text style={styles.detailText}>
-                    {selectedOrder.address || "Updating..."}
+                    Purchase Date: {selectedOrder.date}
+                  </Text>
+                  <Text style={styles.detailText}>
+                    Shipping Address: {selectedOrder.address}
+                  </Text>
+                  <Text style={styles.detailText}>
+                    Phone: {selectedOrder.phone}
+                  </Text>
+                  <Text style={styles.detailText}>
+                    Note: {selectedOrder.note}
+                  </Text>
+                  <Text style={styles.detailText}>
+                    Subtotal: {selectedOrder.subtotal.toLocaleString()}₫
+                  </Text>
+                  <Text style={styles.detailText}>
+                    Delivery Fee: {selectedOrder.shippingFee.toLocaleString()}₫
+                  </Text>
+                  <Text style={[styles.detailText, { fontWeight: "bold" }]}>
+                    Total: {selectedOrder.total.toLocaleString()}₫
                   </Text>
 
                   <TouchableOpacity

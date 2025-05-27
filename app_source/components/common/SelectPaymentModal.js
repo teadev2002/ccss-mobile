@@ -24,7 +24,7 @@ const SelectPaymentModal = ({ visible, onClose, onSelectPaymentMethod }) => {
             <Text style={styles.paymentText}>Thanh toán bằng VNPay</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.paymentOption}
             onPress={() => {
               onSelectPaymentMethod("Momo");
@@ -32,7 +32,7 @@ const SelectPaymentModal = ({ visible, onClose, onSelectPaymentMethod }) => {
             }}
           >
             <Text style={styles.paymentText}>Thanh toán bằng Momo</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity
             onPress={onClose}

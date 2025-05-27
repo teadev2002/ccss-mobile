@@ -38,6 +38,9 @@ import MyEventHistory from "./app_source/screens/MyEventScreen/MyEventHistory.js
 import FeedbackScreen from "./app_source/screens/MyEventScreen/components/FeedbackScreen.js";
 import { Provider as PaperProvider } from "react-native-paper";
 import RentalModal from "./app_source/screens/CostumeRentalScreen/components/RentalModal.js";
+import MyRentalCostume from "./app_source/screens/RentalCostumeHistoryScreen/RentalCostumeScreen.js";
+import EditRentalRequestScreen from "./app_source/screens/RentalCostumeHistoryScreen/components/EditRentalRequestScreen.js";
+import RentalRequestDetailScreen from "./app_source/screens/RentalCostumeHistoryScreen/components/RentalRequestDetailScreen.js";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -252,6 +255,24 @@ export default function App() {
                 <Stack.Screen
                   name="PaymentFailed"
                   component={PaymentFailed}
+                  options={{ headerShown: false }}
+                />
+
+                
+                <Stack.Screen
+                  name="RentalRequestDetail"
+                  component={RentalRequestDetailScreen}
+                  options={{ headerShown: false }}
+                />
+                
+                <Stack.Screen
+                  name="EditRentalRequest"
+                  component={EditRentalRequestScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="MyRentalCostume"
+                  component={MyRentalCostume}
                   options={{ headerShown: false }}
                 />
               </Stack.Navigator>

@@ -10,7 +10,6 @@ import { Text, Chip, Button } from "react-native-paper";
 import { FontAwesome5, Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import styles from "./styles/MyEventScreenStyle";
-import { LinearGradient } from "expo-linear-gradient";
 import EditEventModal from "./components/EditEventModal";
 import EventDetailModal from "./components/EventDetailModal";
 import useEventData from "../../hooks/useEventData";

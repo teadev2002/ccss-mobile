@@ -18,6 +18,9 @@ import ConfirmationModal from "../../components/common/ConfirmationModal";
 import PaymentPurpose from "../../const/PaymentPurpose";
 import { useFocusEffect } from "@react-navigation/native";
 import { AuthContext } from "../../../assets/context/AuthContext";
+import UserInfoModal from "./components/UserInfoModal";
+import OrderPreviewModal from "./components/OrderPreviewModal";
+import LocationPickerService from "../../apiServices/LocationService/LocationPickerService";
 
 const CustomCheckbox = ({ value, onValueChange }) => (
   <TouchableOpacity onPress={onValueChange} style={styles.checkboxContainer}>
@@ -49,6 +52,14 @@ const Cart = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showUserInfoModal, setShowUserInfoModal] = useState(false);
+  const [userShippingInfo, setUserShippingInfo] = useState(null);
+
+  const [orderPaymentId, setOrderPaymentId] = useState(null);
+  const [shippingFee, setShippingFee] = useState(0);
+  const [showOrderPreviewModal, setShowOrderPreviewModal] = useState(false);
+
+  console.log("Cart Items:", JSON.stringify(cartItems, null, 2));
 
   useFocusEffect(
     React.useCallback(() => {
@@ -62,7 +73,10 @@ const Cart = () => {
         }
       };
 
-      const linkingSubscription = Linking.addEventListener("url", handleDeepLink);
+      const linkingSubscription = Linking.addEventListener(
+        "url",
+        handleDeepLink
+      );
       return () => linkingSubscription.remove();
     }, [])
   );
@@ -76,7 +90,9 @@ const Cart = () => {
   const toggleSelectAll = () => {
     setSelectAll((prev) => {
       const newSelectAll = !prev;
-      setSelectedItems(newSelectAll ? cartItems.map((item) => item.cartProductId) : []);
+      setSelectedItems(
+        newSelectAll ? cartItems.map((item) => item.cartProductId) : []
+      );
       return newSelectAll;
     });
   };
@@ -114,16 +130,10 @@ const Cart = () => {
   const handleConfirmPayment = async () => {
     setShowConfirmationModal(false);
     try {
-      const orderPaymentId = await createOrder(selectedItems);
-      if (!orderPaymentId) {
-        Alert.alert("Error", "Could not create order. Please try again.");
-        return;
-      }
-
       const paymentData = {
         fullName: user.accountName,
         orderInfo: "Cart Checkout",
-        amount: calculateTotalPrice(),
+        amount: calculateTotalPrice() + shippingFee,
         purpose: PaymentPurpose.SHOPPING,
         accountId: accountId,
         accountCouponId: null,
@@ -131,10 +141,16 @@ const Cart = () => {
         ticketQuantity: null,
         contractId: null,
         orderpaymentId: orderPaymentId,
+        address: userShippingInfo.address,
+        phone: userShippingInfo.phone,
+        description: userShippingInfo.description,
+        to_district_id: userShippingInfo.districtId,
+        to_ward_code: userShippingInfo.wardId,
         isWeb: false,
       };
 
       await confirmPayment(selectedPaymentMethod, paymentData, navigation);
+      console.log("Payment Data:", paymentData);
     } catch (error) {
       Alert.alert("Payment Error", "An error occurred. Please try again.");
       console.error("❌ Payment Error:", error);
@@ -189,11 +205,17 @@ const Cart = () => {
       </View>
 
       <View style={styles.banner}>
-        <Text style={styles.bannerText}>Don't miss FreeShip + CCSS Voucher</Text>
+        <Text style={styles.bannerText}>
+          Don't miss FreeShip + CCSS Voucher
+        </Text>
       </View>
 
       {isLoading ? (
-        <ActivityIndicator size="large" color="royalblue" style={{ marginTop: 20 }} />
+        <ActivityIndicator
+          size="large"
+          color="royalblue"
+          style={{ marginTop: 20 }}
+        />
       ) : (
         <FlatList
           data={cartItems}
@@ -221,7 +243,8 @@ const Cart = () => {
         <Text style={styles.selectAllText}>Select all products</Text>
         <View style={styles.totalPriceContainer}>
           <Text style={styles.totalPriceText}>
-            Total ({selectedItems.length} items): ₫{calculateTotalPrice().toLocaleString()}
+            Total ({selectedItems.length} items): ₫
+            {calculateTotalPrice().toLocaleString()}
           </Text>
           <TouchableOpacity
             style={[
@@ -229,7 +252,11 @@ const Cart = () => {
               { opacity: selectedItems.length === 0 ? 0.5 : 1 },
             ]}
             disabled={selectedItems.length === 0}
-            onPress={() => setShowPaymentModal(true)}
+            onPress={() => {
+              if (selectedItems.length > 0) {
+                setShowUserInfoModal(true);
+              }
+            }}
           >
             <Text style={styles.checkoutButtonText}>Check out</Text>
           </TouchableOpacity>
@@ -248,6 +275,64 @@ const Cart = () => {
         onConfirm={handleConfirmPayment}
         paymentMethod={selectedPaymentMethod}
       />
+
+      <UserInfoModal
+        visible={showUserInfoModal}
+        onClose={() => setShowUserInfoModal(false)}
+        onSubmit={async (info) => {
+          try {
+            setUserShippingInfo(info);
+            setShowUserInfoModal(false);
+
+            const paymentOrder = {
+              address: info.address,
+              phone: info.phone,
+              description: info.description,
+              to_district_id: info.districtId,
+              to_ward_code: info.wardId,
+            };
+
+            const orderId = await createOrder(selectedItems, paymentOrder);
+            if (!orderId) {
+              Alert.alert("Error", "Could not create order.");
+              return;
+            }
+
+            setOrderPaymentId(orderId);
+
+            // ✅ Tính phí giao hàng
+            const fee = await LocationPickerService.calculateDeliveryFee(
+              orderId
+            );
+            setShippingFee(fee);
+
+            setShowOrderPreviewModal(true);
+          } catch (error) {
+            Alert.alert(
+              "Error",
+              "An error occurred while preparing your order."
+            );
+            console.error(error);
+          }
+        }}
+      />
+
+      {userShippingInfo && (
+        <OrderPreviewModal
+          visible={showOrderPreviewModal}
+          onClose={() => setShowOrderPreviewModal(false)}
+          onConfirm={() => {
+            setShowOrderPreviewModal(false);
+            setShowPaymentModal(true);
+          }}
+          items={cartItems.filter((item) =>
+            selectedItems.includes(item.cartProductId)
+          )}
+          address={userShippingInfo.address}
+          productTotal={calculateTotalPrice()}
+          shippingFee={shippingFee}
+        />
+      )}
     </View>
   );
 };

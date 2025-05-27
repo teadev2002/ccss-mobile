@@ -43,10 +43,10 @@ const useCart = () => {
             quantity: item.quantity,
             image: product?.urlImage || "https://via.placeholder.com/100",
             productId: item.productId,
-            stockQuantity: product?.quantity || 0, 
+            stockQuantity: product?.quantity || 0,
           };
         }) || []
-      );      
+      );
       setCartItems(items);
       setCartId(cart.cartId);
     } catch (error) {
@@ -65,7 +65,7 @@ const useCart = () => {
       await cartService.updateProductQuantity(cartId, [
         { cartProductId, quantity: newQuantity },
       ]);
-      await AsyncStorage.setItem('cart_changed', 'true');
+      await AsyncStorage.setItem("cart_changed", "true");
       setCartItems((prev) =>
         prev.map((item) =>
           item.cartProductId === cartProductId
@@ -82,7 +82,7 @@ const useCart = () => {
     try {
       const payload = cartProductIds.map((id) => ({ cartProductId: id }));
       await cartService.removeProductFromCart(cartId, payload);
-      await AsyncStorage.setItem('cart_changed', 'true');
+      await AsyncStorage.setItem("cart_changed", "true");
       setCartItems((prev) =>
         prev.filter((item) => !cartProductIds.includes(item.cartProductId))
       );
@@ -111,7 +111,7 @@ const useCart = () => {
     }
   };
 
-  const createOrder = async (selectedItems) => {
+  const createOrder = async (selectedItems, data) => {
     const selectedCart = cartItems
       .filter((item) => selectedItems.includes(item.cartProductId))
       .map((item) => ({
@@ -127,6 +127,11 @@ const useCart = () => {
 
     const orderData = {
       accountId: accountId,
+      address: data.address || "Chưa cập nhật",
+      phone: data.phone || "Chưa cập nhật",
+      description: data.description || "Chưa cập nhật",
+      to_district_id: data.to_district_id || "Chưa cập nhật",
+      to_ward_code: data.to_ward_code || "Chưa cập nhật",
       orderProducts: selectedCart.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,

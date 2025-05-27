@@ -26,6 +26,9 @@ const Souvenirs = () => {
   const { productItems, cartCount, loading, handleAddToCart, stockMap } =
     useSouvenirProducts(accountId, searchText);
 
+    console.log("Product Items:", JSON.stringify(productItems, null, 2));
+    
+
   const filteredItems = productItems.filter(
     (item) =>
       item.name && item.name.toLowerCase().includes(searchText.toLowerCase())
@@ -47,7 +50,7 @@ const Souvenirs = () => {
       <View style={styles.productContainer}>
         <Image
           source={{
-            uri: "https://i.pinimg.com/originals/9b/f9/e7/9bf9e73625e302f350b62903b4ecd9fd.jpg", // placeholder
+            uri: item.image, // placeholder
           }}
           style={styles.productImage}
         />
