@@ -37,6 +37,8 @@ const Souvenirs = () => {
   const handleAdd = (item) => {
     if (!item.quantity || item.quantity <= 0) {
       Alert.alert("Out of stock", "This product is sold out!");
+
+      
       return;
     }
     setSelectedProduct({ ...item, stock: stockMap[item.id] });

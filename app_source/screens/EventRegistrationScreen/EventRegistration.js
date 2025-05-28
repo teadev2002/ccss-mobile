@@ -17,42 +17,85 @@ const EventRegistration = () => {
   const { eventItems } = useFetchFestivals();
   const now = new Date();
 
+  console.log("EventRegistration render", JSON.stringify(eventItems, null, 2));
+  
+
   // Lọc và sắp xếp sự kiện
-  const sortedItems = [...eventItems]
-    .filter((item) => item.isActive && item.eventName.toLowerCase().includes(searchText.toLowerCase()))
-    .sort((a, b) => {
-      const aDate = new Date(a.startDate);
-      const bDate = new Date(b.startDate);
-      const aIsPast = aDate < now;
-      const bIsPast = bDate < now;
+  const filteredItems = eventItems.filter((item) =>
+  item.eventName.toLowerCase().includes(searchText.toLowerCase())
+);
 
-      if (aIsPast && !bIsPast) return 1;
-      if (!aIsPast && bIsPast) return -1;
+const upcomingEvents = filteredItems
+  .filter((item) => item.status === 0)
+  .sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
 
-      if (!aIsPast && !bIsPast) {
-        return aDate - bDate; // Sắp tới: tăng dần
-      }
-      return bDate - aDate; // Đã qua: giảm dần
-    });
+const ongoingEvents = filteredItems
+  .filter((item) => item.status === 2)
+  .sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+
+const endedEvents = filteredItems
+  .filter((item) => item.status === 3)
+  .sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+
+const inactiveEvents = filteredItems
+  .filter((item) => item.status === 1);
+
+
 
   return (
     <View style={styles.container}>
-      {/* Header đứng yên */}
       <EventHeader navigation={navigation} />
 
       <View style={styles.content}>
         <EventSearchBar searchText={searchText} setSearchText={setSearchText} />
 
         <FlatList
-          data={sortedItems}
-          renderItem={({ item }) => <EventItem item={item} navigation={navigation} />}
-          keyExtractor={(item) => item.eventId}
-          contentContainerStyle={styles.listContent}
-          ListEmptyComponent={() => (
-            <Text style={styles.emptyText}>No events found</Text>
-          )}
-          showsVerticalScrollIndicator={false}
-        />
+  ListHeaderComponent={
+    <>
+      {ongoingEvents.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Ongoing Events</Text>
+          {ongoingEvents.map((item) => (
+            <EventItem key={item.eventId} item={item} navigation={navigation} />
+          ))}
+        </>
+      )}
+
+      {upcomingEvents.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Upcoming Events</Text>
+          {upcomingEvents.map((item) => (
+            <EventItem key={item.eventId} item={item} navigation={navigation} />
+          ))}
+        </>
+      )}
+
+      {endedEvents.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Ended Events</Text>
+          {endedEvents.map((item) => (
+            <EventItem key={item.eventId} item={item} navigation={navigation} />
+          ))}
+        </>
+      )}
+
+      {inactiveEvents.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Inactive Events</Text>
+          {inactiveEvents.map((item) => (
+            <EventItem key={item.eventId} item={item} navigation={navigation} />
+          ))}
+        </>
+      )}
+    </>
+  }
+  data={[]} // để tránh lỗi FlatList, data có thể để rỗng vì dùng ListHeaderComponent để custom
+  contentContainerStyle={styles.listContent}
+  ListEmptyComponent={() => (
+    <Text style={styles.emptyText}>No events found</Text>
+  )}
+  showsVerticalScrollIndicator={false}
+/>
       </View>
     </View>
   );

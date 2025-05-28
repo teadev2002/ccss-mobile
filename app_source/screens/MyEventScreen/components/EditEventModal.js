@@ -98,44 +98,42 @@ const EditEventModal = ({ visible, onClose, event }) => {
   };
 
   const prepareEditRequestPayloadFromEvent = (event) => {
+    // Tạo 1 Map từ charactersListResponse để lấy nhanh requestCharacterId theo characterId
+    const requestIdMap = new Map();
+    event.charactersListResponse.forEach((char) => {
+      requestIdMap.set(char.characterId, char.requestCharacterId);
+    });
+
+    // Ghép characters với requestCharacterId từ map
+    const listUpdateRequestCharacters = characters.map((char) => ({
+      requestCharacterId: requestIdMap.get(char.characterId) || null,
+      characterId: char.characterId,
+      cosplayerId: null,
+      description: char.note || char.description || "shared",
+      quantity: char.quantity || 1,
+      listUpdateRequestDates: char.listUpdateRequestDates || [],
+    }));
+
+    // Tính tổng tiền
     const characterTotal = characters.reduce(
       (sum, c) => sum + c.price * c.quantity,
       0
     );
     const packagePrice = selectedPackageData?.price || 0;
 
-    console.log(
-      "🧪 Event trước khi tạo payload:",
-      JSON.stringify(event, null, 2)
-    );
-
     const payload = {
       name: event.name,
       description: event.description,
       price: packagePrice + characterTotal,
-      startDate: event.startDate, // Đã gộp sẵn giờ + ngày
+      startDate: event.startDate,
       endDate: event.endDate,
       location: event.location,
       serviceId: event.serviceId,
       packageId: selectedPackage,
-      range: event.range || "15000-16000",
-      listUpdateRequestCharacters: event.charactersListResponse.map((char) => ({
-        requestCharacterId: char.requestCharacterId,
-        characterId: char.characterId,
-        cosplayerId: null,
-        description: "shared",
-        quantity: char.quantity || 1,
-        listUpdateRequestDates: (char.requestDateResponses || []).map(
-          (date) => ({
-            requestDateId: date.requestDateId || null,
-            startDate: date.startDate,
-            endDate: date.endDate,
-          })
-        ),
-      })),
+      range: event.range || "15000-50000",
+      listUpdateRequestCharacters,
     };
 
-    console.log("📤 Payload to send:", JSON.stringify(payload, null, 2));
     return payload;
   };
 
@@ -288,6 +286,7 @@ const EditEventModal = ({ visible, onClose, event }) => {
                         event.requestId,
                         payload
                       );
+                    console.log(res);
 
                     alert("Cập nhật yêu cầu thành công!");
                     onClose();

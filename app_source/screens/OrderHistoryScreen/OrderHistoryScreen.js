@@ -16,6 +16,7 @@ import orderService from "../../apiServices/orderService/PurcharseHistoryService
 import { AuthContext } from "../../../assets/context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import LocationPickerService from "../../apiServices/LocationService/LocationPickerService";
+import HeaderHero from "../../components/common/HeaderHero";
 
 const formatDate = (isoDate) => {
   const dateObj = new Date(isoDate);
@@ -246,13 +247,7 @@ const OrderHistoryScreen = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Order History</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <HeaderHero title="Order History"></HeaderHero>
 
       {/* Filter */}
       <View style={styles.filterContainer}>

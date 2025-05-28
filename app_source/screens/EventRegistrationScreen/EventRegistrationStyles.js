@@ -11,6 +11,52 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent',
   },
+  
+  // --- Cập nhật style tiêu đề từng section ---
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginVertical: 16,
+    marginLeft: 10,
+    color: "#222",
+    borderLeftWidth: 4,
+    borderLeftColor: "#007bff", // xanh nổi bật
+    paddingLeft: 10,
+  },
+
+  // Style wrapper mỗi event (để tạo card bo góc, shadow)
+  eventItemWrapper: {
+    backgroundColor: "#fff",
+    marginHorizontal: 10,
+    marginBottom: 12,
+    borderRadius: 12,
+    elevation: 4,            // shadow android
+    shadowColor: "#000",     // shadow iOS
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    overflow: "hidden",
+  },
+
+  statusTagContainer: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    backgroundColor: "transparent",
+  },
+
+  statusTag: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+    marginTop: 5,
+    alignSelf: "flex-start",
+  },
+  statusText: {
+    color: "#fff",
+    fontSize: 12,
+  },
+
   headerImage: {
     width: '100%',
     height: '100%',
@@ -166,7 +212,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 12,
   },
-  
 });
 
 export default styles;

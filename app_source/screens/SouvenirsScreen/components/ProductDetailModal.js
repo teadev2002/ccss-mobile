@@ -54,8 +54,7 @@ const ProductDetailModal = ({ visible, onClose, product, onAdd }) => {
         <View style={styles.modalContainer}>
           <Image
             source={{ uri: 
-                // product.image ||  Nào có hình thì mở comment này
-                "https://i.pinimg.com/originals/9b/f9/e7/9bf9e73625e302f350b62903b4ecd9fd.jpg" }}
+                product.image ||"https://i.pinimg.com/originals/9b/f9/e7/9bf9e73625e302f350b62903b4ecd9fd.jpg" }}
             style={styles.productImage}
           />
           <Text style={styles.title}>{product.name}</Text>

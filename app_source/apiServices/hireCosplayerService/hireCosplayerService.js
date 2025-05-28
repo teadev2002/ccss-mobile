@@ -27,6 +27,17 @@ const HireCosplayerService = {
     }
   },
 
+  getCharacterById: async (characterId) => {
+    try {
+      const response = await apiClient.get(`/api/Character/${characterId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Lỗi khi lấy thông tin character"
+      );
+    }
+  },
+
   // from RequestService
   getNameCosplayerInRequestByCosplayerId: async (accountId) => {
     try {
@@ -93,6 +104,8 @@ const HireCosplayerService = {
         "/api/Request/CreateRentCosplayer",
         requestData
       );
+      console.log("Data trả về: ", JSON.stringify(response.data, null, 2));
+      
       return response.data; // Trả về dữ liệu từ API (nếu có)
     } catch (error) {
       console.error("Error sending hire cosplayer request:", error);

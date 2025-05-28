@@ -14,6 +14,7 @@ import PurchaseHistoryService from "../../apiServices/orderService/PurcharseHist
 import { AuthContext } from "../../../assets/context/AuthContext";
 import Modal from "react-native-modal";
 import styles from "./styles/MyTicketStyle";
+import HeaderHero from "../../components/common/HeaderHero";
 
 const MyTicket = () => {
   const navigation = useNavigation();
@@ -32,6 +33,8 @@ const MyTicket = () => {
     try {
       const accountId = user?.id;
       const response = await PurchaseHistoryService.getAllTicketsByAccountId(accountId);
+      console.log("ticket", JSON.stringify(response, null, 2));
+      
       setTickets(response);
     } catch (error) {
       Alert.alert("Error", "Failed to load ticket history: " + error.message);
@@ -60,7 +63,7 @@ const MyTicket = () => {
       case 0:
         return "Regular";
       case 1:
-        return "VIP";
+        return "Premium";
       default:
         return "Unknown";
     }
@@ -87,15 +90,7 @@ const MyTicket = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Ionicons
-          name="arrow-back-outline"
-          size={25}
-          color="#000"
-          onPress={() => navigation.goBack()}
-        />
-        <Title style={styles.headerTitle}>My Tickets</Title>
-      </View>
+      <HeaderHero title="My Ticket"></HeaderHero>
 
       {loading ? (
         <ActivityIndicator size="large" color="#000" style={{ marginTop: 20 }} />
@@ -134,7 +129,7 @@ const MyTicket = () => {
                           : styles.usedStatus,
                       ]}
                     >
-                      {item.ticket.ticketStatus === 0 ? "Not used yet" : "Used"}
+                      {item.quantity == 0 ? "Used" : "Not Used"}
                     </Text>
                   </View>
                 </Card.Content>

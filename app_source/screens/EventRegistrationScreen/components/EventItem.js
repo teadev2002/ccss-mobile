@@ -12,12 +12,44 @@ const EventItem = ({ item, navigation }) => {
     return `${day}/${month}/${year}`;
   };
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 0:
+        return "ON READY";
+      case 1:
+        return "INACTIVE";
+      case 2:
+        return "ONGOING";
+      case 3:
+        return "ENDED";
+      default:
+        return "";
+    }
+  };
+
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case 0:
+        return { backgroundColor: "#28a745" }; // Green
+      case 1:
+        return { backgroundColor: "#6c757d" }; // Grey
+      case 2:
+        return { backgroundColor: "#ffc107" }; // Yellow
+      case 3:
+        return { backgroundColor: "#dc3545" }; // Red
+      default:
+        return {};
+    }
+  };
+
+  console.log("EventItem render", JSON.stringify(item, null, 2));
+
   const { date, month, year } = handleDate(item.startDate);
 
   const isPastEvent = new Date(item.startDate) < new Date();
 
   const imageUrl =
-    // item.eventImageResponses?.[0]?.imageUrl ||
+    item.eventImageResponses?.[0]?.imageUrl ||
     "https://www.mmogames.com/wp-content/uploads/2018/05/blizzcon-cosplayer-army.jpg";
 
   const handleMoreButtonPress = () => {
@@ -31,6 +63,7 @@ const EventItem = ({ item, navigation }) => {
         source={{ uri: imageUrl }}
         style={styles.eventImage}
         imageStyle={{ borderRadius: 10 }}
+        resizeMode="repeat"
       >
         <View style={styles.dateContainer}>
           <Text style={styles.dateMonth}>{handleDate(item.startDate)}</Text>
@@ -38,6 +71,12 @@ const EventItem = ({ item, navigation }) => {
 
         <View style={styles.eventDetails}>
           <Text style={styles.eventName}>{item.eventName}</Text>
+        </View>
+
+        <View style={styles.statusTagContainer}>
+          <Text style={[styles.statusTag, getStatusStyle(item.status)]}>
+            {getStatusLabel(item.status)}
+          </Text>
         </View>
 
         <TouchableOpacity

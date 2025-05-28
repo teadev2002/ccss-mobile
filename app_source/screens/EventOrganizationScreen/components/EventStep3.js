@@ -16,18 +16,43 @@ const EventStep3 = ({ goNextStep ,goBackStep}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [characterDetails, setCharacterDetails] = useState({});
 
+  
   useEffect(() => {
-    const fetchCharacters = async () => {
-      try {
-        const data = await DetailEventOrganizationPageService.getAllCharacters();
-        setCharacters(data);
-      } catch (error) {
-        console.error("Failed to fetch characters:", error);
-        alert("Failed to load character list.");
-      }
-    };
-    fetchCharacters();
-  }, []);
+  const fetchCharacters = async () => {
+    try {
+      const data = await DetailEventOrganizationPageService.getAllCharacters();
+
+      // Dùng Promise.all để gọi đồng thời các getCharacterById
+      const enrichedCharacters = await Promise.all(
+        data.map(async (char) => {
+          try {
+            const fullChar = await DetailEventOrganizationPageService.getCharacterById(char.characterId);
+            return {
+              ...char,
+              images: fullChar.images[0].urlImage || "",
+            };
+          } catch (error) {
+            console.warn(`Failed to fetch character ${char.characterId}:`, error);
+            return {
+              ...char,
+              images: "",
+            };
+          }
+        })
+      );
+
+      setCharacters(enrichedCharacters);
+      console.log("Enriched Characters:", JSON.stringify(enrichedCharacters, null, 2));
+
+    } catch (error) {
+      console.error("Failed to fetch characters:", error);
+      alert("Failed to load character list.");
+    }
+  };
+
+  fetchCharacters();
+}, []);
+
 
   const toggleCharacter = (characterId) => {
     setCharacterDetails((prev) => {
@@ -111,7 +136,7 @@ const EventStep3 = ({ goNextStep ,goBackStep}) => {
               onPress={() => toggleCharacter(char.characterId)}
             >
               <Image
-                source={{ uri: char.images?.[0]?.urlImage }}
+                source={{ uri: char.images}}
                 style={styles.characterImage}
                 resizeMode="contain"
               />

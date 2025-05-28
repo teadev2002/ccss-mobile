@@ -41,6 +41,8 @@ import RentalModal from "./app_source/screens/CostumeRentalScreen/components/Ren
 import MyRentalCostume from "./app_source/screens/RentalCostumeHistoryScreen/RentalCostumeScreen.js";
 import EditRentalRequestScreen from "./app_source/screens/RentalCostumeHistoryScreen/components/EditRentalRequestScreen.js";
 import RentalRequestDetailScreen from "./app_source/screens/RentalCostumeHistoryScreen/components/RentalRequestDetailScreen.js";
+import QuantitySelector from "./app_source/screens/EventDetailsScreen/QuantitySelector.js";
+import { AlertProvider } from "./assets/context/AlertHelper.js";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -70,9 +72,11 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <CustomFontProvider>
+           
            <PaperProvider>
           <NavigationContainer>
             <AuthProvider>
+              
               <Stack.Navigator initialRouteName="Login">
                 <Stack.Screen
                   name="Onboarding"
@@ -264,6 +268,12 @@ export default function App() {
                   component={RentalRequestDetailScreen}
                   options={{ headerShown: false }}
                 />
+
+                <Stack.Screen
+                  name="QuantitySelector"
+                  component={QuantitySelector}
+                  options={{ headerShown: false }}
+                />
                 
                 <Stack.Screen
                   name="EditRentalRequest"
@@ -275,6 +285,7 @@ export default function App() {
                   component={MyRentalCostume}
                   options={{ headerShown: false }}
                 />
+                
               </Stack.Navigator>
             </AuthProvider>
           </NavigationContainer>

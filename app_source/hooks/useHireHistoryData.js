@@ -11,66 +11,70 @@ const useHireHistoryData = (userId) => {
   const [cosplayerStatuses, setCosplayerStatuses] = useState({});
 
   const fetchAllData = async () => {
-    setIsLoading(true);
-    try {
-      const [history, allCos, allChars, contractList] = await Promise.all([
-        HireCosplayerService.getHistoryByAccountId(userId),
-        HireCosplayerService.getAllCosplayers(),
-        HireCosplayerService.getAllCharacters(),
-        HireHistoryService.getAllContractByAccountId(userId),
-      ]);
+  setIsLoading(true);
+  try {
+    const [history, allCos, allChars, contractList] = await Promise.all([
+      HireCosplayerService.getHistoryByAccountId(userId),
+      HireCosplayerService.getAllCosplayers(),
+      HireCosplayerService.getAllCharacters(),
+      HireHistoryService.getAllContractByAccountId(userId),
+    ]);
 
-      const cosMap = {};
-      allCos.forEach((cos) => (cosMap[cos.accountId] = cos));
+    // Lọc history lấy request có serviceId = "S002"
+    const filteredHistory = history.filter((item) => item.serviceId === "S002");
 
-      const charMap = {};
-      allChars.forEach((char) => (charMap[char.characterId] = char));
+    const cosMap = {};
+    allCos.forEach((cos) => (cosMap[cos.accountId] = cos));
 
-      const contractMap = {};
-      contractList.forEach((c) => {
-        if (c.requestId) contractMap[c.requestId] = c;
-      });
+    const charMap = {};
+    allChars.forEach((char) => (charMap[char.characterId] = char));
 
-      // Fetch all cosplayer statuses
-      const statusMap = {};
-      await Promise.all(
-        allCos.map(async (cos) => {
-          try {
-            const res = await HireHistoryService.getRequestCharacterByCosplayer(
-              cos.accountId
-            );
-            
+    const contractMap = {};
+    contractList.forEach((c) => {
+      if (c.requestId) contractMap[c.requestId] = c;
+    });
 
-            const validStatuses = res.filter(
-              (item) => item.status !== null && item.status !== undefined
-            );
-            const highestStatus = validStatuses.reduce(
-              (max, cur) => (cur.status > max ? cur.status : max),
-              0
-            );
-            statusMap[cos.accountId] = highestStatus;
-          } catch (err) {
-            console.error(`❌ Lỗi fetch status cho ${cos.accountId}:`, err);
-            statusMap[cos.accountId] = 0;
-          }
-        })
-      );
+    // Fetch all cosplayer statuses
+    const statusMap = {};
+    await Promise.all(
+      allCos.map(async (cos) => {
+        try {
+          const res = await HireHistoryService.getRequestCharacterByCosplayer(
+            cos.accountId
+          );
 
-      const sorted = [...history].sort(
-        (a, b) => new Date(b.startDate) - new Date(a.startDate)
-      );
+          const validStatuses = res.filter(
+            (item) => item.status !== null && item.status !== undefined
+          );
+          const highestStatus = validStatuses.reduce(
+            (max, cur) => (cur.status > max ? cur.status : max),
+            0
+          );
+          statusMap[cos.accountId] = highestStatus;
+        } catch (err) {
+          console.error(`❌ Lỗi fetch status cho ${cos.accountId}:`, err);
+          statusMap[cos.accountId] = 0;
+        }
+      })
+    );
 
-      setHistoryData(sorted);
-      setCosplayers(cosMap);
-      setCharacters(charMap);
-      setContracts(contractMap);
-      setCosplayerStatuses(statusMap);
-    } catch (err) {
-      console.error("Failed to fetch hire history:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    // Sắp xếp filteredHistory theo startDate giảm dần
+    const sorted = [...filteredHistory].sort(
+      (a, b) => new Date(b.startDate) - new Date(a.startDate)
+    );
+
+    setHistoryData(sorted);
+    setCosplayers(cosMap);
+    setCharacters(charMap);
+    setContracts(contractMap);
+    setCosplayerStatuses(statusMap);
+  } catch (err) {
+    console.error("Failed to fetch hire history:", err);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   useEffect(() => {
     if (userId) {

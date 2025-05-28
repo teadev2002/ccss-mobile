@@ -8,6 +8,9 @@ const EventDetailModal = ({ visible, onClose, event }) => {
 
   if (!event) return null;
 
+  console.log("Event", JSON.stringify(event, null, 2));
+  
+
   return (
     <Modal visible={visible} animationType="slide">
       <ScrollView contentContainerStyle={styles.container}>
@@ -65,10 +68,6 @@ const EventDetailModal = ({ visible, onClose, event }) => {
                 </Text>
                 <Text style={styles.infoText}>
                   ⚖️ Weight: {charDetail.minWeight} – {charDetail.maxWeight} kg
-                </Text>
-                <Text style={styles.infoText}>
-                  💵 Unit Price: {Number(charDetail.unitPrice).toLocaleString()}{" "}
-                  VND/day
                 </Text>
 
                 {charDetail.characterImages?.length > 0 && (

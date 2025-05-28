@@ -34,6 +34,8 @@ const useCart = () => {
       const items = await Promise.all(
         cart?.listCartProduct?.map(async (item) => {
           const product = await cartService.getProductById(item.productId);
+          console.log("Product",JSON.stringify(product, null, 2));
+          
           return {
             cartProductId: item.cartProductId,
             store: "CCSS Store",
@@ -41,7 +43,7 @@ const useCart = () => {
             variant: product?.variant || "Default",
             price: item.price,
             quantity: item.quantity,
-            image: product?.urlImage || "https://via.placeholder.com/100",
+            image: product?.productImages[0].urlImage || "https://via.placeholder.com/100",
             productId: item.productId,
             stockQuantity: product?.quantity || 0,
           };

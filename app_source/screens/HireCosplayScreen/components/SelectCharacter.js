@@ -14,28 +14,61 @@ import AppBarSimple from "../../../components/appbar/SimpleAppBar";
 import HireCosplayerService from "../../../apiServices/hireCosplayerService/hireCosplayerService";
 import CharacterCosplayerModal from "./CharacterCosplayerModal";
 import { HireFlowContext } from "../../../../assets/context/HireFlowContext";
-
+import DetailEventOrganizationPageService from "../../../apiServices/eventOrganizeService/DetailEventOrganizationPageService";
 
 const SelectCharacter = ({ navigation }) => {
-  const { formData, timeData, selectedPairs, setSelectedPairs } = useContext(HireFlowContext);
+  const { formData, timeData, selectedPairs, setSelectedPairs } =
+    useContext(HireFlowContext);
   const [characters, setCharacters] = useState([]);
   const [imageErrors, setImageErrors] = useState({});
   const [currentCharacter, setCurrentCharacter] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const usedCosplayerIds = selectedPairs.flatMap(pair =>
-    pair.cosplayers.map(c => c.accountId)
+  const usedCosplayerIds = selectedPairs.flatMap((pair) =>
+    pair.cosplayers.map((c) => c.accountId)
   );
-
   useEffect(() => {
     const fetchCharacters = async () => {
       try {
-        const data = await HireCosplayerService.getAllCharacters();
-        setCharacters(data);
+        const data =
+          await DetailEventOrganizationPageService.getAllCharacters();
+
+        // Dùng Promise.all để gọi đồng thời các getCharacterById
+        const enrichedCharacters = await Promise.all(
+          data.map(async (char) => {
+            try {
+              const fullChar =
+                await DetailEventOrganizationPageService.getCharacterById(
+                  char.characterId
+                );
+              return {
+                ...char,
+                images: fullChar.images[0].urlImage || "",
+              };
+            } catch (error) {
+              console.warn(
+                `Failed to fetch character ${char.characterId}:`,
+                error
+              );
+              return {
+                ...char,
+                images: "",
+              };
+            }
+          })
+        );
+
+        setCharacters(enrichedCharacters);
+        console.log(
+          "Enriched Characters:",
+          JSON.stringify(enrichedCharacters, null, 2)
+        );
       } catch (error) {
         console.error("Failed to fetch characters:", error);
+        alert("Failed to load character list.");
       }
     };
+
     fetchCharacters();
   }, []);
 
@@ -44,7 +77,10 @@ const SelectCharacter = ({ navigation }) => {
       (pair) => pair.character.characterId === character.characterId
     );
     if (isAlreadySelected) {
-      Alert.alert("Already selected", "You have already assigned cosplayers for this character.");
+      Alert.alert(
+        "Already selected",
+        "You have already assigned cosplayers for this character."
+      );
       return;
     }
     setCurrentCharacter(character);
@@ -53,7 +89,10 @@ const SelectCharacter = ({ navigation }) => {
 
   const handleConfirmCosplayers = (cosplayers) => {
     if (cosplayers.length === 0) {
-      Alert.alert("No cosplayer selected", "Please select at least one cosplayer.");
+      Alert.alert(
+        "No cosplayer selected",
+        "Please select at least one cosplayer."
+      );
       return;
     }
 
@@ -67,7 +106,10 @@ const SelectCharacter = ({ navigation }) => {
 
   const handleNext = () => {
     if (selectedPairs.length === 0) {
-      Alert.alert("No character selected", "Please select at least one character with cosplayers.");
+      Alert.alert(
+        "No character selected",
+        "Please select at least one character with cosplayers."
+      );
       return;
     }
     navigation.navigate("ConfirmRequest");
@@ -96,7 +138,7 @@ const SelectCharacter = ({ navigation }) => {
                     char.images &&
                     char.images.length > 0 && (
                       <Image
-                        source={{ uri: char.images[0]?.url }}
+                        source={{ uri: char.images }}
                         style={styles.characterImage}
                         resizeMode="cover"
                         onError={() =>
@@ -128,7 +170,10 @@ const SelectCharacter = ({ navigation }) => {
           })}
 
           <TouchableOpacity style={styles.submitButton} onPress={handleNext}>
-            <LinearGradient colors={["#510545", "#22668a"]} style={styles.gradientButton}>
+            <LinearGradient
+              colors={["#510545", "#22668a"]}
+              style={styles.gradientButton}
+            >
               <Text style={styles.submitButtonText}>Next</Text>
             </LinearGradient>
           </TouchableOpacity>

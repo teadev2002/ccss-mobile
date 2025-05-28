@@ -4,10 +4,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f0f2f5', // nhẹ nhàng, hiện đại
+    backgroundColor: '#f0f2f5',
   },
 
-  // HEADER
   header: {
     fontSize: 26,
     fontWeight: '700',
@@ -16,7 +15,6 @@ const styles = StyleSheet.create({
     color: '#1e293b',
   },
 
-  // SEARCH + SORT
   searchBox: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -27,11 +25,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 16,
   },
+
   sortRow: {
     flexDirection: 'row',
     gap: 12,
     marginBottom: 16,
   },
+
   pickerContainer: {
     flex: 1,
     backgroundColor: '#fff',
@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  // TAB
   tabRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -50,25 +49,24 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 4,
   },
+
   tabButton: {
     flex: 1,
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
   },
+
   activeTab: {
     backgroundColor: '#2563eb',
   },
+
   tabText: {
     fontSize: 14,
     fontWeight: '600',
     color: '#1e293b',
   },
-  activeTabText: {
-    color: '#fff',
-  },
 
-  // STATUS FILTERS
   statusFilters: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -76,6 +74,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     justifyContent: 'flex-start',
   },
+
   statusBtn: {
     borderWidth: 1,
     borderColor: '#94a3b8',
@@ -84,20 +83,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     backgroundColor: '#f8fafc',
   },
+
   statusBtnActive: {
     backgroundColor: '#2563eb',
     borderColor: '#2563eb',
   },
+
   statusText: {
     fontSize: 13,
     fontWeight: '500',
     color: '#2563eb',
   },
-  statusTextActive: {
-    color: '#fff',
-  },
 
-  // CARD
   card: {
     backgroundColor: '#fff',
     borderRadius: 16,
@@ -109,12 +106,14 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 4,
   },
+
   title: {
     fontSize: 16,
     fontWeight: '700',
     color: '#0f172a',
     marginBottom: 4,
   },
+
   status: {
     backgroundColor: '#3b82f6',
     color: '#fff',
@@ -127,12 +126,12 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
 
-  // BUTTONS
   buttonRow: {
     flexDirection: 'row',
     gap: 12,
     marginTop: 16,
   },
+
   editBtn: {
     flex: 1,
     backgroundColor: '#2563eb',
@@ -140,6 +139,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
+
   detailBtn: {
     flex: 1,
     backgroundColor: '#64748b',
@@ -147,13 +147,37 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
+
   btnText: {
     color: '#fff',
     fontWeight: '600',
     fontSize: 14,
   },
+
+  // Bổ sung styles cho các nút đặc biệt
+  payBtn: {
+    flex: 1,
+    backgroundColor: '#22c55e', // xanh lá tươi mát, button Pay
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+
+  cancelBtn: {
+    flex: 1,
+    backgroundColor: '#ef4444', // đỏ nổi bật, nút Cancel
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+
+  feedbackBtn: {
+    flex: 1,
+    backgroundColor: '#f97316', // cam ấm áp, nút Feedback
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
 });
-
-
 
 export default styles;

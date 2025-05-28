@@ -161,6 +161,9 @@ const Cart = () => {
     setShowConfirmationModal(false);
   };
 
+  console.log("item", JSON.stringify(selectedItems, null, 2));
+  
+
   const renderItem = ({ item }) => (
     <View style={styles.cartItem}>
       <CustomCheckbox
@@ -228,16 +231,6 @@ const Cart = () => {
           }
         />
       )}
-
-      <View style={styles.voucherSection}>
-        <CustomCheckbox
-          value={voucherSelected}
-          onValueChange={() => setVoucherSelected((prev) => !prev)}
-        />
-        <Text style={styles.voucherText}>1Đ discount voucher</Text>
-        <Text style={styles.voucherStore}>CCSS Official Store</Text>
-      </View>
-
       <View style={styles.footer}>
         <CustomCheckbox value={selectAll} onValueChange={toggleSelectAll} />
         <Text style={styles.selectAllText}>Select all products</Text>

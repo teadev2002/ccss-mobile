@@ -14,6 +14,31 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
+  quantityContainer: {
+  marginTop: 8,
+  marginBottom: 12,
+},
+picker: {
+  height: 40,
+  width: 120,
+  backgroundColor: "#f0f0f0",
+  marginTop: 4,
+  marginBottom: 8,
+},
+quantityInput: {
+  borderWidth: 1,
+  borderColor: "#ccc",
+  borderRadius: 8,
+  paddingHorizontal: 10,
+  paddingVertical: 6,
+  width: 80,
+  fontSize: 16,
+},
+selectText: {
+  fontSize: 14,
+  marginBottom: 4,
+},
+
   backButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -36,6 +61,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 12,
+    resizeMode: "repeat",
   },
 
   overlay: {
@@ -47,7 +73,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // nền đen mờ
+    backgroundColor: "rgba(94, 85, 85, 0.5)", // nền đen mờ
     alignItems: "center",
   },
 
@@ -109,6 +135,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333", 
     fontWeight: "600",
+    
     
   },
 
@@ -205,6 +232,7 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 10,
     marginBottom: 8,
+    resizeMode: "contain",
   },
 
   characterName: {

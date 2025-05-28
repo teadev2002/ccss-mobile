@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  TextInput,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import styles from "./EventDetailStyle";
@@ -18,6 +19,7 @@ import PaymentService from "../../apiServices/paymentService/paymentService";
 import PaymentPurpose from "../../const/PaymentPurpose";
 import { AuthContext } from "../../../assets/context/AuthContext";
 import Toast from "react-native-toast-message";
+import QuantitySelector from "./QuantitySelector";
 
 const formatDate = (isoDate) => {
   const date = new Date(isoDate);
@@ -67,11 +69,20 @@ const EventDetail = ({ route, navigation }) => {
     const ticket = event.ticket.find((t) => t.ticketId === ticketId);
     if (!ticket) return;
 
-    if (value > ticket.quantity) {
+    if (ticket.ticketStatus === 1) {
       Toast.show({
         type: "error",
-        text1: "⚠️ Not enough tickets!",
-        text2: `Only ${ticket.quantity} tickets available.`,
+        text1: "⚠️ Ticket not available!",
+        text2: "This ticket type has stopped selling.",
+      });
+      return;
+    }
+
+    if (value < 0 || value > ticket.quantity) {
+      Toast.show({
+        type: "error",
+        text1: "⚠️ Invalid quantity!",
+        text2: `Please select between 0 and ${ticket.quantity} tickets.`,
       });
       return;
     }
@@ -170,7 +181,7 @@ const EventDetail = ({ route, navigation }) => {
         <Image
           source={{
             uri:
-              // event.eventImageResponses?.[0]?.imageUrl ||
+              event.eventImageResponses?.[0]?.imageUrl ||
               "https://www.mmogames.com/wp-content/uploads/2018/05/blizzcon-cosplayer-army.jpg",
           }}
           style={styles.eventImage}
@@ -188,57 +199,53 @@ const EventDetail = ({ route, navigation }) => {
 
       {/* Ticket Section */}
       <Text style={styles.sectionTitle}>🎫 Ticket Type</Text>
-      {event.ticket?.map((ticket) => {
-        const isSoldOut = ticket.quantity <= 0;
-        return (
-          <View
-            key={ticket.ticketId}
-            style={[styles.ticketCard, isSoldOut && { opacity: 0.5 }]}
-          >
-            <Text style={styles.ticketType}>
-              {ticket.ticketType === 0 ? "🎭 Normal" : "🎉 Premium "}
-            </Text>
-            <Text>{ticket.description}</Text>
-            <Text style={styles.price}>
-              Price: {ticket.price.toLocaleString()}đ
-            </Text>
-
-            <Text>
-              {isSoldOut
-                ? "🚫 Sold Out"
-                : `In stock: ${ticket.quantity} ${pluralize(
-                    ticket.quantity,
-                    "ticket"
-                  )}`}
-            </Text>
-
-            {!isSoldOut && (
-              <View style={styles.quantityContainer}>
-                <Text style={styles.selectText}>Select quantity:</Text>
-                <Picker
-                  selectedValue={selectedQuantity[ticket.ticketId] || 0}
-                  onValueChange={(value) =>
-                    handleQuantityChange(ticket.ticketId, value)
-                  }
-                  style={styles.picker}
-                  dropdownIconColor="#000"
-                >
-                  {Array.from({ length: ticket.quantity + 1 }, (_, i) => (
-                    <Picker.Item key={i} label={`${i}`} value={i} />
-                  ))}
-                </Picker>
-              </View>
-            )}
-
-            {selectedQuantity[ticket.ticketId] > 0 && (
-              <Text style={styles.selectedInfo}>
-                ✅ Selected: {selectedQuantity[ticket.ticketId]}{" "}
-                {pluralize(selectedQuantity[ticket.ticketId], "ticket")}
+      {event.ticket
+        ?.filter((ticket) => ticket.ticketStatus === 0) // chỉ lấy vé còn bán
+        .map((ticket) => {
+          const isSoldOut = ticket.quantity <= 0;
+          return (
+            <View
+              key={ticket.ticketId}
+              style={[styles.ticketCard, isSoldOut && { opacity: 0.5 }]}
+            >
+              <Text style={styles.ticketType}>
+                {ticket.ticketType === 0 ? "🎭 Normal" : "🎉 Premium "}
               </Text>
-            )}
-          </View>
-        );
-      })}
+              <Text>{ticket.description}</Text>
+              <Text style={styles.price}>
+                Price: {ticket.price.toLocaleString()}đ
+              </Text>
+              <Text>
+                {isSoldOut
+                  ? "🚫 Sold Out"
+                  : `In stock: ${ticket.quantity} ${pluralize(
+                      ticket.quantity,
+                      "ticket"
+                    )}`}
+              </Text>
+
+              {!isSoldOut && (
+                <View style={styles.quantityContainer}>
+                  <Text style={styles.selectText}>Select quantity:</Text>
+                  <QuantitySelector
+                    maxQuantity={ticket.quantity}
+                    value={selectedQuantity[ticket.ticketId] || 0}
+                    onChange={(val) =>
+                      handleQuantityChange(ticket.ticketId, val)
+                    }
+                  />
+                </View>
+              )}
+
+              {selectedQuantity[ticket.ticketId] > 0 && (
+                <Text style={styles.selectedInfo}>
+                  ✅ Selected: {selectedQuantity[ticket.ticketId]}{" "}
+                  {pluralize(selectedQuantity[ticket.ticketId], "ticket")}
+                </Text>
+              )}
+            </View>
+          );
+        })}
 
       {/* Activity Section */}
       <Text style={styles.sectionTitle}>
@@ -287,10 +294,7 @@ const EventDetail = ({ route, navigation }) => {
                 >
                   {char.images?.[0]?.urlImage && (
                     <Image
-                      // source={{ uri: char.images[0].urlImage }}
-                      source={{
-                        uri: "https://i0.wp.com/ic.pics.livejournal.com/mnarutocosplay/65073251/13297/13297_original.jpg",
-                      }}
+                       source={{ uri: char.images[0].urlImage }}
                       style={styles.characterImage}
                     />
                   )}
@@ -299,15 +303,15 @@ const EventDetail = ({ route, navigation }) => {
                   {expandedCharacter === char.characterId && (
                     <View style={styles.characterDetail}>
                       <Text>{char.description}</Text>
-                      <Text>💰 Giá: {char.price.toLocaleString()}đ</Text>
+                      <Text>💰 Price: {char.price.toLocaleString()}đ</Text>
                       <Text>
-                        📏 Chiều cao: {char.minHeight} - {char.maxHeight} cm
+                        📏 Height: {char.minHeight} - {char.maxHeight} cm
                       </Text>
                       <Text>
-                        ⚖️ Cân nặng: {char.minWeight} - {char.maxWeight} kg
+                        ⚖️ Weight: {char.minWeight} - {char.maxWeight} kg
                       </Text>
                       <Text>
-                        📦 Còn lại: {char.quantity}{" "}
+                        📦 Quantity: {char.quantity}{" "}
                         {pluralize(char.quantity, "slot")}
                       </Text>
                     </View>

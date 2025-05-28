@@ -4,6 +4,7 @@ import cartServices from "../apiServices/cartService/CartService";
 import { Alert } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { alert } from "../../assets/context/AlertHelper";
 
 const useSouvenirProducts = (accountId, searchText) => {
   const [productItems, setProductItems] = useState([]);
@@ -113,6 +114,7 @@ const useSouvenirProducts = (accountId, searchText) => {
       }));
 
       Alert.alert("Success", "Product added to cart!");
+      
       setCartCount((prev) => prev + quantity);
     } catch (error) {
       console.error("Error adding product to cart:", error.message);

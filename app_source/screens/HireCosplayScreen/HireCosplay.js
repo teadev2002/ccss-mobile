@@ -17,7 +17,14 @@ import styles from "./styles/HireCosplayStyles";
 import { HireFlowContext } from "../../../assets/context/HireFlowContext";
 
 const HireCosplay = ({ navigation }) => {
-  const { formData, setFormData, timeData, selectedPairs, isResumable, resetHireFlow } = useContext(HireFlowContext);
+  const {
+    formData,
+    setFormData,
+    timeData,
+    selectedPairs,
+    isResumable,
+    resetHireFlow,
+  } = useContext(HireFlowContext);
   const [errors, setErrors] = useState({});
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
@@ -61,7 +68,11 @@ const HireCosplay = ({ navigation }) => {
       return;
     }
 
-    if (formData?.startDate && Object.keys(timeData || {}).length > 0 && selectedPairs.length === 0) {
+    if (
+      formData?.startDate &&
+      Object.keys(timeData || {}).length > 0 &&
+      selectedPairs.length === 0
+    ) {
       navigation.replace("SelectCharacter");
       return;
     }
@@ -70,7 +81,6 @@ const HireCosplay = ({ navigation }) => {
       navigation.replace("ConfirmRequest");
     }
   };
-
 
   useEffect(() => {
     const fetchAccountId = async () => {
@@ -86,28 +96,31 @@ const HireCosplay = ({ navigation }) => {
     fetchAccountId();
   }, []);
 
-  const today = moment().add(1, "day");
+  const today = moment().add(3, "day");
   const parsedStart = moment(formData.startDate, "DD-MM-YYYY", true);
-  const maxEnd = parsedStart.isValid() ? parsedStart.clone().add(4, "days") : null;
+  const maxEnd = parsedStart.isValid()
+    ? parsedStart.clone().add(4, "days")
+    : null;
 
   const validateDates = () => {
-    const newErrors = {};
-    const isStartValid = moment(formData.startDate, "DD-MM-YYYY", true);
-    const isEndValid = moment(formData.endDate, "DD-MM-YYYY", true);
-    const now = moment();
+  const newErrors = {};
+  const isStartValid = moment(formData.startDate, "DD-MM-YYYY", true);
+  const isEndValid = moment(formData.endDate, "DD-MM-YYYY", true);
+  const today = moment().startOf("day");
 
-    if (!isStartValid.isValid()) newErrors.startDate = "Start date is invalid.";
-    if (!isEndValid.isValid()) newErrors.endDate = "End date is invalid.";
-    if (isStartValid.isSameOrBefore(now, "day"))
-      newErrors.startDate = "Start date must be at least 1 day in the future.";
-    if (isEndValid.isBefore(isStartValid))
-      newErrors.endDate = "End date must be after start date.";
-    if (isEndValid.diff(isStartValid, "days") > 4)
-      newErrors.endDate = "Cannot exceed 5 days range.";
+  if (!isStartValid.isValid()) newErrors.startDate = "Start date is invalid.";
+  if (!isEndValid.isValid()) newErrors.endDate = "End date is invalid.";
+  if (isStartValid.startOf("day").diff(today, "days") < 3)
+    newErrors.startDate = "Start date must be at least 3 days in the future.";
+  if (isEndValid.isBefore(isStartValid))
+    newErrors.endDate = "End date must be after start date.";
+  if (isEndValid.diff(isStartValid, "days") > 4)
+    newErrors.endDate = "Cannot exceed 5 days range.";
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
 
   const handleNext = () => {
     if (!validateDates()) return;
@@ -141,14 +154,16 @@ const HireCosplay = ({ navigation }) => {
             </TouchableOpacity>
             {showStartDatePicker && (
               <DateTimePicker
-                value={parsedStart.isValid() ? parsedStart.toDate() : today.toDate()}
+                value={
+                  parsedStart.isValid() ? parsedStart.toDate() : today.toDate()
+                }
                 mode="date"
                 display="default"
                 minimumDate={today.toDate()}
                 onChange={(e, date) => {
                   setShowStartDatePicker(false);
                   if (date) {
-                    setFormData(prev => ({
+                    setFormData((prev) => ({
                       ...prev,
                       startDate: moment(date).format("DD-MM-YYYY"),
                       endDate: "", // Reset end date when start date changes
@@ -184,12 +199,14 @@ const HireCosplay = ({ navigation }) => {
                 }
                 mode="date"
                 display="default"
-                minimumDate={parsedStart.isValid() ? parsedStart.toDate() : today.toDate()}
+                minimumDate={
+                  parsedStart.isValid() ? parsedStart.toDate() : today.toDate()
+                }
                 maximumDate={maxEnd ? maxEnd.toDate() : undefined}
                 onChange={(e, date) => {
                   setShowEndDatePicker(false);
                   if (date) {
-                    setFormData(prev => ({
+                    setFormData((prev) => ({
                       ...prev,
                       endDate: moment(date).format("DD-MM-YYYY"),
                     }));
@@ -204,7 +221,10 @@ const HireCosplay = ({ navigation }) => {
 
           {/* Submit */}
           <TouchableOpacity style={styles.submitButton} onPress={handleNext}>
-            <LinearGradient colors={["#510545", "#22668a"]} style={styles.gradientButton}>
+            <LinearGradient
+              colors={["#510545", "#22668a"]}
+              style={styles.gradientButton}
+            >
               <Text style={styles.submitButtonText}>Next</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -215,4 +235,3 @@ const HireCosplay = ({ navigation }) => {
 };
 
 export default HireCosplay;
-

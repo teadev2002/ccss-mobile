@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import styles from "../styles/UserInfoStyle";
-import LocationPickerService from './../../../apiServices/LocationService/LocationPickerService';
+import LocationPickerService from "./../../../apiServices/LocationService/LocationPickerService";
 
 const UserInfoModal = ({ visible, onClose, onSubmit }) => {
   const [phone, setPhone] = useState("");
@@ -23,26 +23,25 @@ const UserInfoModal = ({ visible, onClose, onSubmit }) => {
   const [selectedWard, setSelectedWard] = useState("");
   const [errors, setErrors] = useState({});
 
-  const vietnamPhoneRegex = /^(0|\+84)[3|5|7|8|9]\d{8}$/;
-
   useEffect(() => {
-  const fetchProvinces = async () => {
-    try {
-      const res = await LocationPickerService.getAllProvinces();
-      console.log("Provinces:", JSON.stringify(res, null, 2));
-      setProvinces(res);
-    } catch (error) {
-      console.error("Fetch provinces error:", error);
-    }
-  };
-  fetchProvinces();
-}, []);
+    const fetchProvinces = async () => {
+      try {
+        const res = await LocationPickerService.getAllProvinces();
+        setProvinces(res);
+      } catch (error) {
+        console.error("Fetch provinces error:", error);
+      }
+    };
+    fetchProvinces();
+  }, []);
 
   useEffect(() => {
     if (selectedProvince) {
       const fetchDistricts = async () => {
         try {
-          const res = await LocationPickerService.getAllDistricts(selectedProvince);
+          const res = await LocationPickerService.getAllDistricts(
+            selectedProvince
+          );
           setDistricts(res);
           setSelectedDistrict("");
           setWards([]);
@@ -67,11 +66,25 @@ const UserInfoModal = ({ visible, onClose, onSubmit }) => {
 
   const handleSubmit = () => {
     const newErrors = {};
+    const vietnamPhoneRegex = /^(0|\+84)[3|5|7|8|9]\d{8}$/;
+    const addressRegex = /^[a-zA-Z0-9\s,.\-]{5,100}$/;
+    const descriptionRegex = /^[\p{L}0-9\s,.\-]{0,200}$/u;
 
     if (!phone) newErrors.phone = "Phone is required.";
-    else if (!vietnamPhoneRegex.test(phone)) newErrors.phone = "Invalid Vietnamese phone number.";
+    else if (!vietnamPhoneRegex.test(phone))
+      newErrors.phone = "Invalid Vietnamese phone number.";
 
     if (!address) newErrors.address = "Address is required.";
+    else if (!addressRegex.test(address))
+      newErrors.address = "Address must be 5–100 valid characters.";
+
+    if (!description) {
+      newErrors.description = "Description is required.";
+    } else if (!descriptionRegex.test(description)) {
+      newErrors.description =
+        "Description can be up to 200 characters without special characters.";
+    }
+
     if (!selectedProvince) newErrors.province = "Province is required.";
     if (!selectedDistrict) newErrors.district = "District is required.";
     if (!selectedWard) newErrors.ward = "Ward is required.";
@@ -116,7 +129,9 @@ const UserInfoModal = ({ visible, onClose, onSubmit }) => {
             }}
             style={styles.input}
           />
-          {errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
+          {errors.address && (
+            <Text style={styles.errorText}>{errors.address}</Text>
+          )}
 
           <TextInput
             placeholder="Description (optional)"
@@ -138,7 +153,9 @@ const UserInfoModal = ({ visible, onClose, onSubmit }) => {
               <Picker.Item key={p.id} label={p.name} value={p.id} />
             ))}
           </Picker>
-          {errors.province && <Text style={styles.errorText}>{errors.province}</Text>}
+          {errors.province && (
+            <Text style={styles.errorText}>{errors.province}</Text>
+          )}
 
           <Text style={styles.label}>District</Text>
           <Picker
@@ -154,7 +171,9 @@ const UserInfoModal = ({ visible, onClose, onSubmit }) => {
               <Picker.Item key={d.id} label={d.name} value={d.id} />
             ))}
           </Picker>
-          {errors.district && <Text style={styles.errorText}>{errors.district}</Text>}
+          {errors.district && (
+            <Text style={styles.errorText}>{errors.district}</Text>
+          )}
 
           <Text style={styles.label}>Ward</Text>
           <Picker
