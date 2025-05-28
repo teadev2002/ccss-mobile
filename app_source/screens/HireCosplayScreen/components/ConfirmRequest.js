@@ -169,7 +169,8 @@ const ConfirmRequest = ({ navigation }) => {
         })),
       }))
     );
-
+    
+    
     const payload = {
       accountId: user?.id,
       name: user?.accountName || "Rental Request",
@@ -179,7 +180,7 @@ const ConfirmRequest = ({ navigation }) => {
       endDate: moment(formData.endDate, "DD-MM-YYYY").format("DD/MM/YYYY"),
       location: fullAddress,
       accountCouponId: null,
-      deposit: deposit,
+      deposit: selectedPackage.toString(),
       charactersRentCosplayers,
     };
 
@@ -310,10 +311,10 @@ const ConfirmRequest = ({ navigation }) => {
 
         {selectedWard && (
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Số nhà, tên đường</Text>
+            <Text style={styles.label}>Street</Text>
             <TextInput
               style={styles.input}
-              placeholder="Nhập số nhà, tên đường"
+              placeholder="Street"
               value={address}
               onChangeText={setAddress}
             />
@@ -321,18 +322,18 @@ const ConfirmRequest = ({ navigation }) => {
         )}
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Ghi chú (nếu có)</Text>
+          <Text style={styles.label}>Description</Text>
           <TextInput
             multiline
             style={[styles.input, { height: 80 }]}
-            placeholder="Nhập ghi chú thêm"
+            placeholder="Description"
             value={note}
             onChangeText={setNote}
           />
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Số tiền đặt cọc</Text>
+          <Text style={styles.label}>Deposit</Text>
           <TextInput
             keyboardType="numeric"
             style={styles.input}
@@ -340,14 +341,13 @@ const ConfirmRequest = ({ navigation }) => {
             onChangeText={setDeposit}
           />
           <Text style={styles.hintText}>
-            (Không được nhỏ hơn {formatMoney(initialDeposit)}đ)
           </Text>
         </View>
 
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <LinearGradient
             colors={["#4c669f", "#3b5998", "#192f6a"]}
-            style={styles.submitButtonGradient}
+            style={styles.gradientButton}
           >
             <Text style={styles.submitButtonText}>Confirm Request</Text>
           </LinearGradient>
