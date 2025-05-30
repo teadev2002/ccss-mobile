@@ -43,6 +43,7 @@ import EditRentalRequestScreen from "./app_source/screens/RentalCostumeHistorySc
 import RentalRequestDetailScreen from "./app_source/screens/RentalCostumeHistoryScreen/components/RentalRequestDetailScreen.js";
 import QuantitySelector from "./app_source/screens/EventDetailsScreen/QuantitySelector.js";
 import { AlertProvider } from "./assets/context/AlertHelper.js";
+import RequestCard from "./app_source/screens/HireHistoryScreen/components/RequestCard.js";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -86,6 +87,10 @@ export default function App() {
                 <Stack.Screen
                   name="Login"
                   component={Login}
+                  options={{ headerShown: false }}
+                /><Stack.Screen
+                  name="RequestCard"
+                  component={RequestCard}
                   options={{ headerShown: false }}
                 />
                 <Stack.Screen

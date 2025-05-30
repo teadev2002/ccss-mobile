@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import moment from "moment";
@@ -38,6 +39,7 @@ const ConfirmRequest = ({ navigation }) => {
   const [selectedWard, setSelectedWard] = useState(null);
 
   const [address, setAddress] = useState(""); // số nhà, tên đường
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchProvinces = async () => {
@@ -156,6 +158,9 @@ const ConfirmRequest = ({ navigation }) => {
       return;
     }
 
+      
+
+
     const fullAddress = `${address.trim()}, ${selectedWard.name}, ${selectedDistrict.name}, ${selectedProvince.name}`;
 
     const charactersRentCosplayers = selectedPairs.flatMap((pair) =>
@@ -185,14 +190,16 @@ const ConfirmRequest = ({ navigation }) => {
     };
 
     try {
+      setIsLoading(true); 
       await HireCosplayerService.NewSendRequestHireCosplayer(payload);
-
       await resetHireFlow();
       Alert.alert("Success", "Your request has been submitted and is pending approval.");
       navigation.reset({ index: 0, routes: [{ name: "MainDrawer" }] });
     } catch (err) {
       console.error("Submission error:", err);
       Alert.alert("Server error", err.message || "Unknown error");
+    }finally{
+       setIsLoading(false); 
     }
   };
 
@@ -344,12 +351,20 @@ const ConfirmRequest = ({ navigation }) => {
           </Text>
         </View>
 
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <TouchableOpacity
+          style={[styles.submitButton, isLoading && { opacity: 0.6 }]}
+          onPress={handleSubmit}
+          disabled={isLoading}
+        >
           <LinearGradient
             colors={["#4c669f", "#3b5998", "#192f6a"]}
             style={styles.gradientButton}
           >
-            <Text style={styles.submitButtonText}>Confirm Request</Text>
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.submitButtonText}>Confirm Request</Text>
+            )}
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>

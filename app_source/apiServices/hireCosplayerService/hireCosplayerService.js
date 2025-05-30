@@ -67,6 +67,8 @@ const HireCosplayerService = {
   getAccountNoTaskByCharacterId: async (payload) => {
     try {
       const response = await apiClient.post("/api/Account/characterId/", payload);
+      // console.log("abc",JSON.stringify(response.data,null,2));
+      
       return response.data;
     } catch (error) {
       console.error("Error fetching available accounts:", error);
@@ -114,6 +116,42 @@ const HireCosplayerService = {
       );
     }
   },
+
+  ChangeCosplayer: async (data) => {
+    try {
+      const response = await apiClient.post(`/api/Account/characterId`, data);
+      console.log("abccccccccccccccccc",response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error changing cosplayer:", error);
+      throw error;
+    }
+  },
+
+  editRequest: async (requestId, data) => {
+    try {
+      const response = await apiClient.put(
+        `/api/Request?RequestId=${requestId}`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updating request:", error);
+      throw error;
+    }
+  },
+
+  // ChangeCosplayer: async (requestCharacterId,data) => {
+  //   try {
+  //     const response = await apiClient.put(`/api/RequestCharacter/${requestCharacterId}`, data);
+  //     console.log("abccccccccccccccccc",response.data);
+      
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Error changing cosplayer:", error);
+  //     throw error;
+  //   }
+  // },
 
   
 };

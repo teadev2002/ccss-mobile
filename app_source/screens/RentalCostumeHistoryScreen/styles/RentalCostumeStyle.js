@@ -107,6 +107,20 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
 
+  statusBadge: {
+  alignSelf: "flex-start",
+  borderRadius: 12,
+  paddingVertical: 4,
+  paddingHorizontal: 10,
+  marginTop: 6,
+},
+
+statusText: {
+  fontSize: 13,
+  fontWeight: "600",
+  textTransform: "capitalize",
+},
+
   title: {
     fontSize: 16,
     fontWeight: '700',

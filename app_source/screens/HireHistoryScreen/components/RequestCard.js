@@ -1,6 +1,6 @@
 // --- Các import giữ nguyên như bạn đã có ---
 import React, { useContext, useMemo } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { Button } from "react-native-paper";
 import CharacterCard from "./CharacterCard";
 import styles from "../css/HireHistoryStyles";
@@ -37,6 +37,7 @@ const RequestCard = ({
   const status = request.status?.toLowerCase();
   const showContractSection =
     ["browsed", "finish"].includes(status) && contract;
+
 
   const depositAmount = useMemo(() => {
     const percent = parseFloat(request.deposit);
@@ -80,78 +81,30 @@ const RequestCard = ({
     },
   };
 
-  const contractStatusComponentMap = {
-    [CONTRACT_STATUS.FinalSettlement]: (
-      <>
-        <Button
-          mode="outlined"
-          icon="file-document-outline"
-          onPress={openContractPdf}
-          style={styles.flexBtn}
-        >
-          View Contract
-        </Button>
-        <Text>Waiting completed.</Text>
-      </>
-    ),
-    [CONTRACT_STATUS.Deposited]: (
-      <>
-        <Button
-          mode="outlined"
-          icon="file-document-outline"
-          onPress={openContractPdf}
-          style={[styles.flexBtn, { marginBottom: 8 }]}
-        >
-          View Contract
-        </Button>
-        <Button
-          mode="outlined"
-          icon="cash-refund"
-          onPress={handlePayRemaining}
-          style={styles.flexBtn}
-        >
-          Pay Remaining
-        </Button>
-      </>
-    ),
-    [CONTRACT_STATUS.Completed]: (
-      <>
-        <Button
-          mode="outlined"
-          icon="file-document-outline"
-          onPress={openContractPdf}
-          style={[styles.flexBtn, { marginBottom: 8 }]}
-        >
-          View Contract
-        </Button>
-        <Button
-          mode="outlined"
-          style={styles.flexBtn}
-          onPress={handleFeedbackPress}
-        >
-          <Text style={styles.editBtnText}>💬 Feedback Cosplayers</Text>
-        </Button>
-      </>
-    ),
-    [CONTRACT_STATUS.Feedbacked]: (
-      <>
-        <Button
-          mode="outlined"
-          icon="file-document-outline"
-          onPress={openContractPdf}
-          style={[styles.flexBtn, { marginBottom: 8 }]}
-        >
-          View Contract
-        </Button>
-        <Button
-          mode="outlined"
-          style={styles.flexBtn}
-          onPress={handleViewFeedbackPress}
-        >
-          <Text style={styles.editBtnText}>💬 View Feedback</Text>
-        </Button>
-      </>
-    ),
+  const handlePayRemaining = async () => {
+    const remaining = Math.round(Number(contract?.price) - depositAmount);
+    const payload = {
+      fullName: user.accountName,
+      orderInfo: "",
+      amount: remaining,
+      purpose: PaymentPurpose.CONTRACT_SETTLEMENT,
+      accountId: user?.id,
+      ticketId: "",
+      ticketQuantity: "",
+      contractId: contract.contractId,
+      orderpaymentId: "",
+      isWeb: false,
+    };
+    try {
+      const res = await PaymentService.DepositPayment(payload);
+      if (res?.includes("http")) {
+        navigation.navigate("PaymentWebviewScreen", { paymentUrl: res });
+      } else {
+        alert("Không nhận được link thanh toán.");
+      }
+    } catch (err) {
+      alert("Thanh toán thất bại: " + (err.message || "Lỗi không xác định"));
+    }
   };
 
   const openContractPdf = () => {
@@ -248,30 +201,82 @@ const RequestCard = ({
     }
   };
 
-  const handlePayRemaining = async () => {
-    const remaining = Math.round(Number(contract?.price) - depositAmount);
-    const payload = {
-      fullName: user.accountName,
-      orderInfo: "",
-      amount: remaining,
-      purpose: PaymentPurpose.CONTRACT_SETTLEMENT,
-      accountId: user?.id,
-      ticketId: "",
-      ticketQuantity: "",
-      contractId: contract.contractId,
-      orderpaymentId: "",
-      isWeb: false,
-    };
-    try {
-      const res = await PaymentService.DepositPayment(payload);
-      if (res?.includes("http")) {
-        navigation.navigate("PaymentWebviewScreen", { paymentUrl: res });
-      } else {
-        alert("Không nhận được link thanh toán.");
-      }
-    } catch (err) {
-      alert("Thanh toán thất bại: " + (err.message || "Lỗi không xác định"));
-    }
+
+  const contractStatusComponentMap = {
+    [CONTRACT_STATUS.FinalSettlement]: (
+      <>
+        <Button
+          mode="outlined"
+          icon="file-document-outline"
+          onPress={openContractPdf}
+          style={styles.flexBtn}
+        >
+          View Contract
+        </Button>
+        <Text>Waiting completed.</Text>
+      </>
+    ),
+    [CONTRACT_STATUS.Deposited]: (
+      <>
+        <Button
+          mode="outlined"
+          icon="file-document-outline"
+          onPress={openContractPdf}
+          style={[styles.flexBtn, { marginBottom: 8 }]}
+        >
+          View Contract
+        </Button>
+
+        
+        
+        <Button
+          mode="outlined"
+          icon="cash-refund"
+          onPress={handlePayRemaining}
+          style={styles.flexBtn}
+        >
+          Pay Remaining
+        </Button>
+      </>
+    ),
+    [CONTRACT_STATUS.Completed]: (
+      <>
+        <Button
+          mode="outlined"
+          icon="file-document-outline"
+          onPress={openContractPdf}
+          style={[styles.flexBtn, { marginBottom: 8 }]}
+        >
+          View Contract
+        </Button>
+        <Button
+          mode="outlined"
+          style={styles.flexBtn}
+          onPress={handleFeedbackPress}
+        >
+          <Text style={styles.editBtnText}>💬 Feedback Cosplayers</Text>
+        </Button>
+      </>
+    ),
+    [CONTRACT_STATUS.Feedbacked]: (
+      <>
+        <Button
+          mode="outlined"
+          icon="file-document-outline"
+          onPress={openContractPdf}
+          style={[styles.flexBtn, { marginBottom: 8 }]}
+        >
+          View Contract
+        </Button>
+        <Button
+          mode="outlined"
+          style={styles.flexBtn}
+          onPress={handleViewFeedbackPress}
+        >
+          <Text style={styles.editBtnText}>💬 View Feedback</Text>
+        </Button>
+      </>
+    ),
   };
 
   const renderActionButtons = () => (
@@ -393,6 +398,7 @@ const RequestCard = ({
         request.charactersListResponse.map((char, idx) => (
           <CharacterCard
             key={idx}
+            {...(contract ? { contract } : {})}
             char={char}
             cosplayer={cosplayers[char.cosplayerId]}
             character={characters[char.characterId]}

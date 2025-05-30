@@ -17,6 +17,8 @@ const MyRentalCostumeService = {
       // Lấy thông tin request
       const requestResponse = await apiClient.get(`/api/Request/${requestId}`);
       const requestData = requestResponse.data;
+      console.log("RequestId khi gọi GetRequestCostumeByRequestId:", JSON.stringify(requestResponse.data,null,2));
+
 
       // Lấy thông tin character từ charactersListResponse
       const charactersList = requestData.charactersListResponse || [];
@@ -42,6 +44,32 @@ const MyRentalCostumeService = {
       throw error;
     }
   },
+
+  GetRequestCostuByRequestId: async (requestId) => {
+    try {
+      // Lấy thông tin request
+      console.log("RequestId khi gọi GetRequestCostumeByRequestId:", requestId);
+      const requestResponse = await apiClient.get(`/api/Request/${requestId}`);
+      const requestData = requestResponse.data;
+      return requestData;
+    } catch (error) {
+      console.error("Error fetching request costume details:", error);
+      throw error;
+    }
+  },
+
+  updateDepositRequest: async (requestId, deposit) => {
+  try {
+    const response = await apiClient.patch(
+      `/api/Request/UpdateDepositRequest?requestId=${requestId}`, 
+      deposit
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating deposit:", error);
+    throw error;
+  }
+},
   getRequestByRequestId: async (id) => {
     try {
       const response = await apiClient.get(`/api/Request/${id}`);
@@ -231,6 +259,21 @@ const MyRentalCostumeService = {
     try {
       const response = await apiClient.get(
         `/api/Task/GetAllTaskByContractId?contractId=${contractId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error fetching task",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  
+  addCharacterToRequest: async (payload) => {
+    try {
+      const response = await apiClient.post(
+        `/api/RequestCharacter`, payload
       );
       return response.data;
     } catch (error) {

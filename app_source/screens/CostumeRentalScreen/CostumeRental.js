@@ -92,6 +92,8 @@ const CostumeRental = () => {
     extrapolate: "clamp",
   });
 
+  
+
   const renderItem = ({ item }) => {
     return (
       <View style={styles.itemContainer}>
@@ -103,6 +105,7 @@ const CostumeRental = () => {
           >{`Height: ${item.minHeight} cm - ${item.maxHeight} cm`}</Text>
           <Text style={styles.itemPrice}>Price: {item.price} VND</Text>
           <Text style={styles.itemPrice}>Quantity: {item.quantity}</Text>
+          
         </View>
         <View style={styles.itemStatusContainer}>
           {/* Thay TouchableOpacity bằng LinearGradient */}

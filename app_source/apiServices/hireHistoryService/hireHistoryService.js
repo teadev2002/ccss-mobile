@@ -10,6 +10,19 @@ const hireHistoryService = {
     }
   },
 
+  getAllTaskByAccountId: async (accountId) => {
+    try {
+      const response = await apiClient.get(`/api/Task/AccountId/${accountId}`);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error fetching all tasks:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
   GetAllRequestByAccountId: async (accountId) => {
     try {
       const response = await apiClient.get(
@@ -88,6 +101,7 @@ const hireHistoryService = {
         `/api/Request?RequestId=${requestId}`,
         data
       );
+      
       return response.data;
     } catch (error) {
       console.error("Error updating request:", error);

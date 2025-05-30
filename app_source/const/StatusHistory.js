@@ -1,28 +1,25 @@
 export const REQUEST_STATUS = {
-    All: "All",
-    Pending: "Pending",
-    Browsed: "Browsed",
-    Cancel: "Cancel",
-  };
+  All: "All",
+  Pending: "Pending",
+  Browsed: "Browsed",
+  Cancel: "Cancel",
+};
 
-  export const CONTRACT_STATUS = {
-    Created:"Created",
-    Deposited: "Deposited",
-    FinalSettlement: "FinalSettlement",
-    Completed:"Completed",
-    Feedbacked:"Feedbacked",
-    Cancel:"Cancel",
-    Refund:"Refund",
-    Expired:"Expired"
-  };
+export const CONTRACT_STATUS = {
+  Created: "Created",
+  Deposited: "Deposited",
+  FinalSettlement: "FinalSettlement",
+  Completed: "Completed",
+  Feedbacked: "Feedbacked",
+  Cancel: "Cancel",
+  Refund: "Refund",
+  Expired: "Expired",
+};
 
-  
-
-  export const COSPLAYER_STATUS = {
-    0: { label: "None", color: "#ccc" },
-    1: { label: "Pending", color: "#f7b731" },
-    2: { label: "Accepted", color: "#20bf6b" },
-    3: { label: "Busy", color: "#eb3b5a" },
-    4: { label: "Cancelled", color: "#a5b1c2" },
-  };
-  
+export const COSPLAYER_STATUS = {
+  Pending:   { label: "Pending",   color: "#999999" },   
+  Assignment:{ label: "Assignment",color: "#f1c40f" },   
+  Progressing:{ label: "Progressing",color: "#2980b9" }, 
+  Completed: { label: "Completed", color: "#27ae60" },  
+  Cancel:    { label: "Cancel",    color: "#7f8c8d" },
+};

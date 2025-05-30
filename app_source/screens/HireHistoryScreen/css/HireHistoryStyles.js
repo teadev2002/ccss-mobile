@@ -155,6 +155,14 @@ export default StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  characterBox: {
+  borderWidth: 1,
+  borderColor: "#ccc",
+  borderRadius: 8,
+  padding: 10,
+  marginTop: 10,
+  backgroundColor: "#fff",
+},
   characterImage: {
     width: 60,
     height: 60,

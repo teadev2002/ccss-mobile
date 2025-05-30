@@ -7,6 +7,8 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -48,7 +50,32 @@ const RentalModal = ({
   const [wards, setWards] = useState([]);
   const [termsVisible, setTermsVisible] = useState(false);
   const { user } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(false);
 
+  const calculateDeposit = () => {
+    if (
+      !selectedCharacter?.price ||
+      !rentalForm.startDate ||
+      !rentalForm.endDate
+    ) {
+      return 0;
+    }
+
+    const start = parseDate(rentalForm.startDate);
+    const end = parseDate(rentalForm.endDate);
+    const quantity = parseInt(rentalForm.quantity || "1");
+
+    // Tính số ngày (tối thiểu 1)
+    const totalDays = Math.max(
+      1,
+      Math.ceil((end - start) / (1000 * 60 * 60 * 24))
+    );
+
+    const unitPrice = selectedCharacter.price;
+
+    const deposit = (unitPrice * totalDays + unitPrice * 5) * quantity;
+    return deposit;
+  };
   useEffect(() => {
     if (modalVisible) {
       LocationPickerService.getDistricts().then((res) => setDistricts(res)); // 👈 CHỈ set res.data
@@ -99,7 +126,7 @@ const RentalModal = ({
       }, ${wards.find((w) => w.id === rentalForm.ward)?.name || ""}, ${
         rentalForm.street
       }`,
-      deposit: "0",
+      deposit: calculateDeposit().toString(),
       listRequestCharacters: [
         {
           characterId: selectedCharacter?.characterId,
@@ -108,28 +135,41 @@ const RentalModal = ({
         },
       ],
     };
-
-    console.log("Payload: ", JSON.stringify(payload, null, 2));
-
     try {
+      setIsLoading(true);
       await RequestService.createRentalRequest(payload);
       setModalVisible(false);
-      Toast.show({
-        type: "success",
-        text1: "Rental request sent successfully",
-        text2: "We will contact you soon.",
-        position: "top",
-      });
+      Alert.alert(
+        "🎉 Rental Successful",
+        "Your costume has been rented successfully. We will contact you soon.",
+        [
+          {
+            text: "OK",
+            style: "default",
+          },
+        ],
+        {
+          cancelable: true,
+        }
+      );
     } catch (error) {
       console.error("Rental request failed:", error);
-      Toast.show({
-        type: "error",
-        text1: "Request failed",
-        text2: "Please try again later.",
-        position: "top",
-      });
+      Alert.alert(
+        "❌ Rental Failed",
+        "Something went wrong while trying to rent the costume. Please try again.",
+        [
+          {
+            text: "OK",
+            style: "destructive", // đỏ trên iOS, đậm hơn trên Android
+          },
+        ]
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  
 
   return (
     <Modal
@@ -249,6 +289,10 @@ const RentalModal = ({
                   selectedCharacter?.price * parseInt(rentalForm.quantity || 0)
                 ).toLocaleString()}{" "}
                 VND
+              </Text>
+
+              <Text style={styles.label}>
+                Deposit: {calculateDeposit().toLocaleString()} VND {"\n"}
               </Text>
 
               <Text style={styles.label}>Quantity:</Text>
@@ -382,7 +426,7 @@ const RentalModal = ({
                     styles.modalSubmitButton,
                     !rentalForm.agreeTerms && { backgroundColor: "#ccc" },
                   ]}
-                  disabled={!rentalForm.agreeTerms}
+                  disabled={!rentalForm.agreeTerms || isLoading}
                   onPress={() =>
                     handleSubmitRental({
                       rentalForm,
@@ -393,7 +437,11 @@ const RentalModal = ({
                     })
                   }
                 >
-                  <Text style={styles.modalButtonText}>Send Request</Text>
+                  {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.modalButtonText}>Confirm Request</Text>
+                  )}
                 </TouchableOpacity>
               </View>
             </ScrollView>

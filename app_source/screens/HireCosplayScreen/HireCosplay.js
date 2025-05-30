@@ -106,7 +106,7 @@ const HireCosplay = ({ navigation }) => {
   const newErrors = {};
   const isStartValid = moment(formData.startDate, "DD-MM-YYYY", true);
   const isEndValid = moment(formData.endDate, "DD-MM-YYYY", true);
-  const today = moment().startOf("day");
+  const today = moment().startOf("day");  // chỉ tính ngày
 
   if (!isStartValid.isValid()) newErrors.startDate = "Start date is invalid.";
   if (!isEndValid.isValid()) newErrors.endDate = "End date is invalid.";

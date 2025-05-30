@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React from "react";
 import { View, Text, Image } from "react-native";
 import { Card, Title } from "react-native-paper";
 import styles from "../../HireHistoryScreen/css/HireHistoryStyles";
@@ -7,37 +7,34 @@ import {
   calculateTotalHours,
   calculateTotalDays,
 } from "../../../utils/calculateCost";
+import { COSPLAYER_STATUS } from "../../../const/StatusHistory";
+import useTaskStatus from "../../../hooks/useTaskStatus";
 
-const CharacterCard = ({
-  char,
-  cosplayer,
-  character,
-  COSPLAYER_STATUS,
-  cosplayerStatuses, 
-}) => {
+const CharacterCard = ({ char, cosplayer, character, contract }) => {
   const cosplayerId = cosplayer?.accountId;
-  const status = cosplayerStatuses?.[cosplayerId] ?? 0;
-  const statusInfo = COSPLAYER_STATUS[status] ?? { label: "Unknown", color: "#999" };
+  const contractId = contract?.contractId;
+  const status = useTaskStatus(cosplayerId, contractId);
+
+  const statusInfo = COSPLAYER_STATUS[status] ?? {
+    label: "Pending",
+    color: "#999",
+  };
+
+  const statusKeys = Object.keys(COSPLAYER_STATUS).filter((s) => s !== "Cancel");
+  const progressIndex = statusKeys.indexOf(status);
+  const progressPercent =
+    status === "Cancel" ? 1 : progressIndex / (statusKeys.length - 1);
+
   const totalHour = calculateTotalHours(char.requestDateResponses);
   const salary = cosplayer?.salaryIndex || 0;
   const totalDays = calculateTotalDays(char.requestDateResponses);
   const characterPrice = character?.price || 0;
-  const totalCost = calculateCosplayerCost(salary, totalHour, characterPrice, totalDays);
-
-  useEffect(() => {
-    console.log("🧩 CharacterCard Debug Info:");
-    console.log("➡️ char:", char);
-    console.log("➡️ cosplayer:", cosplayer);
-    console.log("➡️ character:", character);
-    console.log("➡️ cosplayerId:", cosplayerId);
-    console.log("➡️ status (from map):", status);
-    console.log("➡️ statusInfo:", statusInfo);
-    console.log("🧮 totalHour:", totalHour);
-    console.log("🧮 totalDays:", totalDays);
-    console.log("💰 salary:", salary);
-    console.log("💰 characterPrice:", characterPrice);
-    console.log("💰 totalCost:", totalCost);
-  }, [char, cosplayer, character, cosplayerStatuses]);
+  const totalCost = calculateCosplayerCost(
+    salary,
+    totalHour,
+    characterPrice,
+    totalDays
+  );
 
   return (
     <Card style={styles.infoCard}>
@@ -56,30 +53,18 @@ const CharacterCard = ({
             <Text style={styles.cardText}>
               🎭 Cosplayer: {cosplayer?.name || `ID: ${char.cosplayerId}`}
             </Text>
-            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 4 }}>
-              <View
-                style={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: 5,
-                  backgroundColor: statusInfo.color,
-                  marginRight: 6,
-                }}
-              />
-              <Text style={styles.cardText}>Status: {statusInfo.label}</Text>
-            </View>
 
             <Text style={styles.cardText}>🕒 Total Time: {totalHour}h</Text>
+
             <View style={{ marginTop: 6, paddingLeft: 6 }}>
               {char.requestDateResponses?.map((dateObj, idx) => {
-                const day = dateObj.startDate?.split(" ")[1] || dateObj.startDate;
-                const startTime = dateObj.startDate?.split(" ")[0] || "";
-                const endTime = dateObj.endDate?.split(" ")[0] || "";
+                const [startTime, day] = dateObj.startDate?.split(" ") || [];
+                const [endTime] = dateObj.endDate?.split(" ") || [];
                 return (
                   <View key={idx} style={{ marginBottom: 6 }}>
                     <View style={{ flexDirection: "row", alignItems: "center" }}>
                       <Text style={{ marginRight: 4 }}>•</Text>
-                      <Text style={styles.cardText}>🗓 {day}</Text>
+                      <Text style={styles.cardText}>🗓 {day || dateObj.startDate}</Text>
                     </View>
                     <Text
                       style={[
@@ -97,6 +82,38 @@ const CharacterCard = ({
             <Text style={styles.cardText}>
               💰 Cost: {totalCost.toLocaleString()}đ ({salary.toLocaleString()}đ/h)
             </Text>
+
+            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 4 }}>
+              <View
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 5,
+                  backgroundColor: statusInfo.color,
+                  marginRight: 6,
+                }}
+              />
+              <Text style={styles.cardText}>Status: {statusInfo.label}</Text>
+            </View>
+
+            <View style={{ marginTop: 8 }}>
+              <View
+                style={{
+                  height: 8,
+                  backgroundColor: "#eee",
+                  borderRadius: 4,
+                  overflow: "hidden",
+                }}
+              >
+                <View
+                  style={{
+                    height: 8,
+                    width: `${progressPercent * 100}%`,
+                    backgroundColor: statusInfo.color,
+                  }}
+                />
+              </View>
+            </View>
           </View>
         </View>
       </Card.Content>
@@ -105,4 +122,3 @@ const CharacterCard = ({
 };
 
 export default CharacterCard;
-

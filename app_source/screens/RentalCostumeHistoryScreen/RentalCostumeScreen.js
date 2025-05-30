@@ -36,10 +36,38 @@ export default function CostumeRentalScreen() {
   const { history, loading, contracts } = useEventData(user?.id);
 
   const [activeTab, setActiveTab] = useState("MyRequest");
-  const [selectedStatuses, setSelectedStatuses] = useState(TAB_FILTERS["MyRequest"]);
+  const [selectedStatuses, setSelectedStatuses] = useState(
+    TAB_FILTERS["MyRequest"]
+  );
   const [sortOption, setSortOption] = useState("Normal");
   const [orderOption, setOrderOption] = useState("Descending");
   const [search, setSearch] = useState("");
+
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "Pending":
+        return { backgroundColor: "#FBBF24", color: "#000" }; // vàng
+      case "Browsed":
+        return { backgroundColor: "#38BDF8", color: "#fff" }; // xanh dương
+      case "Cancel":
+        return { backgroundColor: "#EF4444", color: "#fff" }; // đỏ
+      case "Created":
+        return { backgroundColor: "#A78BFA", color: "#fff" }; // tím
+      case "Deposited":
+        return { backgroundColor: "#22C55E", color: "#fff" }; // xanh lá
+      case "Refund":
+      case "RefundOverdue":
+        return { backgroundColor: "#F97316", color: "#fff" }; // cam
+      case "Completed":
+        return { backgroundColor: "#10B981", color: "#fff" }; // xanh ngọc
+      case "Expired":
+        return { backgroundColor: "#6B7280", color: "#fff" }; // xám
+      case "Paid":
+        return { backgroundColor: "#3B82F6", color: "#fff" }; // xanh
+      default:
+        return { backgroundColor: "#E5E7EB", color: "#000" }; // mặc định xám nhạt
+    }
+  };
 
   // Toggle status filter on/off
   const handleStatusToggle = (status) => {
@@ -93,17 +121,16 @@ export default function CostumeRentalScreen() {
     </View>
   );
 
-  // Depending on active tab, pick the data source
   const dataList = activeTab === "MyRequest" ? history : contracts;
 
-  // Filter dataList by selectedStatuses and search
   const filteredList = dataList.filter(
     (item) =>
       selectedStatuses.includes(item.status) &&
       (item.name?.toLowerCase().includes(search.toLowerCase()) ||
-       item.startDate?.toLowerCase().includes(search.toLowerCase()) ||
-       item.endDate?.toLowerCase().includes(search.toLowerCase()) ||
-       (item.description && item.description.toLowerCase().includes(search.toLowerCase())))
+        item.startDate?.toLowerCase().includes(search.toLowerCase()) ||
+        item.endDate?.toLowerCase().includes(search.toLowerCase()) ||
+        (item.description &&
+          item.description.toLowerCase().includes(search.toLowerCase())))
   );
 
   // Sort filteredList according to sortOption and orderOption
@@ -152,10 +179,18 @@ export default function CostumeRentalScreen() {
 
     return (
       <View style={styles.card}>
-        <Text style={styles.title}>
-          {item.name}
-          <Text style={styles.status}> {item.status}</Text>
-        </Text>
+        <Text style={styles.title}>{item.name}</Text>
+        <View style={[styles.statusBadge, getStatusStyle(item.status)]}>
+          <Text
+            style={[
+              styles.statusText,
+              { color: getStatusStyle(item.status).color },
+            ]}
+          >
+            {item.status}
+          </Text>
+        </View>
+
         <Text>💵 Price: {item.price?.toLocaleString()} VND</Text>
         <Text>💰 Deposit: {item.deposit?.toLocaleString()} VND</Text>
         <Text>📅 Start Date: {item.startDate}</Text>
@@ -184,7 +219,7 @@ export default function CostumeRentalScreen() {
         {/* Nút đặc biệt cho tab MyContract */}
         {isContractTab && (
           <View style={[styles.buttonRow, { marginTop: 10 }]}>
-            {(item.status === "Created") && (
+            {item.status === "Created" && (
               <>
                 <TouchableOpacity
                   style={styles.payBtn}
@@ -276,7 +311,9 @@ export default function CostumeRentalScreen() {
       {/* List */}
       <FlatList
         data={sortedList}
-        keyExtractor={(item) => item.requestId || item.contractId || item.id?.toString()}
+        keyExtractor={(item) =>
+          item.requestId || item.contractId || item.id?.toString()
+        }
         renderItem={renderRequest}
         scrollEnabled={false}
         contentContainerStyle={{ paddingBottom: 40 }}
