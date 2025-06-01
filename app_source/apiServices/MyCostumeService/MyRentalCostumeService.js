@@ -17,9 +17,7 @@ const MyRentalCostumeService = {
       // Lấy thông tin request
       const requestResponse = await apiClient.get(`/api/Request/${requestId}`);
       const requestData = requestResponse.data;
-      console.log("RequestId khi gọi GetRequestCostumeByRequestId:", JSON.stringify(requestResponse.data,null,2));
-
-
+      
       // Lấy thông tin character từ charactersListResponse
       const charactersList = requestData.charactersListResponse || [];
       const characterPromises = charactersList.map(async (char) => {
@@ -39,6 +37,8 @@ const MyRentalCostumeService = {
         ...requestData,
         charactersListResponse: enrichedCharacters,
       };
+      
+
     } catch (error) {
       console.error("Error fetching request costume details:", error);
       throw error;
