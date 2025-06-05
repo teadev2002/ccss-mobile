@@ -5,8 +5,8 @@ import styles from "../CartStyles";
 const VoucherSection = () => {
   return (
     <View style={styles.voucherSection}>
-      <Text style={styles.voucherText}>Voucher discount up to 1VND</Text>
-      <Text style={styles.voucherStore}>CCSS Official Store</Text>
+      {/* <Text style={styles.voucherText}>Voucher discount up to 1VND</Text>
+      <Text style={styles.voucherStore}>CCSS Official Store</Text> */}
     </View>
   );
 };

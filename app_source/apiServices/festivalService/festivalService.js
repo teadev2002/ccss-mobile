@@ -53,6 +53,19 @@ const FestivalService = {
       );
     }
   },
+
+  getCosplayerByEventCharId: async (id) => {
+    try {
+      const response = await apiClient.get(`/api/Account/GetAccountByEventCharacterId/${id}`);
+      console.log("GetCosplayer response:",JSON.stringify(response.data, null , 2));
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching cosplayer:", error.response?.data || error);
+      throw new Error(
+        error.response?.data?.message || "Error fetching cosplayer"
+      );
+    }
+  },
 };
 
 export default FestivalService;

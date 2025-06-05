@@ -17,7 +17,7 @@ const MyRentalCostumeService = {
       // Lấy thông tin request
       const requestResponse = await apiClient.get(`/api/Request/${requestId}`);
       const requestData = requestResponse.data;
-      
+
       // Lấy thông tin character từ charactersListResponse
       const charactersList = requestData.charactersListResponse || [];
       const characterPromises = charactersList.map(async (char) => {
@@ -37,8 +37,6 @@ const MyRentalCostumeService = {
         ...requestData,
         charactersListResponse: enrichedCharacters,
       };
-      
-
     } catch (error) {
       console.error("Error fetching request costume details:", error);
       throw error;
@@ -57,19 +55,53 @@ const MyRentalCostumeService = {
       throw error;
     }
   },
-
+  getImageRefundMoneybyContractId: async (contractId) => {
+    try {
+      const response = await apiClient.get(
+        `/api/ContractImage?contractId=${contractId}&status=RefundMoney`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching refund images by contract ID:", error);
+      throw error;
+    }
+  },
   updateDepositRequest: async (requestId, deposit) => {
-  try {
-    const response = await apiClient.patch(
-      `/api/Request/UpdateDepositRequest?requestId=${requestId}`, 
-      deposit
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error updating deposit:", error);
-    throw error;
-  }
-},
+    try {
+      const response = await apiClient.patch(
+        `/api/Request/UpdateDepositRequest?requestId=${requestId}`,
+        deposit
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updating deposit:", error);
+      throw error;
+    }
+  },
+  updateCompleteRefund: async (contractRefundId) => {
+    try {
+      await apiClient.put(
+        `/api/Contract?contracId=${contractRefundId}&status=Completed`
+      );
+    } catch (error) {
+      console.error("Error updating deposit:", error);
+      throw error;
+    }
+  },
+  cancelContract: async (contractId, reason) => {
+    try {
+      const response = await apiClient.put(
+        `/api/Contract?contracId=${contractId}&status=Cancel&reason=${reason}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error updating contract status:",
+        error.response ? error.response.data : error.message
+      );
+      throw error;
+    }
+  },
   getRequestByRequestId: async (id) => {
     try {
       const response = await apiClient.get(`/api/Request/${id}`);
@@ -90,6 +122,15 @@ const MyRentalCostumeService = {
       throw error;
     }
   },
+  getAllContractRefunds: async () => {
+    try {
+      const response = await apiClient.get(`/api/ContractRefund`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching contract:", error);
+      throw error;
+    }
+  },
   getCharacterById: async (characterId) => {
     try {
       const response = await apiClient.get(`/api/Character/${characterId}`);
@@ -98,6 +139,34 @@ const MyRentalCostumeService = {
       throw new Error(
         error.response?.data?.message || "Lỗi khi lấy thông tin character"
       );
+    }
+  },
+  getContractRefundByContractId: async (id) => {
+    try {
+      const response = await apiClient.get(`/api/ContractRefund/${id}`);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Lỗi khi lấy thông tin ContractRefund"
+      );
+    }
+  },
+
+  updateContractRefund: async (
+    contractRefundId,
+    ContractId,
+    NumberBank,
+    BankName,
+    AccountBankName
+  ) => {
+    try {
+      const url = `/api/ContractRefund?contractRefundId=${contractRefundId}&ContractId=${ContractId}&NumberBank=${NumberBank}&BankName=${BankName}&AccountBankName=${AccountBankName}`;
+      console.log("URL gửi đi:", url);
+      await apiClient.put(url);
+    } catch (error) {
+      console.error("Error fetching contract:", error);
+      throw error;
     }
   },
   addContractCostume: async (requestId, deposit) => {
@@ -153,7 +222,22 @@ const MyRentalCostumeService = {
     }
   },
   // Lấy danh sách hình ảnh hợp đồng theo contractId và status
-  getContractImageAndStatus: async (contractId, status) => {
+  getContractImg: async (contractId) => {
+    try {
+      const response = await apiClient.get(
+        `api/ContractImage/GetContractImageByContractId?contractId=${contractId}`
+      );
+      return response.data; // hoặc response nếu bạn cần thông tin headers, v.v.
+    } catch (error) {
+      console.error("Error fetching contract images:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+      throw error;
+    }
+  },
+  getContractImage: async (contractId, status) => {
     try {
       const response = await apiClient.get(
         `/api/ContractImage?contractId=${contractId}&status=${status}`
@@ -269,12 +353,10 @@ const MyRentalCostumeService = {
       throw error;
     }
   },
-  
+
   addCharacterToRequest: async (payload) => {
     try {
-      const response = await apiClient.post(
-        `/api/RequestCharacter`, payload
-      );
+      const response = await apiClient.post(`/api/RequestCharacter`, payload);
       return response.data;
     } catch (error) {
       console.error(

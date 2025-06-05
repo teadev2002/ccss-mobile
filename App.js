@@ -68,6 +68,12 @@ function MainDrawer() {
   );
 }
 
+const onRefresh = () => {
+    setRefreshing(true);
+    // Logic refresh, ví dụ gọi API
+    setTimeout(() => setRefreshing(false), 2000);
+  };
+
 export default function App() {
   return (
     <SafeAreaView style={styles.container}>

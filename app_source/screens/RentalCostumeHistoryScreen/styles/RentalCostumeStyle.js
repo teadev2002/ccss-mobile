@@ -127,7 +127,12 @@ statusText: {
     color: '#0f172a',
     marginBottom: 4,
   },
-
+updateBtn: {
+  backgroundColor: "#007AFF",
+  padding: 10,
+  borderRadius: 5,
+  marginHorizontal: 5,
+},
   status: {
     backgroundColor: '#3b82f6',
     color: '#fff',

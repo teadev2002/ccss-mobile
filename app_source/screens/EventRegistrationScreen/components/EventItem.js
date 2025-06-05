@@ -42,7 +42,7 @@ const EventItem = ({ item, navigation }) => {
     }
   };
 
-  console.log("EventItem render", JSON.stringify(item, null, 2));
+  
 
   const { date, month, year } = handleDate(item.startDate);
 

@@ -29,8 +29,8 @@ const formatDate = (date) => {
 
 const today = new Date();
 const minStartDate = new Date(today);
-minStartDate.setHours(0, 0, 0, 0); // clear time
-minStartDate.setDate(today.getDate() + 4); // +4 days from today
+minStartDate.setHours(0, 0, 0, 0);
+minStartDate.setDate(today.getDate() + 4);
 
 const parseDate = (dateStr) => {
   const [day, month, year] = dateStr.split("/");
@@ -42,7 +42,7 @@ const RentalModal = ({
   setModalVisible,
   rentalForm,
   setRentalForm,
-  selectedCharacter,
+  selectedCharacters,
 }) => {
   const [isStartDatePickerVisible, setStartDatePickerVisible] = useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisible] = useState(false);
@@ -51,44 +51,37 @@ const RentalModal = ({
   const [termsVisible, setTermsVisible] = useState(false);
   const { user } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
+  const [characterQuantities, setCharacterQuantities] = useState({});
 
-  const calculateDeposit = () => {
-    if (
-      !selectedCharacter?.price ||
-      !rentalForm.startDate ||
-      !rentalForm.endDate
-    ) {
-      return 0;
-    }
-
-    const start = parseDate(rentalForm.startDate);
-    const end = parseDate(rentalForm.endDate);
-    const quantity = parseInt(rentalForm.quantity || "1");
-
-    // Tính số ngày (tối thiểu 1)
-    const totalDays = Math.max(
-      1,
-      Math.ceil((end - start) / (1000 * 60 * 60 * 24))
-    );
-
-    const unitPrice = selectedCharacter.price;
-
-    const deposit = (unitPrice * totalDays + unitPrice * 5) * quantity;
-    return deposit;
-  };
   useEffect(() => {
     if (modalVisible) {
-      LocationPickerService.getDistricts().then((res) => setDistricts(res)); // 👈 CHỈ set res.data
+      setRentalForm({
+        name: "",
+        description: "",
+        startDate: "",
+        endDate: "",
+        district: "",
+        ward: "",
+        street: "",
+        agreeTerms: false,
+      });
+      const initialQuantities = selectedCharacters.reduce((acc, char) => ({
+        ...acc,
+        [char.characterId]: "1",
+      }), {});
+      setCharacterQuantities(initialQuantities);
+      LocationPickerService.getDistricts().then((res) => setDistricts(res));
     }
-  }, [modalVisible]);
+  }, [modalVisible, selectedCharacters]);
 
   useEffect(() => {
     if (rentalForm.district) {
       LocationPickerService.getStreets(rentalForm.district).then((res) =>
         setWards(res)
-      ); // 👈 Tương tự, lấy `res.data`
+      );
     }
   }, [rentalForm.district]);
+
   const handleConfirmStartDate = (date) => {
     setRentalForm({
       ...rentalForm,
@@ -98,6 +91,20 @@ const RentalModal = ({
   };
 
   const handleConfirmEndDate = (date) => {
+    const startDate = rentalForm.startDate ? parseDate(rentalForm.startDate) : null;
+    const endDate = new Date(date);
+    endDate.setHours(0, 0, 0, 0);
+
+    if (startDate && endDate <= startDate) {
+      Toast.show({
+        type: "error",
+        text1: "Invalid End Date",
+        text2: "End date must be at least one day after start date.",
+        position: "top",
+      });
+      return;
+    }
+
     setRentalForm({
       ...rentalForm,
       endDate: formatDate(date),
@@ -105,71 +112,140 @@ const RentalModal = ({
     setEndDatePickerVisible(false);
   };
 
-  const handleSubmitRental = async ({
-    rentalForm,
-    selectedCharacter,
-    districts,
-    wards,
-    setModalVisible,
-  }) => {
-    if (!rentalForm.agreeTerms) return;
+  const calculateTotalDays = () => {
+    if (!rentalForm.startDate || !rentalForm.endDate) {
+      return 1;
+    }
+    const start = parseDate(rentalForm.startDate);
+    const end = parseDate(rentalForm.endDate);
+    return Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
+  };
+
+  const calculateDeposit = () => {
+    if (!rentalForm.startDate || !rentalForm.endDate) {
+      return 0;
+    }
+    const totalDays = calculateTotalDays() ;
+    return selectedCharacters.reduce((sum, char) => {
+      const unitPrice = char.price || 0;
+      const quantity = parseInt(characterQuantities[char.characterId] || "1");
+      return sum + (unitPrice * (totalDays+ 1)  + unitPrice * 5) * quantity;
+    }, 0);
+  };
+
+  const calculateTotalPrice = () => {
+    const totalDays = calculateTotalDays();
+    return selectedCharacters.reduce((sum, char) => {
+      const unitPrice = char.price || 0;
+      const quantity = parseInt(characterQuantities[char.characterId] || "1");
+      return sum + unitPrice * quantity * (totalDays + 1);
+    }, 0);
+  };
+
+  const handleQuantityChange = (characterId, value) => {
+    let num = parseInt(value);
+    if (isNaN(num)) {
+      Toast.show({
+        type: "info",
+        text1: "Invalid quantity",
+        text2: "Please enter a number between 1 and 10.",
+        position: "top",
+      });
+      num = 1;
+    } else if (num > 10) {
+      Toast.show({
+        type: "info",
+        text1: "Maximum limit reached",
+        text2: "You can rent up to 10 costumes only.",
+        position: "bottom",
+      });
+      num = 10;
+    } else if (num < 1) {
+      Toast.show({
+        type: "info",
+        text1: "Minimum quantity is 1",
+        text2: "You must rent at least 1 costume.",
+        position: "bottom",
+      });
+      num = 1;
+    }
+
+    setCharacterQuantities({
+      ...characterQuantities,
+      [characterId]: num.toString(),
+    });
+  };
+
+  const handleSubmitRental = async () => {
+    if (!rentalForm.agreeTerms) {
+      Toast.show({
+        type: "info",
+        text1: "Terms not agreed",
+        text2: "Please agree to the compensation terms.",
+        position: "top",
+      });
+      return;
+    }
+
+    if (
+      !rentalForm.name ||
+      !rentalForm.startDate ||
+      !rentalForm.endDate ||
+      !rentalForm.district ||
+      !rentalForm.ward ||
+      !rentalForm.street
+    ) {
+      Toast.show({
+        type: "error",
+        text1: "Missing information",
+        text2: "Please fill in all required fields.",
+        position: "top",
+      });
+      return;
+    }
 
     const payload = {
-      accountId: user?.id,
+      accountId: user?.id || "",
       name: rentalForm.name,
-      description: rentalForm.description,
-      price: selectedCharacter?.price * parseInt(rentalForm.quantity || "1"),
+      description: rentalForm.description || "shared",
+      price: calculateTotalPrice(),
       startDate: rentalForm.startDate,
       endDate: rentalForm.endDate,
-      location: `Hồ Chí Minh, ${
+      location: `${rentalForm.street}, ${
+        wards.find((w) => w.id === rentalForm.ward)?.name || ""
+      }, ${
         districts.find((d) => d.id === rentalForm.district)?.name || ""
-      }, ${wards.find((w) => w.id === rentalForm.ward)?.name || ""}, ${
-        rentalForm.street
-      }`,
+      }, Hồ Chí Minh`,
       deposit: calculateDeposit().toString(),
-      listRequestCharacters: [
-        {
-          characterId: selectedCharacter?.characterId,
-          description: rentalForm.description,
-          quantity: parseInt(rentalForm.quantity || "1"),
-        },
-      ],
+      serviceId: "S001",
+      packageId: null,
+      listRequestCharacters: selectedCharacters.map((char) => ({
+        characterId: char.characterId || "",
+        description: rentalForm.description || "shared",
+        quantity: parseInt(characterQuantities[char.characterId] || "1"),
+      })),
     };
+
     try {
       setIsLoading(true);
       await RequestService.createRentalRequest(payload);
       setModalVisible(false);
       Alert.alert(
         "🎉 Rental Successful",
-        "Your costume has been rented successfully. We will contact you soon.",
-        [
-          {
-            text: "OK",
-            style: "default",
-          },
-        ],
-        {
-          cancelable: true,
-        }
+        "Your costumes have been rented successfully. We will contact you soon.",
+        [{ text: "OK" }]
       );
     } catch (error) {
       console.error("Rental request failed:", error);
       Alert.alert(
         "❌ Rental Failed",
-        "Something went wrong while trying to rent the costume. Please try again.",
-        [
-          {
-            text: "OK",
-            style: "destructive", // đỏ trên iOS, đậm hơn trên Android
-          },
-        ]
+        "Something went wrong while trying to rent the costumes. Please try again.",
+        [{ text: "OK" }]
       );
     } finally {
       setIsLoading(false);
     }
   };
-
-  
 
   return (
     <Modal
@@ -201,7 +277,7 @@ const RentalModal = ({
 
               <TextInput
                 style={[styles.modalInput, { height: 80 }]}
-                placeholder="Enter your height and weight"
+                placeholder="Description"
                 multiline
                 value={rentalForm.description}
                 onChangeText={(text) =>
@@ -219,7 +295,6 @@ const RentalModal = ({
                 </Text>
               </TouchableOpacity>
 
-              {/* End Date */}
               <Text style={styles.label}>Return Date:</Text>
               <TouchableOpacity
                 style={styles.modalInput}
@@ -237,7 +312,7 @@ const RentalModal = ({
                   setRentalForm({ ...rentalForm, district: value, ward: "" })
                 }
                 items={districts.map((d) => ({
-                  label: d.name,
+                  label: d.name || "Unknown",
                   value: d.id,
                   key: d.id,
                 }))}
@@ -255,7 +330,7 @@ const RentalModal = ({
                   setRentalForm({ ...rentalForm, ward: value })
                 }
                 items={wards.map((w) => ({
-                  label: w.name,
+                  label: w.name || "Unknown",
                   value: w.id,
                   key: w.id,
                 }))}
@@ -277,114 +352,75 @@ const RentalModal = ({
                 }
               />
 
-              <Text style={styles.label}>
-                Costume: {selectedCharacter?.characterName}
-              </Text>
-              <Text style={styles.label}>
-                Unit Price: {selectedCharacter?.price?.toLocaleString()} VND
-              </Text>
-              <Text style={styles.label}>
-                Total:{" "}
-                {(
-                  selectedCharacter?.price * parseInt(rentalForm.quantity || 0)
-                ).toLocaleString()}{" "}
-                VND
-              </Text>
+              <Text style={styles.label}>Selected Costumes:</Text>
+              {selectedCharacters.map((char) => (
+                <View key={char.characterId} style={styles.characterContainer}>
+                  <Text style={styles.label}>
+                    Costume: {char.characterName || "Unknown"}
+                  </Text>
+                  <Text style={styles.label}>
+                    Unit Price: {(char.price || 0).toLocaleString()} VND
+                  </Text>
+                  <Text style={styles.label}>Quantity:</Text>
+                  <View style={styles.quantityRow}>
+                    <TouchableOpacity
+                      style={styles.quantityButton}
+                      onPress={() => {
+                        const currentQty = parseInt(characterQuantities[char.characterId] || "1");
+                        if (currentQty <= 1) {
+                          Toast.show({
+                            type: "info",
+                            text1: "Minimum quantity is 1",
+                            text2: "You must rent at least 1 costume.",
+                            position: "top",
+                          });
+                          return;
+                        }
+                        handleQuantityChange(char.characterId, (currentQty - 1).toString());
+                      }}
+                    >
+                      <Text style={styles.quantityButtonText}>-</Text>
+                    </TouchableOpacity>
+                    <TextInput
+                      style={[styles.modalInput, styles.quantityInput]}
+                      keyboardType="numeric"
+                      value={characterQuantities[char.characterId]?.toString() || "1"}
+                      onChangeText={(text) => handleQuantityChange(char.characterId, text)}
+                    />
+                    <TouchableOpacity
+                      style={styles.quantityButton}
+                      onPress={() => {
+                        const currentQty = parseInt(characterQuantities[char.characterId] || "1");
+                        const maxQty = Math.min(char.quantity || 10, 10); // Respect character stock
+                        if (currentQty >= maxQty) {
+                          Toast.show({
+                            type: "info",
+                            text1: "Maximum limit reached",
+                            text2: `Only ${maxQty} available for ${char.characterName || "this costume"}.`,
+                            position: "bottom",
+                          });
+                          return;
+                        }
+                        handleQuantityChange(char.characterId, (currentQty + 1).toString());
+                      }}
+                    >
+                      <Text style={styles.quantityButtonText}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={styles.label}>
+                    Total for {char.characterName || "Unknown"}: {(
+                      (char.price || 0) * parseInt(characterQuantities[char.characterId] || "1") * calculateTotalDays()
+                    ).toLocaleString()} VND
+                  </Text>
+                </View>
+              ))}
 
               <Text style={styles.label}>
-                Deposit: {calculateDeposit().toLocaleString()} VND {"\n"}
+                Total Price: {calculateTotalPrice().toLocaleString()} VND
               </Text>
-
-              <Text style={styles.label}>Quantity:</Text>
-              <View style={styles.quantityRow}>
-                <TouchableOpacity
-                  style={styles.quantityButton}
-                  onPress={() => {
-                    const currentQty = parseInt(rentalForm.quantity || "1");
-                    if (currentQty <= 1) {
-                      Toast.show({
-                        type: "info",
-                        text1: "Minimum quantity is 1",
-                        text2: "You must rent at least 1 costume.",
-                        position: "top",
-                      });
-                      return;
-                    }
-                    const newQty = currentQty - 1;
-                    setRentalForm({
-                      ...rentalForm,
-                      quantity: newQty.toString(),
-                    });
-                  }}
-                >
-                  <Text style={styles.quantityButtonText}>-</Text>
-                </TouchableOpacity>
-
-                <TextInput
-                  style={[styles.modalInput, styles.quantityInput]}
-                  keyboardType="numeric"
-                  value={rentalForm.quantity?.toString()}
-                  onChangeText={(text) => {
-                    let num = parseInt(text);
-                    if (isNaN(num)) {
-                      Toast.show({
-                        type: "info",
-                        text1: "Invalid quantity",
-                        text2: "Please enter a number between 1 and 10.",
-                        position: "top",
-                      });
-                      setRentalForm({ ...rentalForm, quantity: "1" });
-                      return;
-                    }
-
-                    if (num > 10) {
-                      Toast.show({
-                        type: "info",
-                        text1: "Maximum limit reached",
-                        text2: "You can rent up to 10 costumes only.",
-                        position: "bottom",
-                      });
-                      num = 10;
-                    } else if (num < 1) {
-                      Toast.show({
-                        type: "info",
-                        text1: "Minimum quantity is 1",
-                        text2: "You must rent at least 1 costume.",
-                        position: "bottom",
-                      });
-                      num = 1;
-                    }
-
-                    setRentalForm({
-                      ...rentalForm,
-                      quantity: num.toString(),
-                    });
-                  }}
-                />
-
-                <TouchableOpacity
-                  style={styles.quantityButton}
-                  onPress={() => {
-                    const currentQty = parseInt(rentalForm.quantity || "1");
-                    if (currentQty >= 10) {
-                      Toast.show({
-                        type: "info",
-                        text1: "Maximum limit reached",
-                        text2: "Sorry, you can't rent more than 10 costumes.",
-                        position: "bottom",
-                      });
-                      return;
-                    }
-                    const newQty = currentQty + 1;
-                    setRentalForm({
-                      ...rentalForm,
-                      quantity: newQty.toString(),
-                    });
-                  }}
-                >
-                  <Text style={styles.quantityButtonText}>+</Text>
-                </TouchableOpacity>
-              </View>
+              <Text style={styles.label}>
+                Deposit: {calculateDeposit().toLocaleString()} VND
+              </Text>
 
               <View style={styles.termsRow}>
                 <TouchableOpacity
@@ -427,15 +463,7 @@ const RentalModal = ({
                     !rentalForm.agreeTerms && { backgroundColor: "#ccc" },
                   ]}
                   disabled={!rentalForm.agreeTerms || isLoading}
-                  onPress={() =>
-                    handleSubmitRental({
-                      rentalForm,
-                      selectedCharacter,
-                      districts,
-                      wards,
-                      setModalVisible,
-                    })
-                  }
+                  onPress={handleSubmitRental}
                 >
                   {isLoading ? (
                     <ActivityIndicator color="#fff" />
@@ -449,7 +477,6 @@ const RentalModal = ({
         </View>
       </KeyboardAvoidingView>
 
-      {/* Start Date Picker */}
       <DateTimePickerModal
         isVisible={isStartDatePickerVisible}
         mode="date"
@@ -459,7 +486,6 @@ const RentalModal = ({
         minimumDate={minStartDate}
       />
 
-      {/* End Date Picker */}
       <DateTimePickerModal
         isVisible={isEndDatePickerVisible}
         mode="date"
@@ -467,7 +493,14 @@ const RentalModal = ({
         onConfirm={handleConfirmEndDate}
         onCancel={() => setEndDatePickerVisible(false)}
         minimumDate={
-          rentalForm.startDate ? parseDate(rentalForm.startDate) : minStartDate
+          rentalForm.startDate
+              ? (() => {
+                  const start = parseDate(rentalForm.startDate);
+                  const min = new Date(start);
+                  min.setDate(start.getDate() + 1); // At least 1 day after start
+                  return min;
+                })()
+              : minStartDate
         }
         maximumDate={
           rentalForm.startDate

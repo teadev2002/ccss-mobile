@@ -22,8 +22,14 @@ import UserInfoModal from "./components/UserInfoModal";
 import OrderPreviewModal from "./components/OrderPreviewModal";
 import LocationPickerService from "../../apiServices/LocationService/LocationPickerService";
 
-const CustomCheckbox = ({ value, onValueChange }) => (
-  <TouchableOpacity onPress={onValueChange} style={styles.checkboxContainer}>
+const CustomCheckbox = ({ value, onValueChange, disabled }) => (
+  <TouchableOpacity
+    onPress={disabled ? null : onValueChange}
+    style={[
+      styles.checkboxContainer,
+      disabled && { opacity: 0.5 }, // Làm mờ khi disabled
+    ]}
+  >
     <Ionicons
       name={value ? "checkbox" : "square-outline"}
       size={24}
@@ -61,6 +67,8 @@ const Cart = () => {
 
   console.log("Cart Items:", JSON.stringify(cartItems, null, 2));
 
+  
+
   useFocusEffect(
     React.useCallback(() => {
       const handleDeepLink = (event) => {
@@ -82,21 +90,29 @@ const Cart = () => {
   );
 
   const toggleItemSelection = (id) => {
-    setSelectedItems((prev) =>
-      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
-    );
-  };
+  const item = cartItems.find((item) => item.cartProductId === id);
+  if (item.stockQuantity === 0) {
+    Alert.alert("Out of Stock", "This item is out of stock and cannot be selected.");
+    return;
+  }
+  setSelectedItems((prev) =>
+    prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
+  );
+};
 
   const toggleSelectAll = () => {
-    setSelectAll((prev) => {
-      const newSelectAll = !prev;
-      setSelectedItems(
-        newSelectAll ? cartItems.map((item) => item.cartProductId) : []
-      );
-      return newSelectAll;
-    });
-  };
-
+  setSelectAll((prev) => {
+    const newSelectAll = !prev;
+    setSelectedItems(
+      newSelectAll
+        ? cartItems
+            .filter((item) => item.stockQuantity > 0)
+            .map((item) => item.cartProductId)
+        : []
+    );
+    return newSelectAll;
+  });
+};
   const increaseQuantity = (item) => {
     if (item.quantity >= item.stockQuantity) {
       Alert.alert("Out of stock", "You cannot add more than available stock.");
@@ -165,38 +181,39 @@ const Cart = () => {
   
 
   const renderItem = ({ item }) => (
-    <View style={styles.cartItem}>
-      <CustomCheckbox
-        value={selectedItems.includes(item.cartProductId)}
-        onValueChange={() => toggleItemSelection(item.cartProductId)}
-      />
-      <Image source={{ uri: item.image }} style={styles.itemImage} />
-      <View style={styles.itemDetails}>
-        <Text style={styles.storeName}>{item.store}</Text>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemVariant}>Type: {item.variant}</Text>
-        <Text style={styles.stockText}>Stock: {item.stockQuantity} items</Text>
-        <View style={styles.priceQuantity}>
-          <Text style={styles.itemPrice}>₫{item.price.toLocaleString()}</Text>
-          <View style={styles.quantityControl}>
-            <TouchableOpacity onPress={() => decreaseQuantity(item)}>
-              <Ionicons name="remove-circle-outline" size={24} color="red" />
-            </TouchableOpacity>
-            <Text style={styles.quantityText}>{item.quantity}</Text>
-            <TouchableOpacity onPress={() => increaseQuantity(item)}>
-              <Ionicons name="add-circle-outline" size={24} color="green" />
-            </TouchableOpacity>
-          </View>
+  <View style={styles.cartItem}>
+    <CustomCheckbox
+      value={selectedItems.includes(item.cartProductId)}
+      onValueChange={() => toggleItemSelection(item.cartProductId)}
+      disabled={item.stockQuantity === 0} // Vô hiệu hóa nếu stock = 0
+    />
+    <Image source={{ uri: item.image }} style={styles.itemImage} />
+    <View style={styles.itemDetails}>
+      <Text style={styles.storeName}>{item.store}</Text>
+      <Text style={styles.itemName}>{item.name}</Text>
+      <Text style={styles.itemVariant}>Type: {item.variant}</Text>
+      <Text style={styles.stockText}>Stock: {item.stockQuantity} items</Text>
+      <View style={styles.priceQuantity}>
+        <Text style={styles.itemPrice}>₫{item.price.toLocaleString()}</Text>
+        <View style={styles.quantityControl}>
+          <TouchableOpacity onPress={() => decreaseQuantity(item)}>
+            <Ionicons name="remove-circle-outline" size={24} color="red" />
+          </TouchableOpacity>
+          <Text style={styles.quantityText}>{item.quantity}</Text>
+          <TouchableOpacity onPress={() => increaseQuantity(item)}>
+            <Ionicons name="add-circle-outline" size={24} color="green" />
+          </TouchableOpacity>
         </View>
       </View>
-      <TouchableOpacity
-        onPress={() => handleDeleteItem(cartId, [item.cartProductId])}
-        style={styles.deleteIcon}
-      >
-        <Ionicons name="trash-outline" size={22} color="gray" />
-      </TouchableOpacity>
     </View>
-  );
+    <TouchableOpacity
+      onPress={() => handleDeleteItem(cartId, [item.cartProductId])}
+      style={styles.deleteIcon}
+    >
+      <Ionicons name="trash-outline" size={22} color="gray" />
+    </TouchableOpacity>
+  </View>
+);
 
   return (
     <View style={styles.container}>

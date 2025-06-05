@@ -9,9 +9,12 @@ import {
 } from "react-native";
 import styles from "../css/Step2Style";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import LocationPickerService from "../../../apiServices/LocationService/LocationPickerService";
 
 const EventStep2 = ({ goNextStep, goBackStep }) => {
   const [location, setLocation] = useState("");
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endDate, setEndDate] = useState("");

@@ -18,7 +18,7 @@ const EventHeader = ({ navigation }) => {
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={30} color="#fff" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Buy Ticket Event</Text>
+          <Text style={styles.headerTitle}>Buy Ticket Festival</Text>
           <TouchableOpacity style={styles.cartButton} onPress={() => navigation.navigate("MyTicket")}>
             <Ionicons name="ticket-outline" size={24} color="#fff" />
           </TouchableOpacity>

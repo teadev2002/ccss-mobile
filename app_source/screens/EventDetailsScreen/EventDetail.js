@@ -48,12 +48,15 @@ const EventDetail = ({ route, navigation }) => {
     const fetchEvent = async () => {
       try {
         const eventdata = await FestivalService.getEventById(eventId);
+          console.log("Event Data", JSON.stringify(eventdata, null , 2));
+          
+        
         setEvent(eventdata);
         if (eventdata?.eventCharacterResponses?.length > 0) {
           const ids = eventdata.eventCharacterResponses.map(
-            (c) => c.characterId
+            (c) => c.eventCharacterId
           );
-          const promises = ids.map((id) => FestivalService.getCharaterById(id));
+          const promises = ids.map((id) => FestivalService.getCosplayerByEventCharId(id));
           const results = await Promise.all(promises);
           setCharacters(results);
         }
@@ -283,13 +286,13 @@ const EventDetail = ({ route, navigation }) => {
 
               return (
                 <TouchableOpacity
-                  key={char.characterId}
+                  key={char.accountId}
                   style={[
                     styles.characterCardWrapper,
                     isLastOdd && styles.oddLastCharacter,
                     isSingle && styles.singleCharacterCard,
                   ]}
-                  onPress={() => toggleCharacter(char.characterId)}
+                  onPress={() => toggleCharacter(char.accountId)}
                   activeOpacity={0.8}
                 >
                   {char.images?.[0]?.urlImage && (
@@ -298,22 +301,24 @@ const EventDetail = ({ route, navigation }) => {
                       style={styles.characterImage}
                     />
                   )}
-                  <Text style={styles.characterName}>{char.characterName}</Text>
+                  <Text style={styles.characterName}>{char.name}</Text>
 
-                  {expandedCharacter === char.characterId && (
+                  {expandedCharacter === char.accountId && (
                     <View style={styles.characterDetail}>
                       <Text>{char.description}</Text>
-                      <Text>💰 Price: {char.price.toLocaleString()}đ</Text>
+                      <Text>💰 Price: {char.salaryIndex.toLocaleString()}đ</Text>
                       <Text>
-                        📏 Height: {char.minHeight} - {char.maxHeight} cm
+                        📏 Height: {char.weight} cm
                       </Text>
                       <Text>
-                        ⚖️ Weight: {char.minWeight} - {char.maxWeight} kg
+                        ⚖️ Weight: {char.weight} kg
                       </Text>
+
                       <Text>
-                        📦 Quantity: {char.quantity}{" "}
-                        {pluralize(char.quantity, "slot")}
+                        Average: {char.averageStar} star
                       </Text>
+
+                      
                     </View>
                   )}
                 </TouchableOpacity>

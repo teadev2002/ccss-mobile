@@ -3,18 +3,16 @@ import {
   Text,
   ImageBackground,
   TouchableOpacity,
-  FlatList,
-    ScrollView,
-  Image,
   TextInput,
+  Image,
+  FlatList,
   Animated,
-  Modal,
-  Pressable,
 } from "react-native";
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient"; // Thêm LinearGradient từ Expo
+import { LinearGradient } from "expo-linear-gradient";
+import Toast from "react-native-toast-message";
 import styles from "./CostumeRentalStyles";
 import CharacterService from "../../apiServices/characterService/CharacterService";
 import RentalModal from "./components/RentalModal";
@@ -24,9 +22,9 @@ const CostumeRental = () => {
   const [searchText, setSearchText] = useState("");
   const [characters, setCharacters] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [selectedCharacters, setSelectedCharacters] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
-
   const [rentalForm, setRentalForm] = useState({
     name: "",
     description: "",
@@ -35,52 +33,65 @@ const CostumeRental = () => {
     district: "",
     ward: "",
     street: "",
-    quantity: "1",
     agreeTerms: false,
   });
 
   useEffect(() => {
-  if (modalVisible && selectedCharacter) {
-    setRentalForm({
-      name: "",
-      description: "",
-      startDate: "",
-      endDate: "",
-      district: "",
-      ward: "",
-      street: "",
-      quantity: "1",
-      agreeTerms: false,
-    });
-  }
-}, [modalVisible, selectedCharacter]);
-  useEffect(() => {
     const fetchCharacters = async () => {
       try {
+        setIsLoading(true);
         const allCharacters = await CharacterService.getAllCharacters();
 
-        const characterDetailsPromises = allCharacters.map(
-          async (character) => {
+        const characterDetailsPromises = allCharacters.map(async (character) => {
+          try {
             const details = await CharacterService.getCharacterById(
               character.characterId
             );
-
             return {
               ...details,
-              image: details.images?.[0]?.urlImage || null, // Lấy ảnh đầu tiên hoặc null nếu không có
+              image: details.images?.[0]?.urlImage || null,
             };
+          } catch (error) {
+            console.error(`Failed to fetch details for ${character.characterId}:`, error);
+            return null;
           }
-        );
+        });
 
-        const detailedCharacters = await Promise.all(characterDetailsPromises);
+        const detailedCharacters = (await Promise.all(characterDetailsPromises)).filter(
+          (char) => char !== null
+        );
         setCharacters(detailedCharacters);
       } catch (error) {
-        console.error("Failed to fetch characters with details:", error);
+        console.error("Failed to fetch characters:", error);
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Failed to load characters. Please try again.",
+          position: "top",
+        });
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchCharacters();
   }, []);
+
+  useEffect(() => {
+    if (modalVisible) {
+      // Reset rentalForm when modal opens
+      setRentalForm({
+        name: "",
+        description: "",
+        startDate: "",
+        endDate: "",
+        district: "",
+        ward: "",
+        street: "",
+        agreeTerms: false,
+      });
+    }
+  }, [modalVisible]);
 
   const filteredItems = characters.filter((item) =>
     item.characterName.toLowerCase().includes(searchText.toLowerCase())
@@ -92,7 +103,40 @@ const CostumeRental = () => {
     extrapolate: "clamp",
   });
 
-  
+  const handleSelectCharacter = (item) => {
+    const isAlreadySelected = selectedCharacters.find(
+      (c) => c.characterId === item.characterId
+    );
+
+    if (isAlreadySelected) {
+      setSelectedCharacters((prev) =>
+        prev.filter((c) => c.characterId !== item.characterId)
+      );
+      Toast.show({
+        type: "info",
+        text1: "Character Deselected",
+        text2: `${item.characterName} has been removed from selection.`,
+        position: "top",
+      });
+    } else {
+      if (selectedCharacters.length >= 10) {
+        Toast.show({
+          type: "info",
+          text1: "Selection Limit Reached",
+          text2: "You can select up to 10 characters only.",
+          position: "top",
+        });
+        return;
+      }
+      setSelectedCharacters((prev) => [...prev, item]);
+      Toast.show({
+        type: "success",
+        text1: "Character Selected",
+        text2: `${item.characterName} has been added to your selection.`,
+        position: "top",
+      });
+    }
+  };
 
   const renderItem = ({ item }) => {
     return (
@@ -103,25 +147,26 @@ const CostumeRental = () => {
           <Text
             style={styles.itemSize}
           >{`Height: ${item.minHeight} cm - ${item.maxHeight} cm`}</Text>
-          <Text style={styles.itemPrice}>Price: {item.price} VND</Text>
+          <Text style={styles.itemPrice}>Price: {item.price?.toLocaleString()} VND</Text>
           <Text style={styles.itemPrice}>Quantity: {item.quantity}</Text>
-          
         </View>
         <View style={styles.itemStatusContainer}>
-          {/* Thay TouchableOpacity bằng LinearGradient */}
-          <TouchableOpacity
-            onPress={() => {
-              setSelectedCharacter(item);
-              setModalVisible(true);
-            }}
-          >
+          <TouchableOpacity onPress={() => handleSelectCharacter(item)}>
             <LinearGradient
-              colors={["#510545", "#22668a"]}
+              colors={
+                selectedCharacters.find((c) => c.characterId === item.characterId)
+                  ? ["#ffa500", "#ff4500"]
+                  : ["#510545", "#22668a"]
+              }
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.trackButton}
             >
-              <Text style={styles.trackButtonText}>Rent Now</Text>
+              <Text style={styles.trackButtonText}>
+                {selectedCharacters.find((c) => c.characterId === item.characterId)
+                  ? "Selected"
+                  : "Select"}
+              </Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -169,25 +214,47 @@ const CostumeRental = () => {
             placeholderTextColor="#666"
           />
         </View>
-        <Animated.FlatList
-          data={filteredItems}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.characterId}
-          contentContainerStyle={styles.listContent}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false }
-          )}
-          scrollEventThrottle={16}
-        />
+        {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <Text>Loading characters...</Text>
+          </View>
+        ) : (
+          <Animated.FlatList
+            data={filteredItems}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.characterId}
+            contentContainerStyle={styles.listContent}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: false }
+            )}
+            scrollEventThrottle={16}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>No characters found.</Text>
+            }
+          />
+        )}
       </View>
+
+      {selectedCharacters.length > 0 && (
+        <View style={styles.footer}>
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={styles.proceedButton}
+          >
+            <Text style={styles.proceedButtonText}>
+              Proceed to Rent ({selectedCharacters.length} selected)
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <RentalModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
         rentalForm={rentalForm}
         setRentalForm={setRentalForm}
-        selectedCharacter={selectedCharacter}
+        selectedCharacters={selectedCharacters}
       />
     </View>
   );

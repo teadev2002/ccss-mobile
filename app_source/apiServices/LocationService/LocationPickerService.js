@@ -39,22 +39,24 @@ const LocationPickerService = {
   },
 
   getAllProvinces: async () => {
-    try {
-      const response = await apiClient.get(`/api/Delivery/provinces`);
-      if (response.data.code !== 200) {
-        throw new Error(response.data.message || "Error fetching districts");
-      }
-      const allProvinces = response.data.data.map((province) => ({
-        id: String(province.provinceId), // Ensure string
-        name: province.provinceName,
-      }));
-      return allProvinces;
-    } catch (error) {
-      console.error("Provinces error:", error);
-      Toast.error(error.message);
-      throw error;
+  try {
+    const response = await apiClient.get(`/api/Delivery/provinces`);
+    if (response.data.code !== 200) {
+      throw new Error(response.data.message || "Error fetching provinces");
     }
-  },
+    const provinceList = response.data.data;
+    const allProvinces = provinceList.map((province) => ({
+      id: String(province.provinceId), // Ensure string
+      name: province.provinceName,
+    }));
+    
+    return allProvinces.slice(4);
+  } catch (error) {
+    console.error("Provinces error:", error);
+    Toast.error(error.message);
+    throw error;
+  }
+},
 
   getStreets: async (districtId) => {
     try {

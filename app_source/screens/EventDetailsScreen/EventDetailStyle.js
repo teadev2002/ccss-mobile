@@ -1,8 +1,14 @@
 import { StyleSheet } from "react-native";
 
-const styles = StyleSheet.create({
+export default StyleSheet.create({
   container: {
     padding: 16,
+    backgroundColor: "#fff",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: "#fff",
   },
   backHeader: {
@@ -14,31 +20,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
-  quantityContainer: {
-  marginTop: 8,
-  marginBottom: 12,
-},
-picker: {
-  height: 40,
-  width: 120,
-  backgroundColor: "#f0f0f0",
-  marginTop: 4,
-  marginBottom: 8,
-},
-quantityInput: {
-  borderWidth: 1,
-  borderColor: "#ccc",
-  borderRadius: 8,
-  paddingHorizontal: 10,
-  paddingVertical: 6,
-  width: 80,
-  fontSize: 16,
-},
-selectText: {
-  fontSize: 14,
-  marginBottom: 4,
-},
-
   backButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -49,34 +30,32 @@ selectText: {
     color: "#000",
     fontWeight: "bold",
   },
-  
   imageWrapper: {
     position: "relative",
     width: "100%",
-    height: 220,
-    marginBottom: 16,
   },
-
   eventImage: {
     width: "100%",
-    height: "100%",
-    borderRadius: 12,
-    resizeMode: "repeat",
+    height: 250,
+    resizeMode: "cover",
   },
-
   overlay: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-    backgroundColor: "rgba(94, 85, 85, 0.5)", // nền đen mờ
-    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: 16,
   },
-
+  backOverlayButton: {
+    position: "absolute",
+    top: 16,
+    left: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    borderRadius: 20,
+    padding: 8,
+    zIndex: 1,
+  },
   eventName: {
     fontSize: 22,
     fontWeight: "bold",
@@ -84,13 +63,11 @@ selectText: {
     marginBottom: 4,
     textAlign: "center",
   },
-
   location: {
     fontSize: 16,
     color: "#eee",
     marginBottom: 2,
   },
-
   date: {
     fontSize: 14,
     color: "#ccc",
@@ -98,7 +75,7 @@ selectText: {
   description: {
     marginTop: 10,
     fontSize: 24,
-    textAlign: "center"
+    textAlign: "center",
   },
   sectionTitle: {
     marginTop: 20,
@@ -130,34 +107,33 @@ selectText: {
     marginVertical: 10,
     justifyContent: "space-between",
   },
-
   selectText: {
     fontSize: 16,
-    color: "#333", 
+    color: "#333",
     fontWeight: "600",
-    
-    
   },
-
+  selectedInfo: {
+    fontSize: 14,
+    color: "#28a745", // Màu xanh để nổi bật
+    marginTop: 8,
+  },
   picker: {
-    width: 100, 
-    height: 60, 
-    backgroundColor: "#fff3e6", // Nền sáng cho Picker
+    width: 100,
+    height: 60,
+    backgroundColor: "#fff3e6",
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#ddd", // Viền mờ
+    borderColor: "#ddd",
     paddingHorizontal: 10,
-    color: "#333", 
+    color: "#333",
     justifyContent: "center",
   },
-
   activityCard: {
     backgroundColor: "#e6f7ff",
     padding: 16,
     borderRadius: 10,
     marginBottom: 12,
   },
-
   activityName: {
     fontWeight: "bold",
     fontSize: 16,
@@ -180,21 +156,18 @@ selectText: {
     borderRadius: 10,
     alignItems: "center",
   },
-
   totalText: {
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 10,
     color: "#e6005c",
   },
-
   orderButton: {
     backgroundColor: "#ff3399",
     paddingVertical: 10,
     paddingHorizontal: 24,
     borderRadius: 8,
   },
-
   orderText: {
     color: "#fff",
     fontWeight: "bold",
@@ -205,7 +178,6 @@ selectText: {
     flexWrap: "wrap",
     justifyContent: "space-between",
   },
-
   characterCardWrapper: {
     width: "48%",
     backgroundColor: "#fff",
@@ -218,15 +190,12 @@ selectText: {
     shadowRadius: 4,
     elevation: 3,
   },
-
   oddLastCharacter: {
-    alignSelf: "center", // tự động căn giữa nếu là item lẻ cuối cùng
+    alignSelf: "center",
   },
-
   singleCharacterCard: {
-    width: "100%", // full width nếu chỉ có 1
+    width: "100%",
   },
-
   characterImage: {
     width: "100%",
     height: 150,
@@ -234,17 +203,13 @@ selectText: {
     marginBottom: 8,
     resizeMode: "contain",
   },
-
   characterName: {
     fontWeight: "bold",
     fontSize: 16,
     marginBottom: 6,
     textAlign: "center",
   },
-
   characterDetail: {
     marginTop: 6,
   },
 });
-
-export default styles;

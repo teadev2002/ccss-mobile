@@ -56,6 +56,23 @@ const styles = StyleSheet.create({
     color: "#333",
     fontSize: 16,
   },
+  footer: {
+  padding: 12,
+  backgroundColor: "#fff",
+  borderTopWidth: 1,
+  borderColor: "#ddd",
+},
+proceedButton: {
+  backgroundColor: "#22668a",
+  padding: 12,
+  borderRadius: 8,
+  alignItems: "center",
+},
+proceedButtonText: {
+  color: "#fff",
+  fontSize: 16,
+  fontWeight: "bold",
+},
   listContent: {
     paddingBottom: 20,
   },

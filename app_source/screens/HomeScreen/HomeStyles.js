@@ -27,7 +27,7 @@ const HomeStyles = StyleSheet.create({
   },
   welcomeText: {
     fontFamily: "Poppins-SemiBoldItalic",
-    fontSize: 24,
+    fontSize: 20,
     color: "#666",
   },
   welcomeName: {

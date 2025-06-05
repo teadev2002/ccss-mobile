@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "ccss-mobile",
+    "name": "CCSS Mobile",
     "slug": "ccss-mobile",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,6 +17,7 @@
     },
     "android": {
       "package": "com.ccss_mobile",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -24,6 +25,17 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "89018ce8-3104-48f9-9a9e-ad65cb0e5e76"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/89018ce8-3104-48f9-9a9e-ad65cb0e5e76"
     }
   }
 }

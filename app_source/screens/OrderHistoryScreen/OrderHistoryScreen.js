@@ -27,14 +27,17 @@ const formatDate = (isoDate) => {
     .padStart(2, "0")}/${dateObj.getFullYear()}`;
 };
 
-const mapOrderStatus = (status) => {
-  switch (status) {
-    case 1:
-      return "Paid";
-    case 0:
-      return "Pending";
-    case 2:
+const mapOrderStatus = (shipStatus) => {
+  switch (shipStatus) {
+    case 4:
       return "Canceled";
+    case 5:
+      return "Refund";
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      return "Paid";
     default:
       return "Unknown";
   }
@@ -50,7 +53,6 @@ const OrderHistoryScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const { user } = useContext(AuthContext);
   const navigation = useNavigation();
-  const [shippingFee, setShippingFee] = useState(0);
 
   const formatShortOrderId = (id) => {
     if (!id) return "Unknown";
@@ -62,15 +64,11 @@ const OrderHistoryScreen = () => {
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
-
-      const orderResponse = await orderService.getAllOrdersByAccountId(
-        user?.id
-      );
+      const orderResponse = await orderService.getAllOrdersByAccountId(user?.id);
       const sortedResponse = orderResponse.sort(
         (a, b) => new Date(b.orderDate) - new Date(a.orderDate)
       );
 
-      // Lấy shipping fee cho từng order song song
       const shippingFees = await Promise.all(
         sortedResponse.map((order) =>
           LocationPickerService.calculateDeliveryFee(order.orderId)
@@ -83,11 +81,12 @@ const OrderHistoryScreen = () => {
         subtotal: order.totalPrice,
         shippingFee: shippingFees[index],
         total: order.totalPrice + shippingFees[index],
-        status: mapOrderStatus(order.orderStatus),
+        status: mapOrderStatus(order.shipStatus), // Dùng shipStatus
         deliveryStatus: order.shipStatus,
         address: order.address || "Updating...",
         phone: order.phone || "0123456789",
         note: order.description || "(None)",
+        reason: order.cancelReason || "", // Sử dụng cancelReason
         products: order.orderProducts.map((p) => ({
           name: p.product?.productName || "Unknown",
           quantity: p.quantity,
@@ -126,13 +125,31 @@ const OrderHistoryScreen = () => {
 
   const renderShippingStatusBar = (status) => {
     const steps = [
-      { label: "Confirmation", icon: "document-text" },
-      { label: "Picked", icon: "cube" },
-      { label: "In Transit", icon: "car" },
-      { label: "Delivered", icon: "checkmark-done" },
+      { label: "WaitConfirm", icon: "hourglass-outline" },
+      { label: "WaitToPick", icon: "cube-outline" },
+      { label: "In Transit", icon: "car-outline" },
+      { label: "Received", icon: "checkmark-circle-outline" },
+      { label: "Canceled", icon: "close-circle-outline" },
+      { label: "Refund", icon: "refresh-outline" },
     ];
 
-    const currentIndex = Math.min(Number(status), steps.length - 1);
+    let currentIndex;
+    if (status === 4) {
+      currentIndex = steps.findIndex((step) => step.label === "Canceled");
+    } else if (status === 5) {
+      currentIndex = steps.findIndex((step) => step.label === "Refund");
+    } else {
+      currentIndex = Math.min(Number(status), steps.length - 1);
+    }
+
+    const getStatusColor = (stepIndex) => {
+      if (status === 4) {
+        return stepIndex <= currentIndex ? "#f44336" : "#ccc"; // Đỏ cho Cancel
+      } else if (status === 5) {
+        return stepIndex <= currentIndex ? "#ff9800" : "#ccc"; // Vàng cho Refund
+      }
+      return stepIndex <= currentIndex ? "#4caf50" : "#ccc"; // Xanh cho trạng thái khác
+    };
 
     return (
       <View style={{ marginVertical: 12, alignItems: "center" }}>
@@ -158,7 +175,7 @@ const OrderHistoryScreen = () => {
                 >
                   <View
                     style={{
-                      backgroundColor: isCompleted ? "#4caf50" : "#ccc",
+                      backgroundColor: getStatusColor(idx),
                       borderRadius: 20,
                       width: 30,
                       height: 30,
@@ -177,7 +194,7 @@ const OrderHistoryScreen = () => {
                     style={{
                       marginTop: 4,
                       fontSize: 12,
-                      color: isCompleted ? "#4caf50" : "#999",
+                      color: getStatusColor(idx),
                       textAlign: "center",
                     }}
                   >
@@ -195,7 +212,8 @@ const OrderHistoryScreen = () => {
                       }%`,
                       width: `${100 / steps.length}%`,
                       height: 2,
-                      backgroundColor: idx < currentIndex ? "#4caf50" : "#ccc",
+                      backgroundColor:
+                        idx < currentIndex ? getStatusColor(idx) : "#ccc",
                       zIndex: 1,
                     }}
                   />
@@ -217,7 +235,6 @@ const OrderHistoryScreen = () => {
           </Text>
           <Text style={styles.orderDate}>📅 {item.date}</Text>
         </View>
-
         <View style={{ justifyContent: "center" }}>
           <View
             style={[
@@ -229,9 +246,12 @@ const OrderHistoryScreen = () => {
           </View>
         </View>
       </View>
-
+      {(item.status === "Canceled" || item.status === "Refund") && item.reason && (
+        <Text style={[styles.orderDate, { color: "#f44336" }]}>
+          Reason: {item.reason}
+        </Text>
+      )}
       <Text style={styles.orderTotal}>💵 {item.total.toLocaleString()}đ</Text>
-
       <TouchableOpacity
         style={styles.viewDetailButton}
         onPress={() => {
@@ -246,33 +266,7 @@ const OrderHistoryScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <HeaderHero title="Order History"></HeaderHero>
-
-      {/* Filter */}
-      <View style={styles.filterContainer}>
-        {["All", "Pending", "Paid", "Canceled"].map((status) => (
-          <TouchableOpacity
-            key={status}
-            style={[
-              styles.filterButton,
-              filter === status && styles.filterButtonActive,
-            ]}
-            onPress={() => applyFilter(status)}
-          >
-            <Text
-              style={[
-                styles.filterButtonText,
-                filter === status && styles.filterButtonTextActive,
-              ]}
-            >
-              {status}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* List */}
+      <HeaderHero title="Souvenir History" />
       {isLoading ? (
         <ActivityIndicator
           size="large"
@@ -283,17 +277,15 @@ const OrderHistoryScreen = () => {
         <FlatList
           data={filteredOrders}
           renderItem={renderItem}
-          keyExtractor={(item) => item.orderId}
+          keyExtractor={(item) => item.orderId.toString()}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           ListEmptyComponent={
-            <Text style={styles.emptyText}>No order in list.</Text>
+            <Text style={styles.emptyText}>No orders in list.</Text>
           }
         />
       )}
-
-      {/* Modal */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -315,14 +307,19 @@ const OrderHistoryScreen = () => {
                   <Text style={styles.detailText}>
                     Status: {selectedOrder.status}
                   </Text>
+                  {(selectedOrder.status === "Canceled" ||
+                    selectedOrder.status === "Refund") &&
+                    selectedOrder.reason && (
+                      <Text style={[styles.detailText, { color: "#f44336" }]}>
+                        Reason: {selectedOrder.reason}
+                      </Text>
+                    )}
                   <Text style={styles.detailText}>
                     Total: ₫{selectedOrder.total.toLocaleString()}
                   </Text>
-
                   <View style={styles.divider} />
                   <Text style={styles.sectionTitle}>🚚 Shipping Status</Text>
                   {renderShippingStatusBar(selectedOrder.deliveryStatus)}
-
                   <View style={styles.divider} />
                   <Text style={styles.sectionTitle}>📦 Products</Text>
                   {selectedOrder.products.length > 0 ? (
@@ -346,7 +343,6 @@ const OrderHistoryScreen = () => {
                   ) : (
                     <Text style={{ color: "#666" }}>No products</Text>
                   )}
-
                   <View style={styles.divider} />
                   <Text style={styles.sectionTitle}>🧾 Order Summary</Text>
                   <Text style={styles.detailText}>
@@ -370,7 +366,6 @@ const OrderHistoryScreen = () => {
                   <Text style={[styles.detailText, { fontWeight: "bold" }]}>
                     Total: {selectedOrder.total.toLocaleString()}₫
                   </Text>
-
                   <TouchableOpacity
                     style={styles.closeButton}
                     onPress={() => setModalVisible(false)}

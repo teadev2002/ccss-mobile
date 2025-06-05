@@ -132,7 +132,7 @@ const Home = () => {
       icon: <Feather name="gift" size={40} color="#fff" />,
     },
     {
-      title: "Buy Ticket Event",
+      title: "Buy Ticket Festival",
       description: "",
       icon: <Ionicons name="ticket-outline" size={40} color="#fff" />,
     },
@@ -187,7 +187,7 @@ const Home = () => {
       navigation.navigate("CostumeRental");
     } else if (item.title === "Buy Souvenirs") {
       navigation.navigate("Souvenirs");
-    } else if (item.title === "Buy Ticket Event") {
+    } else if (item.title === "Buy Ticket Festival") {
       navigation.navigate("EventRegistration");
     }
   }
@@ -217,11 +217,11 @@ const Home = () => {
     <ScrollView style={HomeStyles.container}>
       <View style={HomeStyles.welcomeSection}>
         <View style={HomeStyles.welcomeTextContainer}>
-          <Text style={HomeStyles.welcomeText}>Welcome </Text>
-          <Text style={HomeStyles.welcomeName}>Home, {user?.accountName}</Text>
+          <Text style={HomeStyles.welcomeText}>Welcome</Text>
+          <Text style={HomeStyles.welcomeName}> {user?.accountName}</Text>
         </View>
         <Avatar.Image
-          size={70}
+          size={45}
           source={{ uri: profile.imageUrl }}
           style={HomeStyles.welcomeAvatar} />
       </View>

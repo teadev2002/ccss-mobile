@@ -26,9 +26,6 @@ const Souvenirs = () => {
   const { productItems, cartCount, loading, handleAddToCart, stockMap } =
     useSouvenirProducts(accountId, searchText);
 
-    console.log("Product Items:", JSON.stringify(productItems, null, 2));
-    
-
   const filteredItems = productItems.filter(
     (item) =>
       item.name && item.name.toLowerCase().includes(searchText.toLowerCase())

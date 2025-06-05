@@ -131,8 +131,8 @@ const Login = () => {
                   {isLoading ? "Logging in..." : "Login In →"}
                 </Text>
               </TouchableOpacity>
-              <Text style={styles.orText}>or continue with</Text>
-              <TouchableOpacity
+              {/* <Text style={styles.orText}>or continue with</Text> */}
+              {/* <TouchableOpacity
                 style={styles.googleButton}
                 onPress={() =>
                   Alert.alert(
@@ -148,7 +148,7 @@ const Login = () => {
                   resizeMode="contain"
                 />
                 <Text style={styles.googleButtonText}>Google</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <TouchableOpacity
                 onPress={() => navigation.navigate("Signup")}
                 disabled={isLoading}

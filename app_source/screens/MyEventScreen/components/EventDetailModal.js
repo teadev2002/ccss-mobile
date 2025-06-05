@@ -88,6 +88,7 @@ const EventDetailModal = ({ visible, onClose, event }) => {
                     </Text>
                     <Text style={styles.infoText}>
                       End: {charDetail.requestDateResponses[0].endDate}
+                      
                     </Text>
                     <Text style={styles.infoText}>
                       ⏳ Total Hours:{" "}
