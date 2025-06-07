@@ -125,8 +125,8 @@ const OrderHistoryScreen = () => {
 
   const renderShippingStatusBar = (status) => {
     const steps = [
-      { label: "WaitConfirm", icon: "hourglass-outline" },
-      { label: "WaitToPick", icon: "cube-outline" },
+      { label: "Confirm", icon: "hourglass-outline" },
+      { label: "Picked", icon: "cube-outline" },
       { label: "In Transit", icon: "car-outline" },
       { label: "Received", icon: "checkmark-circle-outline" },
       { label: "Canceled", icon: "close-circle-outline" },

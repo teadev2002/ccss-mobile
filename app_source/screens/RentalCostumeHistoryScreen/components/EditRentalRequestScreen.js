@@ -31,30 +31,56 @@ export default function EditRentalRequestScreen({ route, navigation }) {
   const [initialDescription] = useState(rentalData.description || "");
   const [initialLocation] = useState(rentalData.location);
   const [initialCostumes, setInitialCostumes] = useState([]);
-  const [loading, setLoading] = useState(false); // Thêm loading cho lưu
+  const [loading, setLoading] = useState(false);
   const scrollViewRef = useRef(null);
+
   useEffect(() => {
     const initializeData = async () => {
       setLoading(true);
       try {
+        // API CALL: getAllCharacters
+        const charactersData = await MyRentalCostumeService.getAllCharacters();
+        console.log("Characters data:", charactersData);
+        setCharacters(charactersData);
+
         // Initialize costumes
         const initialCostumesData =
-          rentalData.charactersListResponse?.map((c) => ({
-            id: c.requestCharacterId,
-            costume: c.characterName || "",
-            characterId: c.characterId || "",
-            description: c.description || "",
-            maxHeight: c.maxHeight || 0,
-            minHeight: c.minHeight || 0,
-            maxWeight: c.maxWeight || 0,
-            minWeight: c.minWeight || 0,
-            quantity: c.quantity || 1,
-            maxQuantity: c.characterDetails?.quantity || c.quantity || 1,
-            unitPrice: c.characterDetails?.price || 0,
-            totalPrice:
-              (c.characterDetails?.price || 0) * (c.quantity || 1) * totalDays,
-          })) || [];
+          rentalData.charactersListResponse?.map((c) => {
+            const matchingCharacter = charactersData.find(
+              (char) => char.characterId === c.characterId
+            );
+            const price =
+              matchingCharacter?.price || c.characterDetails?.price || 0;
+            const quantity = c.quantity || 1;
 
+            console.log("Costume data:", {
+              character: c.characterName,
+              characterId: c.characterId,
+              price,
+              quantity,
+              characterDetails: c.characterDetails,
+            });
+
+            return {
+              id: c.requestCharacterId,
+              costume: c.characterName || "",
+              characterId: c.characterId || "",
+              description: c.description || "",
+              maxHeight: c.maxHeight || 0,
+              minHeight: c.minHeight || 0,
+              maxWeight: c.maxWeight || 0,
+              minWeight: c.minWeight || 0,
+              quantity,
+              maxQuantity:
+                c.characterDetails?.quantity ||
+                matchingCharacter?.quantity ||
+                quantity,
+              unitPrice: price,
+              totalPrice: price * quantity * totalDays,
+            };
+          }) || [];
+
+        console.log("Initial costumes:", initialCostumesData);
         setCostumes(initialCostumesData);
         setInitialCostumes(JSON.parse(JSON.stringify(initialCostumesData)));
 
@@ -62,21 +88,17 @@ export default function EditRentalRequestScreen({ route, navigation }) {
         const quantities = initialCostumesData.reduce(
           (acc, c) => ({
             ...acc,
-            [c.id]: c.quantity || 1,
+            [c.id]: c.quantity,
           }),
           {}
         );
         setOriginalQuantities(quantities);
 
-        // API CALL: getAllCharacters
-        const data = await MyRentalCostumeService.getAllCharacters();
-        setCharacters(data);
-
-        // Calculate initial deposit
+        // Calculate deposit based on costumes
         updateTotalDeposit(initialCostumesData);
       } catch (error) {
         console.error("Error initializing data:", error.message);
-        alert("Không thể tải danh sách nhân vật.");
+        alert("Failed to load character list.");
       } finally {
         setLoading(false);
       }
@@ -90,10 +112,7 @@ export default function EditRentalRequestScreen({ route, navigation }) {
     return endDate.diff(startDate, "day") || 1;
   };
 
-  const totalDays = calculateTotalDays(
-    rentalData.startDate,
-    rentalData.endDate
-  );
+  const totalDays = calculateTotalDays(rentalData.startDate, rentalData.endDate);
 
   const calculateDepositFromCostumes = (costumes) => {
     return costumes.reduce((sum, c) => {
@@ -133,13 +152,13 @@ export default function EditRentalRequestScreen({ route, navigation }) {
 
   const handleRemoveCostume = (id) => {
     if (costumes.length <= 1) {
-      alert("Không thể xóa nhân vật cuối cùng! Cần ít nhất một nhân vật.");
+      alert("Cannot delete the last character! At least one character is required.");
       return;
     }
-    Alert.alert("Xác nhận", "Bạn có chắc muốn xóa nhân vật này?", [
-      { text: "Hủy", style: "cancel" },
+    Alert.alert("Confirm", "Are you sure you want to delete this character?", [
+      { text: "Cancel", style: "cancel" },
       {
-        text: "Xóa",
+        text: "Delete",
         style: "destructive",
         onPress: () => {
           const costume = costumes.find((c) => c.id === id);
@@ -167,7 +186,7 @@ export default function EditRentalRequestScreen({ route, navigation }) {
       (c) => c.characterId === selectedId
     );
     if (!selectedCharacter) {
-      alert("Nhân vật không hợp lệ!");
+      alert("Invalid character!");
       return;
     }
 
@@ -175,7 +194,7 @@ export default function EditRentalRequestScreen({ route, navigation }) {
       (c, i) => i !== index && c.characterId === selectedId
     );
     if (isDuplicate) {
-      alert("Nhân vật này đã được chọn!");
+      alert("This character has already been selected!");
       return;
     }
 
@@ -207,29 +226,27 @@ export default function EditRentalRequestScreen({ route, navigation }) {
     newCostumes[index].description = text;
     setCostumes(newCostumes);
   };
+
   const handleQuantityChange = (index, text) => {
     const newCostumes = [...costumes];
     const costume = newCostumes[index];
 
-    // Cho phép chuỗi rỗng tạm thời
     if (text === "") {
-      newCostumes[index].quantity = ""; // Lưu chuỗi rỗng tạm thời
+      newCostumes[index].quantity = "";
       newCostumes[index].totalPrice = 0;
       setCostumes(newCostumes);
       updateTotalDeposit(newCostumes);
       return;
     }
 
-    // Chuyển đổi thành số
     const qty = parseInt(text);
     if (isNaN(qty)) {
-      return; // Bỏ qua nếu không phải số
+      return;
     }
 
     const currentQuantity = originalQuantities[costume.id] || costume.quantity;
 
     if (qty < 1) {
-      // Không hiển thị alert ngay, sẽ kiểm tra khi lưu
       newCostumes[index].quantity = qty;
       newCostumes[index].totalPrice = 0;
       setCostumes(newCostumes);
@@ -242,7 +259,7 @@ export default function EditRentalRequestScreen({ route, navigation }) {
       const maxAllowed = Math.min(costume.maxQuantity || 10, 10);
       if (additionalQty > maxAllowed) {
         alert(
-          `Không đủ hàng cho ${costume.costume}. Yêu cầu thêm ${additionalQty}, nhưng chỉ có ${maxAllowed} sẵn có!`
+          `Not enough stock for ${costume.costume}. Requested additional ${additionalQty}, but only ${maxAllowed} available!`
         );
         return;
       }
@@ -256,9 +273,7 @@ export default function EditRentalRequestScreen({ route, navigation }) {
   };
 
   const isValidUUID = (id) => {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      id
-    );
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
   };
 
   const isDataChanged = () => {
@@ -271,10 +286,7 @@ export default function EditRentalRequestScreen({ route, navigation }) {
       return true;
     }
 
-    if (
-      costumes.length !== initialCostumes.length ||
-      charactersToRemove.length > 0
-    ) {
+    if (costumes.length !== initialCostumes.length || charactersToRemove.length > 0) {
       return true;
     }
 
@@ -294,47 +306,48 @@ export default function EditRentalRequestScreen({ route, navigation }) {
     setLoading(true);
     try {
       if (!name || !location) {
-        alert("Tên và địa điểm là bắt buộc!");
+        alert("Name and location are required!");
         return;
       }
       if (costumes.length === 0) {
-        alert("Cần ít nhất một nhân vật!");
+        alert("At least one character is required!");
         return;
       }
       for (const c of costumes) {
         if (!c.characterId) {
-          alert(`Vui lòng chọn nhân vật cho ${c.costume || "chưa xác định"}!`);
+          alert(`Please select a character for ${c.costume || "undefined"}!`);
           return;
         }
         if (c.quantity <= 0) {
-          alert(`Số lượng của ${c.costume} phải lớn hơn 0!`);
+          alert(`Quantity for ${c.costume} must be greater than 0!`);
           return;
         }
       }
       if (totalDays > 5) {
-        alert("Thời gian thuê không được vượt quá 5 ngày!");
+        alert("Rental duration cannot exceed 5 days!");
         return;
       }
 
       if (!isDataChanged()) {
-        alert("Không có thay đổi nào được phát hiện!");
+        alert("No changes detected!");
         navigation.goBack();
         return;
       }
 
       const requestId = rentalData.requestId;
-      const requestData =
-        await MyRentalCostumeService.GetRequestCostumeByRequestId(requestId);
+      const requestData = await MyRentalCostumeService.GetRequestCostumeByRequestId(requestId);
       if (requestData.status === "Browsed") {
-        alert("Yêu cầu đã được duyệt, vui lòng tải lại dữ liệu!");
+        const { onSave } = route.params;
+        if (onSave && typeof onSave === "function") {
+          await onSave();
+        }
+        alert("Request has been browsed, please reload data!");
         navigation.goBack();
         return;
       }
 
       const deletePromises = charactersToRemove.map(async (char) => {
-        await MyRentalCostumeService.DeleteCharacterInReq(
-          char.requestCharacterId
-        );
+        await MyRentalCostumeService.DeleteCharacterInReq(char.requestCharacterId);
       });
       await Promise.all(deletePromises);
 
@@ -348,12 +361,8 @@ export default function EditRentalRequestScreen({ route, navigation }) {
           quantity: c.quantity,
           addRequestDates: [
             {
-              startDate: dayjs(rentalData.startDate, "DD/MM/YYYY").format(
-                "HH:mm DD/MM/YYYY"
-              ),
-              endDate: dayjs(rentalData.endDate, "DD/MM/YYYY").format(
-                "HH:mm DD/MM/YYYY"
-              ),
+              startDate: dayjs(rentalData.startDate, "DD/MM/YYYY").format("HH:mm DD/MM/YYYY"),
+              endDate: dayjs(rentalData.endDate, "DD/MM/YYYY").format("HH:mm DD/MM/YYYY"),
             },
           ],
         };
@@ -361,8 +370,7 @@ export default function EditRentalRequestScreen({ route, navigation }) {
       }
 
       await new Promise((resolve) => setTimeout(resolve, 500));
-      const updatedRequest =
-        await MyRentalCostumeService.GetRequestCostumeByRequestId(requestId);
+      const updatedRequest = await MyRentalCostumeService.GetRequestCostumeByRequestId(requestId);
 
       const updatedCostumes = costumes.map((c) => {
         if (!isValidUUID(c.id)) {
@@ -409,9 +417,7 @@ export default function EditRentalRequestScreen({ route, navigation }) {
       setDeposit(newDeposit);
 
       const updatedCharactersPromises = updatedCostumes.map(async (c) => {
-        const charData = await MyRentalCostumeService.getCharacterById(
-          c.characterId
-        );
+        const charData = await MyRentalCostumeService.getCharacterById(c.characterId);
         return {
           ...c,
           maxQuantity: charData.quantity || 1,
@@ -431,11 +437,15 @@ export default function EditRentalRequestScreen({ route, navigation }) {
         )
       );
 
-      alert("Cập nhật thành công!");
+      const { onSave } = route.params;
+      if (onSave && typeof onSave === "function") {
+        await onSave();
+      }
+      alert("Updated successfully!");
       navigation.goBack();
     } catch (error) {
-      console.error("Lỗi:", error);
-      alert(error.message || "Không thể lưu thay đổi. Vui lòng thử lại.");
+      console.error("Error:", error);
+      alert(error.message || "Failed to save changes. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -448,7 +458,7 @@ export default function EditRentalRequestScreen({ route, navigation }) {
         onValueChange={(value) => handleCharacterChange(index, value)}
         style={styles.picker}
       >
-        <Picker.Item label="-- Chọn nhân vật --" value="" />
+        <Picker.Item label="-- Select Character --" value="" />
         {characters.map((char) => (
           <Picker.Item
             key={char.characterId}
@@ -462,20 +472,24 @@ export default function EditRentalRequestScreen({ route, navigation }) {
         style={styles.input}
         value={item.costume}
         editable={false}
-        placeholder="Nhân vật"
+        placeholder="Character Name"
       />
 
-      <Text style={styles.label}>Cosplayer Description:</Text>
+      <Text style={styles.label}>Character Description:</Text>
       <TextInput
         style={styles.input}
         value={item.description}
         onChangeText={(text) => handleDescriptionChange(index, text)}
+        placeholder="Enter description"
       />
 
       <View style={styles.row}>
         <Text style={styles.label}>
           👤 Height: {item.minHeight} - {item.maxHeight} cm
         </Text>
+      </View>
+
+      <View style={styles.row}>
         <Text style={styles.label}>
           ⚖️ Weight: {item.minWeight} - {item.maxWeight} kg
         </Text>
@@ -491,12 +505,11 @@ export default function EditRentalRequestScreen({ route, navigation }) {
           const newCostumes = [...costumes];
           const currentQty = newCostumes[index].quantity;
           if (currentQty === "" || currentQty < 1) {
-            newCostumes[index].quantity = 1; // Đặt lại thành 1 nếu rỗng hoặc nhỏ hơn 1
-            newCostumes[index].totalPrice =
-              newCostumes[index].unitPrice * (totalDays + 1);
+            newCostumes[index].quantity = 1;
+            newCostumes[index].totalPrice = newCostumes[index].unitPrice * (totalDays + 1);
             setCostumes(newCostumes);
             updateTotalDeposit(newCostumes);
-            alert(`Số lượng của ${newCostumes[index].costume} phải lớn hơn 0!`);
+            alert(`Quantity for ${newCostumes[index].costume} must be greater than 0!`);
           }
         }}
       />
@@ -505,6 +518,8 @@ export default function EditRentalRequestScreen({ route, navigation }) {
         <Text style={styles.label}>
           💵 Unit Price: {item.unitPrice.toLocaleString()} VND
         </Text>
+      </View>
+      <View style={styles.row}>
         <Text style={styles.label}>
           🧮 Total Price: {item.totalPrice.toLocaleString()} VND
         </Text>
@@ -525,40 +540,37 @@ export default function EditRentalRequestScreen({ route, navigation }) {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.container} ref={scrollViewRef}>
-        <Text style={styles.title}>🎫 Edit Rental Costume</Text>
+        <Text style={styles.title}>🎫 Edit Costume Rental Request</Text>
 
         {/* General Info Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>🔧 Over View</Text>
+          <Text style={styles.sectionTitle}>🔧 Overview</Text>
           <TextInput
             style={styles.input}
             value={name}
             onChangeText={setName}
-            placeholder="Name"
+            placeholder="Enter name"
           />
           <TextInput
             style={styles.input}
             value={description}
             onChangeText={setDescription}
-            placeholder="Description"
+            placeholder="Enter description"
           />
           <TextInput
             style={styles.input}
             value={location}
             onChangeText={setLocation}
-            placeholder="Location"
+            placeholder="Enter location"
           />
           <View style={styles.metaRow}>
             <Text style={styles.metaText}>
-              📅 Start Date:{" "}
-              <Text style={styles.metaValue}>{rentalData.startDate}</Text>
+              📅 Start Date: <Text style={styles.metaValue}>{rentalData.startDate}</Text>
             </Text>
           </View>
-
           <View style={styles.metaRow}>
             <Text style={styles.metaText}>
-              📅 Return Date:{" "}
-              <Text style={styles.metaValue}>{rentalData.endDate}</Text>
+              📅 Return Date: <Text style={styles.metaValue}>{rentalData.endDate}</Text>
             </Text>
           </View>
         </View>
@@ -566,15 +578,15 @@ export default function EditRentalRequestScreen({ route, navigation }) {
         {/* Costume Section */}
         <View style={styles.section}>
           <View style={styles.costumeHeader}>
-            <Text style={styles.sectionTitle}>🎭 Cosplayers</Text>
+            <Text style={styles.sectionTitle}>🎭 Characters</Text>
             <TouchableOpacity onPress={handleAddCostume} style={styles.addBtn}>
               <Ionicons name="add-circle" size={20} color="#fff" />
-              <Text style={styles.addBtnText}>Add new</Text>
+              <Text style={styles.addBtnText}>Add New</Text>
             </TouchableOpacity>
           </View>
 
           {characters.length === 0 ? (
-            <Text style={styles.emptyText}>No Cosplayer</Text>
+            <Text style={styles.emptyText}>No Characters Available</Text>
           ) : (
             <FlatList
               data={costumes}
@@ -585,7 +597,7 @@ export default function EditRentalRequestScreen({ route, navigation }) {
           )}
         </View>
 
-        {/* Spacer để tránh footer che nội dung */}
+        {/* Spacer to avoid footer overlap */}
         <View style={{ height: 80 }} />
       </ScrollView>
 
@@ -593,10 +605,7 @@ export default function EditRentalRequestScreen({ route, navigation }) {
       <View style={styles.footer}>
         <View style={styles.footerContent}>
           <Text style={styles.footerText}>
-            💰 Deposit:{" "}
-            <Text style={styles.footerValue}>
-              {deposit.toLocaleString()} VND
-            </Text>
+            💰 Deposit: <Text style={styles.footerValue}>{deposit.toLocaleString()} VND</Text>
           </Text>
           <TouchableOpacity
             style={[styles.footerBtn, loading && styles.footerBtnDisabled]}
@@ -606,7 +615,7 @@ export default function EditRentalRequestScreen({ route, navigation }) {
             {loading ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text style={styles.footerBtnText}>💾 Save </Text>
+              <Text style={styles.footerBtnText}>💾 Save</Text>
             )}
           </TouchableOpacity>
         </View>

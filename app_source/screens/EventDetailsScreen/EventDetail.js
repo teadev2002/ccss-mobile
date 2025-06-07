@@ -276,7 +276,7 @@ const EventDetail = ({ route, navigation }) => {
       {characters.length > 0 && (
         <>
           <Text style={styles.sectionTitle}>
-            🧙 {pluralize(characters.length, "Character")}
+            🧙 {pluralize(characters.length, "Cosplayer")}
           </Text>
           <View style={styles.characterGrid}>
             {characters.map((char, index) => {
@@ -302,25 +302,6 @@ const EventDetail = ({ route, navigation }) => {
                     />
                   )}
                   <Text style={styles.characterName}>{char.name}</Text>
-
-                  {expandedCharacter === char.accountId && (
-                    <View style={styles.characterDetail}>
-                      <Text>{char.description}</Text>
-                      <Text>💰 Price: {char.salaryIndex.toLocaleString()}đ</Text>
-                      <Text>
-                        📏 Height: {char.weight} cm
-                      </Text>
-                      <Text>
-                        ⚖️ Weight: {char.weight} kg
-                      </Text>
-
-                      <Text>
-                        Average: {char.averageStar} star
-                      </Text>
-
-                      
-                    </View>
-                  )}
                 </TouchableOpacity>
               );
             })}
@@ -334,7 +315,7 @@ const EventDetail = ({ route, navigation }) => {
           Total Prices: {calculateTotal().toLocaleString()}đ
         </Text>
         <TouchableOpacity style={styles.orderButton} onPress={handleOrder}>
-          <Text style={styles.orderText}>🚀 Order Now</Text>
+          <Text style={styles.orderText}>🚀 Buy Now</Text>
         </TouchableOpacity>
       </View>
       {/* Payment Modals */}

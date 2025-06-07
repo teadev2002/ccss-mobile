@@ -1,201 +1,206 @@
 import { StyleSheet } from "react-native";
 
+const COLORS = {
+  primary: "#4F46E5",
+  secondary: "#6B7280",
+  accent: "#10B981",
+  background: "#F9FAFB",
+  card: "#FFFFFF",
+  text: "#1F2937",
+  textSecondary: "#6B7280",
+  error: "#EF4444",
+  warning: "#FBBF24",
+  success: "#10B981",
+};
+
+const TYPOGRAPHY = {
+  title: { fontSize: 24, fontWeight: "bold", color: COLORS.text },
+  subtitle: { fontSize: 18, fontWeight: "600", color: COLORS.text },
+  body: { fontSize: 16, color: COLORS.text },
+  caption: { fontSize: 14, color: COLORS.textSecondary },
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.background,
     padding: 16,
-    backgroundColor: '#f0f2f5',
   },
-
   header: {
-    fontSize: 26,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#1e293b',
+    ...TYPOGRAPHY.title,
+    marginBottom: 16,
   },
-
-  searchBox: {
-    backgroundColor: '#fff',
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.card,
     borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: 8,
     fontSize: 16,
-    borderColor: '#e5e7eb',
-    borderWidth: 1,
-    marginBottom: 16,
+    color: COLORS.text,
   },
-
   sortRow: {
-    flexDirection: 'row',
-    gap: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 16,
   },
-
   pickerContainer: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.card,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    justifyContent: 'center',
+    marginHorizontal: 4,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-
+  picker: {
+    height: 48,
+    color: COLORS.text,
+  },
   tabRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 16,
-    backgroundColor: '#e2e8f0',
-    borderRadius: 10,
-    padding: 4,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
   },
-
   tabButton: {
     flex: 1,
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: 'center',
+    paddingVertical: 12,
+    alignItems: "center",
+    backgroundColor: COLORS.card,
+    borderRadius: 12,
+    marginHorizontal: 4,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-
   activeTab: {
-    backgroundColor: '#2563eb',
+    backgroundColor: COLORS.primary,
   },
-
   tabText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1e293b',
+    ...TYPOGRAPHY.body,
+    color: COLORS.text,
   },
-
+  activeTabText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
   statusFilters: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 20,
-    justifyContent: 'flex-start',
-  },
-
-  statusBtn: {
-    borderWidth: 1,
-    borderColor: '#94a3b8',
-    borderRadius: 20,
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    backgroundColor: '#f8fafc',
-  },
-
-  statusBtnActive: {
-    backgroundColor: '#2563eb',
-    borderColor: '#2563eb',
-  },
-
-  statusText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#2563eb',
-  },
-
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
+  },
+  statusBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: COLORS.card,
+    borderRadius: 20,
+    marginRight: 8,
+    marginBottom: 8,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  statusBtnActive: {
+    backgroundColor: COLORS.primary,
+  },
+  statusText: {
+    ...TYPOGRAPHY.caption,
+    color: COLORS.text,
+  },
+  statusTextActive: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  card: {
+    backgroundColor: COLORS.card,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
     shadowRadius: 6,
-    elevation: 4,
   },
 
+  cardTitle: {
+    ...TYPOGRAPHY.subtitle,
+    marginBottom: 8,
+  },
   statusBadge: {
-  alignSelf: "flex-start",
-  borderRadius: 12,
-  paddingVertical: 4,
-  paddingHorizontal: 10,
-  marginTop: 6,
-},
-
-statusText: {
-  fontSize: 13,
-  fontWeight: "600",
-  textTransform: "capitalize",
-},
-
-  title: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0f172a',
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    marginBottom: 8,
+  },
+  statusBadgeText: {
+    ...TYPOGRAPHY.caption,
+    fontWeight: "600",
+  },
+  cardText: {
+    ...TYPOGRAPHY.body,
     marginBottom: 4,
   },
-updateBtn: {
-  backgroundColor: "#007AFF",
-  padding: 10,
-  borderRadius: 5,
-  marginHorizontal: 5,
-},
-  status: {
-    backgroundColor: '#3b82f6',
-    color: '#fff',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-    fontSize: 12,
-    overflow: 'hidden',
-    marginTop: 4,
-    alignSelf: 'flex-start',
-  },
-
   buttonRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 16,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 8,
   },
-
-  editBtn: {
+  actionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.card,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginRight: 8,
+    marginBottom: 8,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  cancelButton: {
+    backgroundColor: "#FEE2E2",
+  },
+  actionButtonText: {
+    ...TYPOGRAPHY.caption,
+    color: COLORS.primary,
+    marginLeft: 4,
+    fontWeight: "600",
+  },
+  listContent: {
+    paddingBottom: 40,
+  },
+  loadingContainer: {
     flex: 1,
-    backgroundColor: '#2563eb',
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 20,
   },
-
-  detailBtn: {
-    flex: 1,
-    backgroundColor: '#64748b',
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-
-  btnText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-
-  // Bổ sung styles cho các nút đặc biệt
-  payBtn: {
-    flex: 1,
-    backgroundColor: '#22c55e', // xanh lá tươi mát, button Pay
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-
-  cancelBtn: {
-    flex: 1,
-    backgroundColor: '#ef4444', // đỏ nổi bật, nút Cancel
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-
-  feedbackBtn: {
-    flex: 1,
-    backgroundColor: '#f97316', // cam ấm áp, nút Feedback
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
+  loadingText: {
+    ...TYPOGRAPHY.body,
+    color: COLORS.textSecondary,
+    marginTop: 8,
   },
 });
 

@@ -89,7 +89,7 @@ const DeliveryTimelinePopup = ({ visible, onClose, contractImages }) => {
                           style={styles.deliveryCloseButton}
                           onPress={() => handleRefund(item)}
                         >
-                          <Text style={styles.deliveryCloseText}>Open Refund</Text>
+                          <Text style={styles.deliveryCloseText}>Return costume</Text>
                         </TouchableOpacity>
                       )}
                     </View>

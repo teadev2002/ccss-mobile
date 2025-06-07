@@ -10,11 +10,15 @@ import {
 import styles from "../css/Step2Style";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import LocationPickerService from "../../../apiServices/LocationService/LocationPickerService";
+import { Picker } from "@react-native-picker/picker";
 
 const EventStep2 = ({ goNextStep, goBackStep }) => {
   const [location, setLocation] = useState("");
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
+  const [address, setAddress] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
+  const [selectedWard, setSelectedWard] = useState(null);
   const [startDate, setStartDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -30,6 +34,49 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
   const minStartDate = new Date(today);
   minStartDate.setDate(today.getDate() + 4);
   minStartDate.setHours(0, 0, 0, 0);
+
+  // Fetch districts for HCM (ID: 202)
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      try {
+        const districtData = await LocationPickerService.getDistricts();
+        setDistricts(districtData);
+      } catch (error) {
+        console.error("Error fetching districts:", error.message);
+        Alert.alert("Error", "Failed to load districts. Please try again.");
+      }
+    };
+    fetchDistricts();
+  }, []);
+
+  // Fetch wards when district changes
+  useEffect(() => {
+    if (selectedDistrict) {
+      const fetchWards = async () => {
+        try {
+          const wardData = await LocationPickerService.getStreets(selectedDistrict.id);
+          setWards(wardData);
+          setSelectedWard(null); // Reset ward when district changes
+        } catch (error) {
+          console.error("Error fetching wards:", error.message);
+          Alert.alert("Error", "Failed to load wards. Please try again.");
+        }
+      };
+      fetchWards();
+    } else {
+      setWards([]);
+      setSelectedWard(null);
+    }
+  }, [selectedDistrict]);
+
+  // Update location string when address, ward, or district changes
+  useEffect(() => {
+    if (address && selectedWard && selectedDistrict) {
+      setLocation(`${address}, ${selectedWard.name}, ${selectedDistrict.name}, Thành phố Hồ Chí Minh`);
+    } else {
+      setLocation("");
+    }
+  }, [address, selectedWard, selectedDistrict]);
 
   const handleDateConfirm = (date) => {
     const formatted = date.toISOString().split("T")[0];
@@ -110,13 +157,54 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Event Details</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Location"
-        value={location}
-        onChangeText={setLocation}
-      />
+      {/* Location Picker */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Location</Text>
+        <Text style={styles.fixedProvince}>Thành phố Hồ Chí Minh</Text>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={selectedDistrict?.id || ""}
+            onValueChange={(value) => {
+              const district = districts.find((d) => d.id === value);
+              setSelectedDistrict(district || null);
+            }}
+            style={styles.picker}
+          >
+            <Picker.Item label="Select District" value="" />
+            {districts.map((district) => (
+              <Picker.Item
+                key={district.id}
+                label={district.name}
+                value={district.id}
+              />
+            ))}
+          </Picker>
+        </View>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={selectedWard?.id || ""}
+            onValueChange={(value) => {
+              const ward = wards.find((w) => w.id === value);
+              setSelectedWard(ward || null);
+            }}
+            style={styles.picker}
+            enabled={wards.length > 0}
+          >
+            <Picker.Item label="Select Ward" value="" />
+            {wards.map((ward) => (
+              <Picker.Item key={ward.id} label={ward.name} value={ward.id} />
+            ))}
+          </Picker>
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter detailed address"
+          value={address}
+          onChangeText={setAddress}
+        />
+      </View>
 
+      {/* Date and Time Pickers */}
       <View style={styles.row}>
         <TouchableOpacity
           style={[styles.input, styles.halfInput]}
@@ -127,7 +215,6 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
         >
           <Text>{startDate || "Select Start Date"}</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[styles.input, styles.halfInput]}
           onPress={() => {
@@ -149,7 +236,6 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
         >
           <Text>{startTime || "Select Start Time"}</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[styles.input, styles.halfInput]}
           onPress={() => {
@@ -161,6 +247,7 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
         </TouchableOpacity>
       </View>
 
+      {/* Description */}
       <TextInput
         style={[styles.input, styles.textarea]}
         placeholder="Event Description"
@@ -170,16 +257,18 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
         onChangeText={setDescription}
       />
 
+      {/* Buttons */}
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.backButton} onPress={goBackStep}>
           <Text style={styles.buttonText}>Back</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={styles.nextButton}
           onPress={() => {
             if (
-              !location ||
+              !address ||
+              !selectedDistrict ||
+              !selectedWard ||
               !startDate ||
               !startTime ||
               !endDate ||

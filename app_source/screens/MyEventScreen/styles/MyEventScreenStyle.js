@@ -118,6 +118,65 @@ heroSection: {
     justifyContent: "space-between",
     gap: 8, 
   },
+
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    color: "#555",
+    marginBottom: 20,
+  },
+  depositOptions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  depositOption: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    marginHorizontal: 5,
+    width: 60,
+    alignItems: "center",
+  },
+  depositOptionSelected: {
+    borderColor: "#0275d8",
+    backgroundColor: "#e6f3ff",
+  },
+  depositOptionText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  depositOptionTextSelected: {
+    color: "#0275d8",
+    fontWeight: "bold",
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  modalButton: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
 });
 
 export default styles;

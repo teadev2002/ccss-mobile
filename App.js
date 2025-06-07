@@ -44,6 +44,8 @@ import RentalRequestDetailScreen from "./app_source/screens/RentalCostumeHistory
 import QuantitySelector from "./app_source/screens/EventDetailsScreen/QuantitySelector.js";
 import { AlertProvider } from "./assets/context/AlertHelper.js";
 import RequestCard from "./app_source/screens/HireHistoryScreen/components/RequestCard.js";
+import RefundDetailScreen from "./app_source/screens/RentalCostumeHistoryScreen/components/RefundDetailScreen.js";
+import UpdateRefundScreen from "./app_source/screens/RentalCostumeHistoryScreen/components/UpdateRefundScreen.js";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -109,6 +111,19 @@ export default function App() {
                   component={MainDrawer}
                   options={{ headerShown: false }}
                 />
+                <Stack.Screen
+                  name="RefundDetailScreen"
+                  component={RefundDetailScreen}
+                  options={{ headerShown: false }}
+                />
+
+                <Stack.Screen
+                  name="UpdateRefundScreen"
+                  component={UpdateRefundScreen}
+                  options={{ headerShown: false }}
+                />
+
+                
                 <Stack.Screen
                   name="Profile"
                   component={Profile}

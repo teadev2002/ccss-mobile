@@ -20,14 +20,14 @@ const HomeStyles = StyleSheet.create({
     elevation: 10,
   },
   welcomeAvatar: {
-    marginLeft: 150,
+    marginLeft: 80,
   },
   welcomeTextContainer: {
     flex: 1,
   },
   welcomeText: {
     fontFamily: "Poppins-SemiBoldItalic",
-    fontSize: 20,
+    fontSize: 30,
     color: "#666",
   },
   welcomeName: {

@@ -210,7 +210,7 @@ const Home = () => {
   return (
     <>
     <AppBar
-      title="CCSS Logo"
+      title="CCSS"
       onOpenDrawer={() => navigation.openDrawer()}
       onNotificationPress={() => navigation.navigate('Notify')}
     />

@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   ScrollView,
-  StyleSheet,
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
@@ -21,6 +20,7 @@ import MyRentalCostumeService from "../../apiServices/MyCostumeService/MyRentalC
 import DeliveryTimelinePopup from "./DeliveryTimelinePopup";
 import RefundConfirmPopup from "./RefundConfirmPopup";
 import CancelDetailPopup from "./components/CancelDetailPopup";
+import styles from "./styles/RentalCostumeStyle";
 
 const COLORS = {
   primary: "#4F46E5",
@@ -33,13 +33,6 @@ const COLORS = {
   error: "#EF4444",
   warning: "#FBBF24",
   success: "#10B981",
-};
-
-const TYPOGRAPHY = {
-  title: { fontSize: 24, fontWeight: "bold", color: COLORS.text },
-  subtitle: { fontSize: 18, fontWeight: "600", color: COLORS.text },
-  body: { fontSize: 16, color: COLORS.text },
-  caption: { fontSize: 14, color: COLORS.textSecondary },
 };
 
 const TAB_FILTERS = {
@@ -88,7 +81,7 @@ const getStatusStyle = (status) => {
 export default function RentalCostumeScreen() {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
-  const { history, loading, contracts, refresh } = useEventData(user?.id);
+  const { history, contracts, loading, error, refresh } = useEventData(user?.id);
 
   const [activeTab, setActiveTab] = useState("MyRequest");
   const [selectedStatuses, setSelectedStatuses] = useState(TAB_FILTERS.MyRequest);
@@ -104,19 +97,39 @@ export default function RentalCostumeScreen() {
   const [contractRefunds, setContractRefunds] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
+  // Xử lý lỗi từ useEventData
+  useEffect(() => {
+    if (error) {
+      alert(`Error: ${error}`);
+    }
+  }, [error]);
+
+  // Tải contractRefunds cho tab MyRefund
   useEffect(() => {
     if (activeTab === "MyRefund") {
       const fetchContractRefunds = async () => {
         try {
           const response = await MyRentalCostumeService.getAllContractRefunds();
-          setContractRefunds(response);
+          console.log("Contract refunds:", response);
+          setContractRefunds(response || []);
         } catch (error) {
-          console.error("Lỗi khi lấy danh sách ContractRefund:", error.message);
+          console.error("Error fetching contract refunds:", error.message);
+          alert("Failed to load refund data. Please try again.");
         }
       };
       fetchContractRefunds();
     }
   }, [activeTab]);
+
+  // Xác định tab active dựa trên dữ liệu
+  useEffect(() => {
+    const dataList = history.length > 0 ? history : contracts;
+    if (dataList.length > 0) {
+      const newTab = determineActiveTab(dataList);
+      setActiveTab(newTab);
+      setSelectedStatuses(TAB_FILTERS[newTab]);
+    }
+  }, [history, contracts]);
 
   const determineActiveTab = (dataList) => {
     if (!dataList || dataList.length === 0) return "MyRequest";
@@ -127,36 +140,31 @@ export default function RentalCostumeScreen() {
     return "MyRequest";
   };
 
-  useEffect(() => {
-    const dataList = history.length > 0 ? history : contracts;
-    if (dataList.length > 0) {
-      const newTab = determineActiveTab(dataList);
-      setActiveTab(newTab);
-      setSelectedStatuses(TAB_FILTERS[newTab]);
-    }
-  }, [history, contracts]);
-
+  // Hàm refresh khi vuốt xuống
   const onRefresh = async () => {
-  setRefreshing(true);
-  try {
-    await refresh();
-    if (activeTab === "MyRefund") {
-      const response = await MyRentalCostumeService.getAllContractRefunds();
-      setContractRefunds(response);
+    setRefreshing(true);
+    try {
+      console.log("Starting refresh for tab:", activeTab);
+      await refresh();
+      if (activeTab === "MyRefund") {
+        const response = await MyRentalCostumeService.getAllContractRefunds();
+        console.log("Contract refunds:", response);
+        setContractRefunds(response || []);
+      }
+      console.log("Refresh completed");
+    } catch (error) {
+      console.error("Error refreshing data:", error.message);
+      alert("Failed to refresh data. Please try again.");
+    } finally {
+      setRefreshing(false);
     }
-  } catch (error) {
-    console.error("Lỗi khi làm mới dữ liệu:", error.message);
-    alert("Không thể làm mới dữ liệu. Vui lòng thử lại.");
-  } finally {
-    setRefreshing(false);
-  }
-};
+  };
 
   const openContractPdf = (item) => {
     if (item?.urlPdf) {
       navigation.navigate("ContractPdfScreen", { url: item.urlPdf });
     } else {
-      alert("Hợp đồng không khả dụng.");
+      alert("Contract PDF is not available.");
     }
   };
 
@@ -164,7 +172,7 @@ export default function RentalCostumeScreen() {
     const payload = {
       fullName: user.accountName,
       orderInfo: "",
-      amount: item.amount,
+      amount: item.deposit,
       purpose: PaymentPurpose.CONTRACT_DEPOSIT,
       accountId: user?.id,
       ticketId: "",
@@ -178,10 +186,10 @@ export default function RentalCostumeScreen() {
       if (res?.includes("http")) {
         navigation.navigate("PaymentWebviewScreen", { paymentUrl: res });
       } else {
-        alert("Không nhận được link thanh toán.");
+        alert("Payment link not received.");
       }
     } catch (err) {
-      alert("Thanh toán thất bại: " + (err.message || "Lỗi không xác định"));
+      alert(`Payment failed: ${err.message || "Unknown error"}`);
     }
   };
 
@@ -196,10 +204,11 @@ export default function RentalCostumeScreen() {
   const handleViewDelivery = async (item) => {
     try {
       const result = await MyRentalCostumeService.getContractImg(item.contractId);
-      setContractImages(result);
+      setContractImages(result || []);
       setPopupVisible(true);
     } catch (error) {
-      console.error("Lỗi lấy ảnh giao hàng", error);
+      console.error("Error fetching delivery images:", error.message);
+      alert("Failed to load delivery images.");
     }
   };
 
@@ -213,24 +222,24 @@ export default function RentalCostumeScreen() {
   };
 
   const handleConfirmCancel = async ({ contractId, reason }) => {
-  try {
-    await MyRentalCostumeService.cancelContract(contractId, reason);
-    alert("Hủy hợp đồng thành công!");
-    refresh(); // Tải lại history và contracts
-  } catch (error) {
-    console.error("Lỗi khi hủy hợp đồng:", error.message);
-    alert("Không thể hủy hợp đồng!");
-  }
-};
+    try {
+      await MyRentalCostumeService.cancelContract(contractId, reason);
+      alert("Contract cancelled successfully!");
+      await refresh();
+    } catch (error) {
+      console.error("Error cancelling contract:", error.message);
+      alert("Failed to cancel contract!");
+    }
+  };
 
   const handleRefundRequest = (item) => {
     setSelectedContractId(item.contractId);
     setRefundPopupVisible(true);
   };
 
-  const handleRefundSuccess = () => {
+  const handleRefundSuccess = async () => {
     setRefundPopupVisible(false);
-    refresh();
+    await refresh();
   };
 
   const dataList =
@@ -336,20 +345,20 @@ export default function RentalCostumeScreen() {
         {isRefundTab ? (
           <>
             <Text style={styles.cardTitle}>
-              Hoàn tiền #{item.contractRefundId}
+              Refund #{item.contractRefundId}
             </Text>
             <View style={[styles.statusBadge, getStatusStyle(item.status)]}>
               <Text style={styles.statusBadgeText}>{item.status}</Text>
             </View>
             <Text style={styles.cardText}>
-              💵 Số tiền: {item.amount?.toLocaleString()} VND
+              💵 Amount: {item.amount?.toLocaleString()} VND
             </Text>
             <Text style={styles.cardText}>
-              💰 Giá thiệt hại: {item.price?.toLocaleString()} VND
+              💰 Damage Cost: {item.price?.toLocaleString()} VND
             </Text>
-            <Text style={styles.cardText}>📅 Ngày tạo: {item.createDate}</Text>
+            <Text style={styles.cardText}>📅 Created: {item.createDate}</Text>
             <Text style={styles.cardText}>
-              📅 Ngày cập nhật: {item.updateDate || "Chưa có"}
+              📅 Updated: {item.updateDate || "Not yet"}
             </Text>
             <Text style={styles.cardText}>📝 {item.description}</Text>
           </>
@@ -367,26 +376,33 @@ export default function RentalCostumeScreen() {
             </Text>
             <Text style={styles.cardText}>📅 Start Date: {item.startDate}</Text>
             <Text style={styles.cardText}>📅 Return Date: {item.endDate}</Text>
-            <Text style={styles.cardText}>📍Location:  {item.location}</Text>
+            <Text style={styles.cardText}>📍 Location: {item.location}</Text>
           </>
         )}
 
         <View style={styles.buttonRow}>
           {!isRefundTab && (
             <>
+              {item.status === "Pending" && (
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={() =>
+                    navigation.navigate("EditRentalRequest", {
+                      rentalData: item,
+                      onSave: refresh,
+                    })
+                  }
+                >
+                  <Ionicons name="pencil" size={16} color={COLORS.primary} />
+                  <Text style={styles.actionButtonText}>Edit</Text>
+                </TouchableOpacity>
+              )}
               <TouchableOpacity
                 style={styles.actionButton}
                 onPress={() =>
-                  navigation.navigate("EditRentalRequest", { rentalData: item })
-                }
-              >
-                <Ionicons name="pencil" size={16} color={COLORS.primary} />
-                <Text style={styles.actionButtonText}>Sửa</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() =>
-                  navigation.navigate("RentalRequestDetail", { rentalData: item })
+                  navigation.navigate("RentalRequestDetail", {
+                    rentalData: item,
+                  })
                 }
               >
                 <Ionicons
@@ -394,7 +410,7 @@ export default function RentalCostumeScreen() {
                   size={16}
                   color={COLORS.primary}
                 />
-                <Text style={styles.actionButtonText}>Chi tiết</Text>
+                <Text style={styles.actionButtonText}>Detail</Text>
               </TouchableOpacity>
             </>
           )}
@@ -409,22 +425,24 @@ export default function RentalCostumeScreen() {
                   onPress={() => handleDeposit(item)}
                 >
                   <Ionicons name="card" size={16} color={COLORS.primary} />
-                  <Text style={styles.actionButtonText}>Thanh toán cọc</Text>
+                  <Text style={styles.actionButtonText}>Pay Now</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.actionButton}
                   onPress={() => openContractPdf(item)}
                 >
                   <Ionicons name="document" size={16} color={COLORS.primary} />
-                  <Text style={styles.actionButtonText}>Xem PDF</Text>
+                  <Text style={styles.actionButtonText}>View PDF</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.actionButton, styles.cancelButton]}
                   onPress={() => handleCancelContract(item)}
                 >
                   <Ionicons name="close" size={16} color={COLORS.error} />
-                  <Text style={[styles.actionButtonText, { color: COLORS.error }]}>
-                    Hủy
+                  <Text
+                    style={[styles.actionButtonText, { color: COLORS.error }]}
+                  >
+                    Cancel
                   </Text>
                 </TouchableOpacity>
               </>
@@ -436,21 +454,14 @@ export default function RentalCostumeScreen() {
                   onPress={() => handleViewDelivery(item)}
                 >
                   <Ionicons name="car" size={16} color={COLORS.primary} />
-                  <Text style={styles.actionButtonText}>Xem giao hàng</Text>
+                  <Text style={styles.actionButtonText}>View Delivery</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.actionButton}
                   onPress={() => openContractPdf(item)}
                 >
                   <Ionicons name="document" size={16} color={COLORS.primary} />
-                  <Text style={styles.actionButtonText}>Xem PDF</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.actionButton}
-                  onPress={() => handleRefundRequest(item)}
-                >
-                  <Ionicons name="refresh" size={16} color={COLORS.primary} />
-                  <Text style={styles.actionButtonText}>Hoàn tiền</Text>
+                  <Text style={styles.actionButtonText}>View PDF</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -461,14 +472,14 @@ export default function RentalCostumeScreen() {
                   onPress={() => handleViewDelivery(item)}
                 >
                   <Ionicons name="car" size={16} color={COLORS.primary} />
-                  <Text style={styles.actionButtonText}>Xem giao hàng</Text>
+                  <Text style={styles.actionButtonText}>View Delivery</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.actionButton}
                   onPress={() => openContractPdf(item)}
                 >
                   <Ionicons name="document" size={16} color={COLORS.primary} />
-                  <Text style={styles.actionButtonText}>Xem PDF</Text>
+                  <Text style={styles.actionButtonText}>View PDF</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -478,51 +489,65 @@ export default function RentalCostumeScreen() {
                 onPress={() => handleSendFeedback(item)}
               >
                 <Ionicons name="chatbubble" size={16} color={COLORS.primary} />
-                <Text style={styles.actionButtonText}>Gửi phản hồi</Text>
+                <Text style={styles.actionButtonText}>Send Feedback</Text>
               </TouchableOpacity>
             )}
           </View>
         )}
 
-        {isRefundTab && item.status !== "Paid" && (
-          <View style={[styles.buttonRow, { marginTop: 12 }]}>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() =>
-                navigation.navigate("RefundDetailScreen", { refundData: item })
-              }
-            >
-              <Ionicons
-                name="information-circle"
-                size={16}
-                color={COLORS.primary}
-              />
-              <Text style={styles.actionButtonText}>Chi tiết hoàn tiền</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() =>
-                navigation.navigate("UpdateRefundScreen", { refundData: item })
-              }
-            >
-              <Ionicons name="pencil" size={16} color={COLORS.primary} />
-              <Text style={styles.actionButtonText}>Cập nhật hoàn tiền</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        {isRefundTab && (
+  <View style={[styles.buttonRow, { marginTop: 12 }]}>
+    <TouchableOpacity
+      style={styles.actionButton}
+      onPress={() =>
+        navigation.navigate("RefundDetailScreen", { refundData: item })
+      }
+    >
+      <Ionicons
+        name="information-circle"
+        size={16}
+        color={COLORS.primary}
+      />
+      <Text style={styles.actionButtonText}>Refund Detail</Text>
+    </TouchableOpacity>
+
+    {item.status !== "Paid" && (
+      <TouchableOpacity
+        style={styles.actionButton}
+        onPress={() =>
+          navigation.navigate("UpdateRefundScreen", { refundData: item })
+        }
+      >
+        <Ionicons name="pencil" size={16} color={COLORS.primary} />
+        <Text style={styles.actionButtonText}>Update Refund</Text>
+      </TouchableOpacity>
+    )}
+  </View>
+)}
+
       </View>
     );
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Quản lý thuê trang phục</Text>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={[COLORS.primary]}
+          tintColor={COLORS.primary}
+        />
+      }
+    >
+      <Text style={styles.header}>Costume Rental Management</Text>
 
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color={COLORS.textSecondary} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search by name"
+          placeholder="Search by name, date, or location"
           placeholderTextColor={COLORS.textSecondary}
           value={search}
           onChangeText={setSearch}
@@ -560,7 +585,7 @@ export default function RentalCostumeScreen() {
       {loading && !refreshing ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
+          <Text style={styles.loadingText}>Loading data...</Text>
         </View>
       ) : (
         <FlatList
@@ -574,200 +599,8 @@ export default function RentalCostumeScreen() {
           renderItem={renderRequest}
           scrollEnabled={false}
           contentContainerStyle={styles.listContent}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={[COLORS.primary]}
-              tintColor={COLORS.primary}
-            />
-          }
         />
       )}
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-    padding: 16,
-  },
-  header: {
-    ...TYPOGRAPHY.title,
-    marginBottom: 16,
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.card,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 16,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  searchInput: {
-    flex: 1,
-    marginLeft: 8,
-    fontSize: 16,
-    color: COLORS.text,
-  },
-  sortRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  pickerContainer: {
-    flex: 1,
-    backgroundColor: COLORS.card,
-    borderRadius: 12,
-    marginHorizontal: 4,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  picker: {
-    height: 48,
-    color: COLORS.text,
-  },
-  tabRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  tabButton: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: "center",
-    backgroundColor: COLORS.card,
-    borderRadius: 12,
-    marginHorizontal: 4,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  activeTab: {
-    backgroundColor: COLORS.primary,
-  },
-  tabText: {
-    ...TYPOGRAPHY.body,
-    color: COLORS.text,
-  },
-  activeTabText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-  statusFilters: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginBottom: 16,
-  },
-  statusBtn: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    backgroundColor: COLORS.card,
-    borderRadius: 20,
-    marginRight: 8,
-    marginBottom: 8,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  statusBtnActive: {
-    backgroundColor: COLORS.primary,
-  },
-  statusText: {
-    ...TYPOGRAPHY.caption,
-    color: COLORS.text,
-  },
-  statusTextActive: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-  card: {
-    backgroundColor: COLORS.card,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-  },
-
-  cardTitle: {
-    ...TYPOGRAPHY.subtitle,
-    marginBottom: 8,
-  },
-  statusBadge: {
-    alignSelf: "flex-start",
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    borderRadius: 16,
-    marginBottom: 8,
-  },
-  statusBadgeText: {
-    ...TYPOGRAPHY.caption,
-    fontWeight: "600",
-  },
-  cardText: {
-    ...TYPOGRAPHY.body,
-    marginBottom: 4,
-  },
-  buttonRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 8,
-  },
-  actionButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.card,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    marginRight: 8,
-    marginBottom: 8,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  cancelButton: {
-    backgroundColor: "#FEE2E2",
-  },
-  actionButtonText: {
-    ...TYPOGRAPHY.caption,
-    color: COLORS.primary,
-    marginLeft: 4,
-    fontWeight: "600",
-  },
-  listContent: {
-    paddingBottom: 40,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 20,
-  },
-  loadingText: {
-    ...TYPOGRAPHY.body,
-    color: COLORS.textSecondary,
-    marginTop: 8,
-  },
-});
