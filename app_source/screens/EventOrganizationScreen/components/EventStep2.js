@@ -54,7 +54,9 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
     if (selectedDistrict) {
       const fetchWards = async () => {
         try {
-          const wardData = await LocationPickerService.getStreets(selectedDistrict.id);
+          const wardData = await LocationPickerService.getStreets(
+            selectedDistrict.id
+          );
           setWards(wardData);
           setSelectedWard(null); // Reset ward when district changes
         } catch (error) {
@@ -72,7 +74,9 @@ const EventStep2 = ({ goNextStep, goBackStep }) => {
   // Update location string when address, ward, or district changes
   useEffect(() => {
     if (address && selectedWard && selectedDistrict) {
-      setLocation(`${address}, ${selectedWard.name}, ${selectedDistrict.name}, Thành phố Hồ Chí Minh`);
+      setLocation(
+        `${address}, ${selectedWard.name}, ${selectedDistrict.name}, Thành phố Hồ Chí Minh`
+      );
     } else {
       setLocation("");
     }

@@ -32,10 +32,23 @@ const MyTicket = () => {
   const fetchTickets = async () => {
     try {
       const accountId = user?.id;
-      const response = await PurchaseHistoryService.getAllTicketsByAccountId(accountId);
+      const response = await PurchaseHistoryService.getAllTicketsByAccountId(
+        accountId
+      );
       console.log("ticket", JSON.stringify(response, null, 2));
-      
-      setTickets(response);
+
+      // Sort tickets by event startDate (soonest first)
+      const sortedTickets = [...response].sort((a, b) => {
+        const dateA = a.ticket?.event?.startDate
+          ? new Date(a.ticket.event.startDate)
+          : new Date(0);
+        const dateB = b.ticket?.event?.startDate
+          ? new Date(b.ticket.event.startDate)
+          : new Date(0);
+        return dateA - dateB;
+      });
+
+      setTickets(sortedTickets);
     } catch (error) {
       Alert.alert("Error", "Failed to load ticket history: " + error.message);
     } finally {
@@ -45,7 +58,12 @@ const MyTicket = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    return `${hours}:${minutes} ${day}/${month}/${year}`;
   };
 
   const openModal = (ticket) => {
@@ -93,7 +111,11 @@ const MyTicket = () => {
       <HeaderHero title="My Ticket"></HeaderHero>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#000" style={{ marginTop: 20 }} />
+        <ActivityIndicator
+          size="large"
+          color="#000"
+          style={{ marginTop: 20 }}
+        />
       ) : (
         <ScrollView style={styles.scrollContainer}>
           {tickets.length > 0 ? (
@@ -105,8 +127,14 @@ const MyTicket = () => {
                   </Title>
 
                   <Paragraph style={styles.detailText}>
-                    <Ionicons name="calendar-clear-outline" size={16} color="#555" />{" "}
-                    {item.ticket?.event?.startDate ? formatDate(item.ticket.event.startDate) : "?"}
+                    <Ionicons
+                      name="calendar-clear-outline"
+                      size={16}
+                      color="#555"
+                    />{" "}
+                    {item.ticket?.event?.startDate
+                      ? formatDate(item.ticket.event.startDate)
+                      : "?"}
                   </Paragraph>
 
                   <Paragraph style={styles.detailText}>
@@ -145,7 +173,9 @@ const MyTicket = () => {
               </Card>
             ))
           ) : (
-            <Text style={styles.noTicketText}>You don't have any tickets yet!</Text>
+            <Text style={styles.noTicketText}>
+              You don't have any tickets yet!
+            </Text>
           )}
         </ScrollView>
       )}
@@ -156,7 +186,6 @@ const MyTicket = () => {
         swipeDirection={["down"]}
         onBackdropPress={closeModal}
         style={styles.modalStyle}
-        
       >
         <View style={[styles.modalContent, { height: "75%" }]}>
           {selectedTicket && (
@@ -170,18 +199,22 @@ const MyTicket = () => {
 
               <ScrollView style={styles.modalBody}>
                 <View style={styles.modalRow}>
-                  <Ionicons name="calendar-clear-outline" size={18} color="#6c63ff" />
-                  <Text style={styles.modalLabel}>Date:</Text>
-                  <Text style={styles.modalValue}>{formatDate(selectedTicket.ticket?.event?.startDate)}</Text>
+                  <Ionicons
+                    name="calendar-clear-outline"
+                    size={18}
+                    color="#6c63ff"
+                  />
+                  <Text style={styles.modalLabel}>Start Date:</Text>
+                  <Text style={styles.modalValue}>
+                    {formatDate(selectedTicket.ticket?.event?.startDate)}
+                  </Text>
                 </View>
 
                 <View style={styles.modalRow}>
                   <Ionicons name="time-outline" size={18} color="#6c63ff" />
-                  <Text style={styles.modalLabel}>Time:</Text>
+                  <Text style={styles.modalLabel}>End Date:</Text>
                   <Text style={styles.modalValue}>
-                    {selectedTicket.ticket?.event?.startDate ? formatDate(selectedTicket.ticket.event.startDate) : "?"}
-                    {" "} - {" "}
-                    {selectedTicket.ticket?.event?.endDate ? formatDate(selectedTicket.ticket.event.endDate) : "?"}
+                    {formatDate(selectedTicket.ticket?.event?.endDate)}
                   </Text>
                 </View>
 
@@ -202,9 +235,22 @@ const MyTicket = () => {
                 </View>
 
                 <View style={styles.modalRow}>
-                  <Ionicons name="pricetags-outline" size={18} color="#6c63ff" />
+                  <Ionicons
+                    name="pricetags-outline"
+                    size={18}
+                    color="#6c63ff"
+                  />
                   <Text style={styles.modalLabel}>Ticket Type:</Text>
-                  <Text style={[styles.modalValue, { color: getTicketTypeColor(selectedTicket.ticket.ticketType) }]}>
+                  <Text
+                    style={[
+                      styles.modalValue,
+                      {
+                        color: getTicketTypeColor(
+                          selectedTicket.ticket.ticketType
+                        ),
+                      },
+                    ]}
+                  >
                     {getTicketTypeLabel(selectedTicket.ticket.ticketType)}
                   </Text>
                 </View>
@@ -212,7 +258,9 @@ const MyTicket = () => {
                 <View style={styles.modalRow}>
                   <Ionicons name="people-outline" size={18} color="#6c63ff" />
                   <Text style={styles.modalLabel}>Quantity:</Text>
-                  <Text style={styles.modalValue}>{selectedTicket.quantity}</Text>
+                  <Text style={styles.modalValue}>
+                    {selectedTicket.quantity}
+                  </Text>
                 </View>
 
                 <View style={styles.modalRow}>
@@ -224,14 +272,19 @@ const MyTicket = () => {
                 </View>
 
                 <View style={[styles.modalRow, { alignItems: "flex-start" }]}>
-                  <Ionicons name="document-text-outline" size={18} color="#6c63ff" />
-                  <Text style={styles.modalLabel}>Description:</Text>
+                  <Ionicons
+                    name="document-text-outline"
+                    size={18}
+                    color="#6c63ff"
+                  />
+                  <Text style={styles.modalLabel}>
+                    Description:{" "}
+                    {selectedTicket.ticket?.description || "No description"}
+                  </Text>
                 </View>
-                <Text style={styles.modalDescription}>
-                  {selectedTicket.ticket?.description || "No description"}
-                </Text>
+                <Text style={styles.modalDescription}></Text>
 
-                <View style={styles.modalRow}>
+                {/* <View style={styles.modalRow}>
                   <Ionicons name="person-outline" size={18} color="#6c63ff" />
                   <Text style={styles.modalLabel}>Created by:</Text>
                   <Text style={styles.modalValue}>
@@ -255,7 +308,7 @@ const MyTicket = () => {
                       {formatDate(selectedTicket.ticket.event.updateDate)}
                     </Text>
                   </View>
-                )}
+                )} */}
               </ScrollView>
 
               <TouchableOpacity onPress={closeModal} style={styles.closeButton}>

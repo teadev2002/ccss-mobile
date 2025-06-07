@@ -113,9 +113,14 @@ export default StyleSheet.create({
     fontWeight: "600",
   },
   selectedInfo: {
-    fontSize: 14,
-    color: "#28a745", // Màu xanh để nổi bật
-    marginTop: 8,
+    marginTop: 5,
+    color: "green",
+    fontWeight: "bold",
+  },
+  selectedTicket: {
+    borderWidth: 2,
+    borderColor: "#4CAF50",
+    backgroundColor: "#E8F5E9",
   },
   picker: {
     width: 100,

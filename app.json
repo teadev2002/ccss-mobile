@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "CCSS Mobile",
-    "slug": "ccss-mobile",
+    "slug": "ccss-mobile-v2",
     "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -26,16 +26,14 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": "89018ce8-3104-48f9-9a9e-ad65cb0e5e76"
-      }
-    },
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "updates": {
-      "url": "https://u.expo.dev/89018ce8-3104-48f9-9a9e-ad65cb0e5e76"
-    }
+    "extra": {
+      "eas": {
+        "projectId": "4a84b1fd-54d2-467f-8fe0-f572877ff25a"
+      }
+    },
+    "owner": "theanh8386"
   }
 }

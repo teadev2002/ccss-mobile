@@ -31,7 +31,8 @@ const formatDate = (isoDate) => {
 
 const EventDetail = ({ route, navigation }) => {
   const { eventId } = route.params;
-  const [selectedQuantity, setSelectedQuantity] = useState({});
+  const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const [selectedQuantity, setSelectedQuantity] = useState(0);
   const [expandedActivity, setExpandedActivity] = useState(null);
   const [event, setEvent] = useState(null);
   const [characters, setCharacters] = useState([]);
@@ -48,15 +49,16 @@ const EventDetail = ({ route, navigation }) => {
     const fetchEvent = async () => {
       try {
         const eventdata = await FestivalService.getEventById(eventId);
-          console.log("Event Data", JSON.stringify(eventdata, null , 2));
-          
-        
+        console.log("Event Data", JSON.stringify(eventdata, null, 2));
+
         setEvent(eventdata);
         if (eventdata?.eventCharacterResponses?.length > 0) {
           const ids = eventdata.eventCharacterResponses.map(
             (c) => c.eventCharacterId
           );
-          const promises = ids.map((id) => FestivalService.getCosplayerByEventCharId(id));
+          const promises = ids.map((id) =>
+            FestivalService.getCosplayerByEventCharId(id)
+          );
           const results = await Promise.all(promises);
           setCharacters(results);
         }
@@ -90,15 +92,13 @@ const EventDetail = ({ route, navigation }) => {
       return;
     }
 
-    setSelectedQuantity((prev) => {
-      const newSelected = { ...prev };
-      if (value > 0) {
-        newSelected[ticketId] = value;
-      } else {
-        delete newSelected[ticketId];
-      }
-      return newSelected;
-    });
+    if (value > 0) {
+      setSelectedTicketId(ticketId);
+      setSelectedQuantity(value);
+    } else {
+      setSelectedTicketId(null);
+      setSelectedQuantity(0);
+    }
   };
 
   const toggleActivity = (id) => {
@@ -106,16 +106,13 @@ const EventDetail = ({ route, navigation }) => {
   };
 
   const calculateTotal = () => {
-    let total = 0;
-    event.ticket?.forEach((ticket) => {
-      const qty = selectedQuantity[ticket.ticketId] || 0;
-      total += qty * ticket.price;
-    });
-    return total;
+    if (!selectedTicketId) return 0;
+    const ticket = event.ticket?.find((t) => t.ticketId === selectedTicketId);
+    return ticket ? selectedQuantity * ticket.price : 0;
   };
 
   const handleOrder = () => {
-    if (Object.keys(selectedQuantity).length === 0) {
+    if (!selectedTicketId || selectedQuantity === 0) {
       Alert.alert("⚠️ No ticket selected!", "Please select one ticket type!");
       return;
     }
@@ -131,17 +128,14 @@ const EventDetail = ({ route, navigation }) => {
     setShowConfirmationModal(false);
     try {
       const total = calculateTotal();
-      const [ticketId] = Object.keys(selectedQuantity);
-      const ticketQuantity = selectedQuantity[ticketId].toString();
-
       const paymentData = {
         fullName: user?.accountName,
         orderInfo: "Ticket Checkout",
         amount: total,
         purpose: PaymentPurpose.TICKET_PURCHASE,
         accountId: user?.id,
-        ticketId,
-        ticketQuantity: ticketQuantity,
+        ticketId: String(selectedTicketId),
+        ticketQuantity: selectedQuantity.toString(),
         isWeb: false,
       };
 
@@ -200,56 +194,6 @@ const EventDetail = ({ route, navigation }) => {
 
       <Text style={styles.description}>{event.description}</Text>
 
-      {/* Ticket Section */}
-      <Text style={styles.sectionTitle}>🎫 Ticket Type</Text>
-      {event.ticket
-        ?.filter((ticket) => ticket.ticketStatus === 0) // chỉ lấy vé còn bán
-        .map((ticket) => {
-          const isSoldOut = ticket.quantity <= 0;
-          return (
-            <View
-              key={ticket.ticketId}
-              style={[styles.ticketCard, isSoldOut && { opacity: 0.5 }]}
-            >
-              <Text style={styles.ticketType}>
-                {ticket.ticketType === 0 ? "🎭 Normal" : "🎉 Premium "}
-              </Text>
-              <Text>{ticket.description}</Text>
-              <Text style={styles.price}>
-                Price: {ticket.price.toLocaleString()}đ
-              </Text>
-              <Text>
-                {isSoldOut
-                  ? "🚫 Sold Out"
-                  : `In stock: ${ticket.quantity} ${pluralize(
-                      ticket.quantity,
-                      "ticket"
-                    )}`}
-              </Text>
-
-              {!isSoldOut && (
-                <View style={styles.quantityContainer}>
-                  <Text style={styles.selectText}>Select quantity:</Text>
-                  <QuantitySelector
-                    maxQuantity={ticket.quantity}
-                    value={selectedQuantity[ticket.ticketId] || 0}
-                    onChange={(val) =>
-                      handleQuantityChange(ticket.ticketId, val)
-                    }
-                  />
-                </View>
-              )}
-
-              {selectedQuantity[ticket.ticketId] > 0 && (
-                <Text style={styles.selectedInfo}>
-                  ✅ Selected: {selectedQuantity[ticket.ticketId]}{" "}
-                  {pluralize(selectedQuantity[ticket.ticketId], "ticket")}
-                </Text>
-              )}
-            </View>
-          );
-        })}
-
       {/* Activity Section */}
       <Text style={styles.sectionTitle}>
         🏃 {pluralize(event.eventActivityResponse?.length || 0, "Activity")}
@@ -297,7 +241,7 @@ const EventDetail = ({ route, navigation }) => {
                 >
                   {char.images?.[0]?.urlImage && (
                     <Image
-                       source={{ uri: char.images[0].urlImage }}
+                      source={{ uri: char.images[0].urlImage }}
                       style={styles.characterImage}
                     />
                   )}
@@ -308,6 +252,69 @@ const EventDetail = ({ route, navigation }) => {
           </View>
         </>
       )}
+
+      {/* Ticket Section */}
+      <Text style={styles.sectionTitle}>🎫 Ticket Type</Text>
+      {event.ticket
+        ?.filter((ticket) => ticket.ticketStatus === 0) // chỉ lấy vé còn bán
+        .map((ticket) => {
+          const isSoldOut = ticket.quantity <= 0;
+          return (
+            <TouchableOpacity
+              key={ticket.ticketId}
+              style={[
+                styles.ticketCard,
+                isSoldOut && { opacity: 0.5 },
+                selectedTicketId === ticket.ticketId && styles.selectedTicket,
+              ]}
+              onPress={() => {
+                if (!isSoldOut) {
+                  handleQuantityChange(
+                    ticket.ticketId,
+                    selectedTicketId === ticket.ticketId ? 0 : 1
+                  );
+                }
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.ticketType}>
+                {ticket.ticketType === 0 ? "🎭 Normal" : "🎉 Premium "}
+              </Text>
+              <Text>{ticket.description}</Text>
+              <Text style={styles.price}>
+                Price: {ticket.price.toLocaleString()}đ
+              </Text>
+              <Text>
+                {isSoldOut
+                  ? "🚫 Sold Out"
+                  : `In stock: ${ticket.quantity} ${pluralize(
+                      ticket.quantity,
+                      "ticket"
+                    )}`}
+              </Text>
+
+              {!isSoldOut && selectedTicketId === ticket.ticketId && (
+                <View style={styles.quantityContainer}>
+                  <Text style={styles.selectText}>Select quantity:</Text>
+                  <QuantitySelector
+                    maxQuantity={ticket.quantity}
+                    value={selectedQuantity}
+                    onChange={(val) =>
+                      handleQuantityChange(ticket.ticketId, val)
+                    }
+                  />
+                </View>
+              )}
+
+              {selectedTicketId === ticket.ticketId && selectedQuantity > 0 && (
+                <Text style={styles.selectedInfo}>
+                  ✅ Selected: {selectedQuantity}{" "}
+                  {pluralize(selectedQuantity, "ticket")}
+                </Text>
+              )}
+            </TouchableOpacity>
+          );
+        })}
 
       {/* Total + Order */}
       <View style={styles.totalContainer}>

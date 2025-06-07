@@ -83,11 +83,32 @@ const EventStep4 = ({ eventData, goBackStep, goNextStep }) => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>📍 Event Details</Text>
         <View style={styles.card}>
-          <DetailRow label="Location" value={location} icon="location-outline" />
-          <DetailRow label="Start" value={`${startDate} ${startTime}`} icon="calendar-outline" />
-          <DetailRow label="End" value={`${endDate} ${endTime}`} icon="calendar-outline" />
-          <DetailRow label="Total Days" value={`${totalDays}`} icon="time-outline" />
-          <DetailRow label="Description" value={description} icon="chatbubble-outline" multiline />
+          <DetailRow
+            label="Location"
+            value={location}
+            icon="location-outline"
+          />
+          <DetailRow
+            label="Start"
+            value={`${startDate} ${startTime}`}
+            icon="calendar-outline"
+          />
+          <DetailRow
+            label="End"
+            value={`${endDate} ${endTime}`}
+            icon="calendar-outline"
+          />
+          <DetailRow
+            label="Total Days"
+            value={`${totalDays}`}
+            icon="time-outline"
+          />
+          <DetailRow
+            label="Description"
+            value={description}
+            icon="chatbubble-outline"
+            multiline
+          />
         </View>
       </View>
 
@@ -102,11 +123,15 @@ const EventStep4 = ({ eventData, goBackStep, goNextStep }) => {
               const char = getCharInfo(item.characterId);
               return (
                 <View key={idx} style={styles.charBox}>
-                  <Text style={styles.charName}>{char.characterName || "Unknown"}</Text>
+                  <Text style={styles.charName}>
+                    {char.characterName || "Unknown"}
+                  </Text>
                   <Text style={styles.charDetail}>
                     Price: {getCharPrice(item.characterId).toLocaleString()} VND
                   </Text>
-                  <Text style={styles.charDetail}>Quantity: {item.quantity}</Text>
+                  <Text style={styles.charDetail}>
+                    Quantity: {item.quantity}
+                  </Text>
                   {item.note ? (
                     <Text style={styles.charNote}>Note: {item.note}</Text>
                   ) : null}
@@ -122,7 +147,8 @@ const EventStep4 = ({ eventData, goBackStep, goNextStep }) => {
         <Text style={styles.sectionTitle}>🎯 Price Range</Text>
         <View style={styles.card}>
           <Text style={styles.sliderLabel}>
-            {priceRange[0].toLocaleString()} VND - {priceRange[1].toLocaleString()} VND
+            {priceRange[0].toLocaleString()} VND -{" "}
+            {priceRange[1].toLocaleString()} VND
           </Text>
           <MultiSlider
             values={priceRange}
@@ -161,7 +187,24 @@ const EventStep4 = ({ eventData, goBackStep, goNextStep }) => {
           />
         </View>
       </View>
-
+      <TouchableOpacity
+        onPress={() => {
+          if (!agreed) {
+            alert("Please agree to the terms to proceed.");
+            return;
+          }
+          goNextStep({ priceRange });
+        }}
+        style={styles.nextButton}
+      >
+        <LinearGradient
+          colors={[COLORS.primary, "#7C3AED"]}
+          style={styles.buttonGradient}
+        >
+          <Ionicons name="checkmark-circle-outline" size={20} color="#FFFFFF" />
+          <Text style={styles.buttonText}>Finish</Text>
+        </LinearGradient>
+      </TouchableOpacity>
       {/* Terms & Conditions Link */}
       <TouchableOpacity
         onPress={() => setShowTermsModal(true)}
@@ -184,7 +227,9 @@ const EventStep4 = ({ eventData, goBackStep, goNextStep }) => {
             color={agreed ? COLORS.accent : COLORS.secondary}
           />
         </TouchableOpacity>
-        <Text style={styles.checkboxText}>I agree to the terms and conditions</Text>
+        <Text style={styles.checkboxText}>
+          I agree to the terms and conditions
+        </Text>
       </View>
 
       {/* Action Buttons */}
@@ -198,7 +243,7 @@ const EventStep4 = ({ eventData, goBackStep, goNextStep }) => {
             <Text style={styles.buttonText}>Back</Text>
           </LinearGradient>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => {
             if (!agreed) {
               alert("Please agree to the terms to proceed.");
@@ -215,7 +260,7 @@ const EventStep4 = ({ eventData, goBackStep, goNextStep }) => {
             <Ionicons name="checkmark-circle-outline" size={20} color="#FFFFFF" />
             <Text style={styles.buttonText}>Finish</Text>
           </LinearGradient>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {/* Terms & Conditions Modal */}
@@ -231,15 +276,19 @@ const EventStep4 = ({ eventData, goBackStep, goNextStep }) => {
                 onPress={() => setShowTermsModal(false)}
                 style={styles.modalCloseButton}
               >
-                <Ionicons name="close-circle-outline" size={24} color="#FFFFFF" />
+                <Ionicons
+                  name="close-circle-outline"
+                  size={24}
+                  color="#FFFFFF"
+                />
               </TouchableOpacity>
             </LinearGradient>
             <ScrollView style={styles.modalBody}>
               <Text style={styles.modalText}>
-                • All bookings are subject to availability.{"\n"}
-                • Event details must be accurate and complete.{"\n"}
-                • Cancellations must be made 48 hours in advance.{"\n"}
-                • Additional fees may apply for last-minute changes.
+                • All bookings are subject to availability.{"\n"}• Event details
+                must be accurate and complete.{"\n"}• Cancellations must be made
+                48 hours in advance.{"\n"}• Additional fees may apply for
+                last-minute changes.
               </Text>
             </ScrollView>
           </View>
